@@ -8,7 +8,6 @@ jobs:
       - checkout
       - setup_remote_docker: 
           docker_layer_caching: true 
-		  
       # Build the docker image after git push
       - run: docker build . -t csgigs:latest
 
