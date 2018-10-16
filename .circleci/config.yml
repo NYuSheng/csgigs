@@ -8,11 +8,24 @@ jobs:
     docker:
       # specify the version you desire here
       - image: circleci/node:7.10
-      
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      # - image: circleci/mongo:3.4.4
+      - type: checkout
+      - type: shell
+        name: Install Docker Client
+        command: |
+          echo "test"
+          curl -L -o /tmp/docker.tgz https://get.docker.com/builds/Linux/x86_64/docker-1.12.3.tgz
+          tar -xz -C /tmp -f /tmp/docker.tgz
+          mv /tmp/docker/docker* /usr/bin/
+
+          curl -L "https://github.com/docker/compose/releases/download/1.9.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/bin/docker-compose
+          chmod +x  /usr/bin/docker-compose
+
+      - type: setup-docker-engine
+      - type: shell
+        name: Verify Docker Works
+        command: |
+          docker --version
+          docker run hello-world
 
     working_directory: ~/csgigs
 
