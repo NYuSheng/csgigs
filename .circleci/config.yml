@@ -6,9 +6,18 @@ jobs:
     working_directory: ~/csgigs
     steps:
       - checkout
-      - setup_remote_docker: 
-          docker_layer_caching: true 
-      # Build the docker image after git push
-      - run: docker build . -t csgigs:latest
+      - run:
+          name: Install client dependencies
+          command: npm install --prefix /client
+      - run:
+          name: Build client
+          command: npm run build --prefix /client
+      - run:
+          name: Install server dependencies
+          command: npm install --prefix /server
+      - run:
+          name: Copying client build files to server
+          command: cp -R /client/build /server/public
+
 
 
