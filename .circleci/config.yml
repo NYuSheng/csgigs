@@ -18,11 +18,6 @@ jobs:
       - run:
           name: Copying client build files to server
           command: cp -R client/build/. server/public
-  deploy:
-    machine:
-      enabled: true
-    working_directory: ~/csgigs
-    steps:
       - run:
           name: Run deploy script
           command: ./do_deploy.sh
@@ -32,6 +27,3 @@ workflows:
   build-and-deploy:
     jobs:
       - build
-      - deploy:
-          requires:
-            - build
