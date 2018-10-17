@@ -18,8 +18,17 @@ jobs:
       - run:
           name: Copying client build files to server
           command: cp -R client/build server/public
-  deployment:
+  deploy:
     branch: master
     commands:
       - echo 'Deploying to Digital Ocean'
       - sh ./do_deploy.sh
+
+workflows:
+  version: 2
+  build-and-deploy:
+    jobs:
+      - build
+      - deploy:
+          requires:
+            - build
