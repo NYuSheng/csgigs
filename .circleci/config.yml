@@ -10,14 +10,14 @@ jobs:
           docker_layer_caching: true 
       - run: docker build . -t csgigs:latest
   deploy:
-    docker: 
+    docker:
       - image: circleci/node:7.10
     steps:
       - setup_remote_docker: 
           docker_layer_caching: true
       - run:
           name: Run deploy script
-          command: sh ./do_deploy.sh
+          command: docker exec circleci/node ./do_deploy.sh
 
 workflows:
   version: 2
