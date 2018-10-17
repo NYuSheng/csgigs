@@ -20,9 +20,11 @@ jobs:
           command: cp -R client/build server/public
   deploy:
     branch: master
-    commands:
+    steps:
       - echo 'Deploying to Digital Ocean'
-      - sh ./do_deploy.sh
+      - run:
+          name: Run deploy script
+          command: sh ./do_deploy.sh
 
 workflows:
   version: 2
