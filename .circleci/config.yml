@@ -23,10 +23,9 @@ jobs:
       enabled: true
     working_directory: ~/csgigs
     steps:
-      - checkout
       - run:
           name: Run deploy script
-          commands:
+          command:
             - sh ./do_deploy.sh
 
 workflows:
