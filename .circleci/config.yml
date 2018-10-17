@@ -8,13 +8,13 @@ jobs:
       - checkout
       - run:
           name: Install client dependencies
-          command: npm install --prefix /client
+          command: npm install --prefix client
       - run:
           name: Build client
-          command: npm run build --prefix /client
+          command: npm run build --prefix client
       - run:
           name: Install server dependencies
-          command: npm install --prefix /server
+          command: npm install --prefix server
       - run:
           name: Copying client build files to server
           command: cp -R /client/build /server/public
