@@ -26,9 +26,7 @@ jobs:
       - checkout
       - run:
           name: Run deploy script
-          commands:
-            - echo 'Deploying to Digital Ocean'
-            - sh ./do_deploy.sh
+          command: sh ./do_deploy.sh
 
 workflows:
   version: 2
