@@ -19,9 +19,8 @@ jobs:
           name: Copying client build files to server
           command: cp -R client/build/. server/public
       - persist_to_workspace:
-         root: ~/
-         paths:
-          - .
+         root: /home/circleci/csgigs
+         paths: .
 
   deploy:
     machine:
