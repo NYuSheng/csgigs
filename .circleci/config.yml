@@ -11,7 +11,7 @@ jobs:
       - run: docker build . -t csgigs:latest
   deploy:
     docker: 
-      - image: csgigs:latest
+      - image: circleci/csgigs:latest
     steps:
       - run:
           name: Run deploy script
