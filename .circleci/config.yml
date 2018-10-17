@@ -25,8 +25,7 @@ jobs:
     steps:
       - run:
           name: Run deploy script
-          command:
-            - sh ./do_deploy.sh
+          command: sh ./do_deploy.sh
 
 workflows:
   version: 2
