@@ -28,7 +28,7 @@ jobs:
       enabled: true
     steps:
       - attach_workspace:
-          at: ~/
+          at: ~/csgigs
       - run:
           name: Run deploy script
           command: ./do_deploy.sh
