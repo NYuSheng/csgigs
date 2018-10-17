@@ -3,7 +3,7 @@ jobs:
   build:
     docker:
       - image: circleci/node:7.10
-    working_directory: /tmp
+    working_directory: ~/csgigs
     steps:
       - checkout
       - run:
@@ -19,14 +19,14 @@ jobs:
           name: Copying client build files to server
           command: cp -R client/build/. server/public
       - persist_to_workspace:
-         root: csgigs
+         root: ~/
 
   deploy:
     machine:
       enabled: true
     steps:
       - attach_workspace:
-          at: /tmp/csgigs
+          at: ~/
       - run:
           name: Run deploy script
           command: ./do_deploy.sh
