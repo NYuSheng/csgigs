@@ -24,8 +24,10 @@ jobs:
 
   deploy:
     machine:
-      enabled: true
+      enabled:
+    working_directory: ~/csgigs
     steps:
+      - checkout
       - attach_workspace:
           at: ~/csgigs
       - run:
