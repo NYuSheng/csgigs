@@ -23,10 +23,12 @@ jobs:
       enabled: true
     working_directory: ~/csgigs
     steps:
-      - echo 'Deploying to Digital Ocean'
+      - checkout
       - run:
           name: Run deploy script
-          command: sh ./do_deploy.sh
+          commands:
+            - echo 'Deploying to Digital Ocean'
+            - sh ./do_deploy.sh
 
 workflows:
   version: 2
