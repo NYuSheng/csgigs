@@ -20,6 +20,8 @@ jobs:
           command: cp -R client/build/. server/public
       - persist_to_workspace:
          root: ~/
+         paths:
+          - .
 
   deploy:
     machine:
