@@ -1,7 +1,6 @@
 FROM node:10-alpine
 
 WORKDIR /opt/app
-RUN mkdir -p /opt/app/client/build
 
 # Frontend
 COPY /client/. client/.
