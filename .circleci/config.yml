@@ -23,5 +23,3 @@ jobs:
     commands:
       - echo 'Deploying to Digital Ocean'
       - sh ./do_deploy.sh
-	  
-
