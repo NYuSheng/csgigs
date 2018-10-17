@@ -6,24 +6,15 @@ jobs:
     working_directory: ~/csgigs
     steps:
       - checkout
-      - run:
-          name: Install client dependencies
-          command: npm install --prefix client
-      - run:
-          name: Build client
-          command: npm run build --prefix client
-      - run:
-          name: Install server dependencies
-          command: npm install --prefix server
-      - run:
-          name: Copying client build files to server
-          command: cp -R client/build server/public
+      - setup_remote_docker: 
+          docker_layer_caching: true 
+      - run: docker build . -t csgigs:latest
   deploy:
     machine:
       enabled: true
-    working_directory: ~/csgigs
+    docker: 
+      - image: csgigs:latest
     steps:
-      - checkout
       - run:
           name: Run deploy script
           command: sh ./do_deploy.sh
