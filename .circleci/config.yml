@@ -18,9 +18,12 @@ jobs:
       - run:
           name: Copying client build files to server
           command: cp -R client/build/. server/public
-      - add_ssh_keys:
-          fingerprints:
-            - "e3:48:a8:1f:8c:a0:e5:53:32:1e:8a:47:83:7c:0c:8e"
+  deploy:
+    machine:
+      enabled: true
+    working_directory: ~/csgigs
+    steps:
+      - checkout
       - run:
           name: Run deploy script
           command: ./do_deploy.sh
@@ -30,3 +33,6 @@ workflows:
   build-and-deploy:
     jobs:
       - build
+      - deploy:
+          requires:
+            - build
