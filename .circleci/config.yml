@@ -17,7 +17,7 @@ jobs:
           command: npm install --prefix server
       - run:
           name: Copying client build files to server
-          command: cp -R /client/build /server/public
+          command: cp -R client/build server/public
 
 
 
