@@ -19,7 +19,9 @@ jobs:
           name: Copying client build files to server
           command: cp -R client/build server/public
   deploy:
-    branch: master
+    machine:
+      enabled: true
+    working_directory: ~/csgigs
     steps:
       - echo 'Deploying to Digital Ocean'
       - run:
