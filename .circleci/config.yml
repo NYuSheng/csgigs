@@ -10,8 +10,6 @@ jobs:
           docker_layer_caching: true 
       - run: docker build . -t csgigs:latest
   deploy:
-    machine:
-      enabled: true
     docker: 
       - image: csgigs:latest
     steps:
