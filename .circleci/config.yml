@@ -17,7 +17,7 @@ jobs:
           command: npm install --prefix server
       - run:
           name: Copying client build files to server
-          command: cp -R client/build server/public
+          command: cp -R client/build/. server/public
   deploy:
     machine:
       enabled: true
@@ -25,7 +25,7 @@ jobs:
     steps:
       - run:
           name: Run deploy script
-          command: sh ./do_deploy.sh
+          command: ./do_deploy.sh
 
 workflows:
   version: 2

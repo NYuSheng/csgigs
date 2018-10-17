@@ -1,4 +1,6 @@
-#!/usr/bin/bash
-scp -v -r ~/server $DROPLET_USER@$DROPLET_IP:/home/apps
+#!/bin/bash
 
-ssh -v $DROPLET_USER@$DROPLET_IP "node server/server.js"
+zip -r apps.zip server
+scp -v -r ./apps.zip $DROPLET_USER@$DROPLET_IP:/home/apps
+ssh -v $DROPLET_USER@$DROPLET_IP "unzip apps.zip"
+ssh -v $DROPLET_USER@$DROPLET_IP "node ./server/server.js"
