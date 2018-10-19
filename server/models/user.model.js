@@ -6,8 +6,8 @@ let UserSchema = new Schema({
     channelId:{type:Number, required: true},
     name:{type: String, required: true, max: 100},
     password:{type: String, required: true},
-    authToken:{type: String, required: true},
+    authToken:{type: String, required: true}
 });
 
 // Export the model
-module.exports = mongoose.model('Users', UserSchema);
+module.exports = mongoose.model('users', UserSchema);

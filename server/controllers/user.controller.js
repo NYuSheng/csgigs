@@ -24,8 +24,3 @@ exports.user_create = function (req, res) {
         res.send('User Created successfully')
     })
 };
-
-exports.user_create2 = function (req, res) {
-    console.log(req.body);
-    res.send(req.body);
-};
