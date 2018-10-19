@@ -1,11 +1,12 @@
 const Gig = require('../models/gig.model');
+const asyncMiddleware = require('../utils/asyncMiddleware');
 
 //Simple version, without validation or sanitation
-exports.test = function (req, res) {
+exports.test = asyncMiddleware(async (req, res) => {
     res.send('Greetings from the Gig controller!');
-};
+});
 
-exports.gig_create = function (req, res, next) {
+exports.gig_create = asyncMiddleware(async (req, res, next) => {
     let gig = new Gig(
         {
             channelId:req.body.channelId,
@@ -21,9 +22,11 @@ exports.gig_create = function (req, res, next) {
         }
         res.send('Gig Created successfully')
     })
-};
+});
 
-exports.gigs_details = function(req, res){
+
+
+exports.gigs_details = asyncMiddleware(async (req, res) => {
     Gig.find({}, function(err, gigs){
         if(err) {
             return next(err);
@@ -31,4 +34,4 @@ exports.gigs_details = function(req, res){
 
         res.send(gigs);
     });
-}
+});
