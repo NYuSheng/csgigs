@@ -24,14 +24,14 @@ exports.gig_create = asyncMiddleware(async (req, res, next) => {
     })
 });
 
-
-
-exports.gigs_details = asyncMiddleware(async (req, res) => {
+exports.gigs_details = asyncMiddleware(async (req, res, next) => {
     Gig.find({}, function(err, gigs){
         if(err) {
             return next(err);
         }
-
-        res.send(gigs);
+        res.send({
+            "status" : 200,
+            "gigs" : gigs
+        });
     });
 });
