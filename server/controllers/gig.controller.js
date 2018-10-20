@@ -35,3 +35,10 @@ exports.gigs_details = asyncMiddleware(async (req, res, next) => {
         });
     });
 });
+
+exports.gig_update = function (req, res) {
+    Gig.findByIdAndUpdate(req.params.id, {$set: req.body}, function (err, gig) {
+        if (err) return next(err);
+        res.send('Gig udpated.');
+    });
+};
