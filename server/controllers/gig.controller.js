@@ -1,7 +1,8 @@
 const Gig = require('../models/gig.model');
 const asyncMiddleware = require('../utils/asyncMiddleware');
 
-//Simple version, without validation or sanitation
+
+
 exports.test = asyncMiddleware(async (req, res) => {
     res.send('Greetings from the Gig controller!');
 });
@@ -25,7 +26,14 @@ exports.gig_create = asyncMiddleware(async (req, res, next) => {
 });
 
 exports.gigs_details = asyncMiddleware(async (req, res, next) => {
-    Gig.find({}, function(err, gigs){
+    // return Gig.find({}).exec().then((gigs) =>{
+    //     res.send({
+    //         "status" : 200,
+    //         "gigs" : gigs
+    //     });
+    // })
+
+    return Gig.find({}, function(err, gigs){
         if(err) {
             return next(err);
         }
@@ -42,3 +50,10 @@ exports.gig_update = function (req, res) {
         res.send('Gig udpated.');
     });
 };
+
+//method shouldnt be here, may need to further discuss on location of method
+// exports.retrive_gigs = async (req, res, next) => {
+//     return Gig.find({}).exec().then((result) =>{
+//         return result;
+//     });
+// };
