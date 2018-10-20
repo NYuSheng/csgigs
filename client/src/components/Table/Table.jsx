@@ -77,7 +77,7 @@ function CustomTable({ ...props }) {
                 key={key}
                 hover={hover}
                 className={classes.tableRow + " " + tableRowClasses}
-                onClick={() => {handleTableRowOnClick(prop)}}
+                onClick={() => {(handleTableRowOnClick) ? handleTableRowOnClick(prop) : null}}
               >
                 {prop.map((prop, key) => {
                   const tableCellClasses =

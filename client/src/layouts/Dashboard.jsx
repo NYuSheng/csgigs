@@ -11,11 +11,9 @@ import withStyles from "@material-ui/core/styles/withStyles";
 
 // core components
 import Header from "components/Header/Header.jsx";
-import Footer from "components/Footer/Footer.jsx";
 import Sidebar from "components/Sidebar/Sidebar.jsx";
 
 import dashboardRoutes from "routes/dashboard.jsx";
-import gigRoutes from "routes/gigs.jsx";
 
 import appStyle from "assets/jss/material-dashboard-pro-react/layouts/dashboardStyle.jsx";
 
@@ -33,7 +31,7 @@ const switchRoutes = (
             <Route path={prop.path} component={prop.component} key={key} />
           );
         });
-      return <Route path={prop.path} component={prop.component} key={key} />;
+      return <Route exact path={prop.path} component={prop.component} key={key} />;
     })}
   </Switch>
 );

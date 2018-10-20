@@ -63,7 +63,7 @@ var pages = [
 
 var dashRoutes = [
   { path: "/homepage", name: "Home Page", icon: Home, component: Homepage },
-  { path: "/gig", name: "Gig", icon: Home, component: GigDashboard },
+  { hide: true, path: "/homepage/:gigId", name: "Gig", icon: Home, component: GigDashboard },
   {
     path: "/dashboard",
     name: "Dashboard",
