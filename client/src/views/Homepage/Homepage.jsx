@@ -24,7 +24,39 @@ const style = {
 
 function Homepage({...props}) {
     const {classes, history} = props;
-
+    //for testing
+    var allGigs = [
+        [
+            "APAC Hackathon 2018",
+            "Admin1",
+            "Not started"
+        ],
+        [
+            "APAC Hackathon 2018",
+            "Admin1",
+            "Not started"
+        ],
+        [
+            "APAC Hackathon 2018",
+            "Admin1",
+            "Not started"
+        ],
+        [
+            "APAC Hackathon 2018",
+            "Admin1",
+            "Not started"
+        ],
+        [
+            "APAC Hackathon 2018",
+            "Admin1",
+            "Not started"
+        ],
+        [
+            "APAC Hackathon 2018",
+            "Admin1",
+            "Not started"
+        ]
+    ]
     function handleTableRowOnClick(gig) {
         history.push({
             headername: `${gig[0]}`,
@@ -34,6 +66,7 @@ function Homepage({...props}) {
             }
         });
     }
+
 
     return (
         <Card>
@@ -48,14 +81,15 @@ function Homepage({...props}) {
                     hover
                     tableHeaderColor="primary"
                     tableHead={["Gig", "Gig Admin", "Gig Status"]}
-                    tableData={[
-                        ["Dakota Rice", "Niger", "Oud-Turnhout"],
-                        ["Minerva Hooper", "Curaçao", "Sinaai-Waas"],
-                        ["Sage Rodriguez", "Netherlands", "Baileux"],
-                        ["Philip Chaney", "Korea, South", "Overland Park"],
-                        ["Doris Greene", "Malawi", "Feldkirchen in Kärnten"],
-                        ["Mason Porter", "Chile", "Gloucester"]
-                    ]}
+                    // tableData={[
+                    //     ["Dakota Rice", "Niger", "Oud-Turnhout"],
+                    //     ["Minerva Hooper", "Curaçao", "Sinaai-Waas"],
+                    //     ["Sage Rodriguez", "Netherlands", "Baileux"],
+                    //     ["Philip Chaney", "Korea, South", "Overland Park"],
+                    //     ["Doris Greene", "Malawi", "Feldkirchen in Kärnten"],
+                    //     ["Mason Porter", "Chile", "Gloucester"]
+                    // ]}
+                    tableData={allGigs}
                     coloredColls={[3]}
                     colorsColls={["primary"]}
                     handleTableRowOnClick={handleTableRowOnClick}
