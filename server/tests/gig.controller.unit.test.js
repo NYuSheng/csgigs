@@ -16,17 +16,24 @@ describe("Testing Gigs Controller", () => {
         mongoose.disconnect();
     });
 
-    test('creating gigs with required parameters should give 200', () => {
-        const request = httpMocks.createRequest({
+    function createHttpMockRequest(bodyObj){
+        return request = httpMocks.createRequest({
             method: 'POST',
             url: '/wew', //url here does not matter, this is just a mock
-            body: {
-                channelId: "D1234",
-                name: "Pokemon Tour",
-                browniePoints: 100,
-                status: "NOT STARTED"
-            }
+            body: bodyObj
         });
+    }
+
+    test('creating gigs with required parameters should give status 200', () => {
+
+        var body = {
+            channelId: "D1234",
+            name: "Pokemon Tour",
+            browniePoints: 100,
+            status: "NOT STARTED"
+        };
+
+        const request = createHttpMockRequest(body);
 
         const response = httpMocks.createResponse();
 
@@ -37,13 +44,9 @@ describe("Testing Gigs Controller", () => {
         });
     });
 
-    //testing endpoint
-    test('/gigs should give status 200', () =>{
+    test('retrieving gigs should give status 200', () =>{
 
-        const request = httpMocks.createRequest({
-            method: 'GET',
-            url: '/wew' //url here does not matter, this is just a mock
-        });
+        const request = createHttpMockRequest({});
 
         const response = httpMocks.createResponse();
 
@@ -52,6 +55,22 @@ describe("Testing Gigs Controller", () => {
             //_getData is already formed as an object here.
             expect(responseData.status).toBe(200);
         });
+    });
+
+    xtest('should not be able to create two gigs of same name', () => {
+
+    });
+
+    xtest('creating gig without specifying admins should return empty admin array', () => {
+
+    });
+
+    xtest('creating gig while specifying admins should return a filled admin array', () => {
+
+    });
+
+    xtest('creating gig while specifying invalid admins should return error', () => {
+
     });
 
     //testing function directly
