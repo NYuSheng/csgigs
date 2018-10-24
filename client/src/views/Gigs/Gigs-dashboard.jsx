@@ -4,8 +4,9 @@ import React from "react";
 import withStyles from "@material-ui/core/styles/withStyles";
 
 // material-ui icons
-import Home from "@material-ui/icons/Home";
 import KeyboardArrowLeft from "@material-ui/icons/KeyboardArrowLeft";
+import BrowniePoints from "@material-ui/icons/AttachMoney";
+
 
 import Button from "components/CustomButtons/Button.jsx";
 import CardBody from "components/Card/CardBody.jsx";
@@ -29,9 +30,9 @@ import Danger from "components/Typography/Danger.jsx";
 import CardHeader from "components/Card/CardHeader.jsx";
 import CardIcon from "components/Card/CardIcon.jsx";
 import CardFooter from "components/Card/CardFooter.jsx";
-import CustomTabs from "../../components/CustomTabs/CustomTabs";
+import GigCustomTabs from "../../components/CustomTabs/GigCustomTabs";
 
-import { bugs, website, server } from "variables/general.jsx";
+import {bugs, website, server} from "variables/general.jsx";
 import GigTasks from "../../components/Tasks/GigTasks";
 
 const style = {
@@ -69,20 +70,6 @@ const style = {
 };
 
 class GigDashboard extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            gig: null
-        };
-    }
-
-    componentDidMount() {
-        if (this.props.location) {
-            this.setState({
-                gig: this.props.location.state.gig
-            });
-        }
-    }
 
     returnToHomepage() {
         const {history} = this.props;
@@ -91,8 +78,57 @@ class GigDashboard extends React.Component {
         });
     }
 
+    organizeTabContent(tasks) {
+        var toReturn = [];
+        var organizedContent = [];
+/*
+        {
+            tabName: "Bugs",
+                tabIcon
+        :
+            BugReport,
+                tabContent
+        :
+            (
+                <GigTasks
+                    tasksIndexes={[0, 1, 2, 3]}
+                    tasks={bugs}
+                />
+            )
+        }
+        */
+        tasks.forEach(function(task) {
+            var category = task.category;
+            if (organizedContent.hasOwnProperty(category)){
+                organizedContent[category].push(task)
+            } else {
+                organizedContent[category] = [];
+                organizedContent[category].push(task)
+            }
+        });
+////////
+        organizedContent.forEach((key) => {
+            console.log(key);
+           toReturn.push({
+               tabName: key,
+               tabContent: (
+                   <GigTasks
+                       tasksIndexes={[0, 1, 2, 3]}
+                       tasks={key}
+                   />
+               )
+           });
+        });
+
+        console.log(toReturn);
+    }
+
     render() {
         const {classes} = this.props;
+        const gig = this.props.location.state.gig;
+
+        this.organizeTabContent(gig.tasks)
+
         return (
             <GridContainer>
                 <GridItem xs={12}>
@@ -108,19 +144,10 @@ class GigDashboard extends React.Component {
                             </CardIcon>
                             <p className={classes.cardCategory}>Gigs Status</p>
                             <h3 className={classes.cardTitle}>
-                                49/50 <small>GB</small>
+                                {gig.status}
                             </h3>
                         </CardHeader>
-                        <CardFooter stats>
-                            <div className={classes.stats}>
-                                <Danger>
-                                    <Warning/>
-                                </Danger>
-                                <a href="#pablo" onClick={e => e.preventDefault()}>
-                                    Get more space
-                                </a>
-                            </div>
-                        </CardFooter>
+                        <CardFooter/>
                     </Card>
                 </GridItem>
                 <GridItem xs={4}>
@@ -131,19 +158,10 @@ class GigDashboard extends React.Component {
                             </CardIcon>
                             <p className={classes.cardCategory}>Gigs Admin</p>
                             <h3 className={classes.cardTitle}>
-                                49/50 <small>GB</small>
+                                {gig.admin}
                             </h3>
                         </CardHeader>
-                        <CardFooter stats>
-                            <div className={classes.stats}>
-                                <Danger>
-                                    <Warning/>
-                                </Danger>
-                                <a href="#pablo" onClick={e => e.preventDefault()}>
-                                    Get more space
-                                </a>
-                            </div>
-                        </CardFooter>
+                        <CardFooter/>
                     </Card>
                 </GridItem>
                 <GridItem xs={4}>
@@ -154,19 +172,11 @@ class GigDashboard extends React.Component {
                             </CardIcon>
                             <p className={classes.cardCategory}>Gigs Channel</p>
                             <h3 className={classes.cardTitle}>
-                                49/50 <small>GB</small>
+                                {gig.channel}
+                                {/*link to rocketchat*/}
                             </h3>
                         </CardHeader>
-                        <CardFooter stats>
-                            <div className={classes.stats}>
-                                <Danger>
-                                    <Warning/>
-                                </Danger>
-                                <a href="#pablo" onClick={e => e.preventDefault()}>
-                                    Get more space
-                                </a>
-                            </div>
-                        </CardFooter>
+                        <CardFooter/>
                     </Card>
                 </GridItem>
                 <GridItem xs={4}>
@@ -174,57 +184,57 @@ class GigDashboard extends React.Component {
                         <CardBody pricing>
                             <h6 className={classes.cardCategory}>Brownie Points Total Budget</h6>
                             <div className={classes.icon}>
-                                <Home className={classes.iconRose}/>
+                                <BrowniePoints className={classes.iconRose}/>
                             </div>
                             <h3 className={`${classes.cardTitle} ${classes.marginTop30}`}>
-                                {this.state.gig}
+                                {gig.points}
                             </h3>
                             <p className={classes.cardDescription}>
-                                This is good if your company size is between 2 and 10
-                                Persons.
+                                The budget of {gig.name} is {gig.points} brownie points
                             </p>
                             <Button round color="rose">
-                                Choose plan
+                                {/*TO-DO: Popup for task points allocation view*/}
+                                View Allocation
                             </Button>
                         </CardBody>
                     </Card>
                 </GridItem>
                 <GridItem xs={8}>
-                    <CustomTabs
+                    <GigCustomTabs
                         title="Tasks:"
                         headerColor="rose"
                         tabs={[
-                            {
-                                tabName: "Bugs",
-                                tabIcon: BugReport,
-                                tabContent: (
-                                    <GigTasks
-                                        tasksIndexes={[0, 1, 2, 3]}
-                                        tasks={bugs}
-                                    />
-                                )
-                            },
-                            {
-                                tabName: "Website",
-                                tabIcon: Code,
-                                tabContent: (
-                                    <GigTasks
-                                        tasksIndexes={[0, 1]}
-                                        tasks={website}
-                                    />
-                                )
-                            },
-                            {
-                                tabName: "Server",
-                                tabIcon: Cloud,
-                                tabContent: (
-                                    <GigTasks
-                                        tasksIndexes={[0, 1, 2]}
-                                        tasks={server}
-                                    />
-                                )
-                            }
-                        ]}
+                                {
+                                    tabName: "Bugs",
+                                    tabIcon: BugReport,
+                                    tabContent: (
+                                        <GigTasks
+                                            tasksIndexes={[0, 1, 2, 3]}
+                                            tasks={bugs}
+                                        />
+                                    )
+                                },
+                                    {
+                                        tabName: "Website",
+                                        tabIcon: Code,
+                                        tabContent: (
+                                            <GigTasks
+                                                tasksIndexes={[0, 1]}
+                                                tasks={website}
+                                            />
+                                        )
+                                    },
+                                    {
+                                        tabName: "Server",
+                                        tabIcon: Cloud,
+                                        tabContent: (
+                                            <GigTasks
+                                                tasksIndexes={[0, 1, 2]}
+                                                tasks={server}
+                                            />
+                                        )
+                                    }
+                                ]}
                     />
                 </GridItem>
             </GridContainer>

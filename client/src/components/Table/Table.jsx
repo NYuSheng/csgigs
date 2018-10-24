@@ -27,7 +27,6 @@ function CustomTable({ ...props }) {
     tableShopping,
     customHeadCellClasses,
     customHeadClassesForCells,
-    handleTableRowOnClick
   } = props;
   return (
     <div className={classes.tableResponsive}>
@@ -77,7 +76,6 @@ function CustomTable({ ...props }) {
                 key={key}
                 hover={hover}
                 className={classes.tableRow + " " + tableRowClasses}
-                onClick={() => {(handleTableRowOnClick) ? handleTableRowOnClick(prop) : null}}
               >
                 {prop.map((prop, key) => {
                   const tableCellClasses =

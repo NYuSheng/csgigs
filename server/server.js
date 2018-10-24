@@ -1,6 +1,7 @@
 // app.js
 
 var express = require('express');
+var path = require('path');
 var bodyParser = require('body-parser');
 
 var product = require('./routes/product');
@@ -24,6 +25,11 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use('/products', product);
 app.use('/users', user);
 app.use('/gigs', gig);
+
+app.use('/admin-ui', express.static(path.join(__dirname, './public')));
+app.get('/admin-ui/*', function (req, res) {
+   res.sendFile(path.join(__dirname, 'public', 'index.html'));
+ });
 
 var port = 5000;
 

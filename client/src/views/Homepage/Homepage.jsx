@@ -2,15 +2,14 @@ import React from "react";
 
 // @material-ui/core components
 import withStyles from "@material-ui/core/styles/withStyles";
-
-// material-ui icons
-import Assignment from "@material-ui/icons/Assignment";
-
-import Table from "components/Table/Table.jsx";
+import GigTable from "components/Table/GigTable.jsx";
 import Card from "components/Card/Card.jsx";
 import CardHeader from "components/Card/CardHeader.jsx";
 import CardIcon from "components/Card/CardIcon.jsx";
 import CardBody from "components/Card/CardBody.jsx";
+
+// material-ui icons
+import Assignment from "@material-ui/icons/Assignment";
 
 import {cardTitle} from "assets/jss/material-dashboard-pro-react.jsx";
 
@@ -24,49 +23,17 @@ const style = {
 
 function Homepage({...props}) {
     const {classes, history} = props;
-    //for testing
-    var allGigs = [
-        [
-            "APAC Hackathon 2018",
-            "Admin1",
-            "Not started"
-        ],
-        [
-            "APAC Hackathon 2018",
-            "Admin1",
-            "Not started"
-        ],
-        [
-            "APAC Hackathon 2018",
-            "Admin1",
-            "Not started"
-        ],
-        [
-            "APAC Hackathon 2018",
-            "Admin1",
-            "Not started"
-        ],
-        [
-            "APAC Hackathon 2018",
-            "Admin1",
-            "Not started"
-        ],
-        [
-            "APAC Hackathon 2018",
-            "Admin1",
-            "Not started"
-        ]
-    ]
+    const gigs = setupRawData();
+
     function handleTableRowOnClick(gig) {
         history.push({
-            headername: `${gig[0]}`,
-            pathname: `/homepage/${gig[1]}`,
+            headername: `${gig.name}`,
+            pathname: `/homepage/${gig.id}`,
             state: {
                 gig: gig
             }
         });
     }
-
 
     return (
         <Card>
@@ -77,26 +44,52 @@ function Homepage({...props}) {
                 <h4 className={classes.cardIconTitle}>Simple Table</h4>
             </CardHeader>
             <CardBody>
-                <Table
+                <GigTable
                     hover
                     tableHeaderColor="primary"
                     tableHead={["Gig", "Gig Admin", "Gig Status"]}
-                    // tableData={[
-                    //     ["Dakota Rice", "Niger", "Oud-Turnhout"],
-                    //     ["Minerva Hooper", "Curaçao", "Sinaai-Waas"],
-                    //     ["Sage Rodriguez", "Netherlands", "Baileux"],
-                    //     ["Philip Chaney", "Korea, South", "Overland Park"],
-                    //     ["Doris Greene", "Malawi", "Feldkirchen in Kärnten"],
-                    //     ["Mason Porter", "Chile", "Gloucester"]
-                    // ]}
-                    tableData={allGigs}
-                    coloredColls={[3]}
-                    colorsColls={["primary"]}
+                    // TO-DO: Pass in the array of gigs
+                    tableData={gigs}
                     handleTableRowOnClick={handleTableRowOnClick}
                 />
             </CardBody>
         </Card>
     );
+}
+
+function setupRawData() {
+    // Fake data for gigs
+    let gigs = [];
+    gigs.push({
+        id: 10000,
+        name: "Hackathon 2018",
+        status: "Active",
+        // Could potentially be a user object
+        admin: "Yu Sheng",
+        channel: "gigs chat",
+        points: 400,
+        tasks: [
+            {
+                category: "Logistics",
+                taskname: "Prepare food",
+                status: "Unassigned",
+                assignees: []
+            },
+            {
+                category: "Admin",
+                taskname: "Get sign ups",
+                status: "Unassigned",
+                assignees: []
+            },
+            {
+                category: "Operation",
+                taskname: "Man the area during event",
+                status: "Unassigned",
+                assignees: []
+            }
+        ]
+    })
+    return gigs;
 }
 
 export default withStyles(style)(Homepage);

@@ -2,6 +2,7 @@
   "name": "material-dashboard-pro-react",
   "version": "1.4.0",
   "private": true,
+  "homepage": "/admin-ui",
   "dependencies": {
     "@material-ui/core": "3.1.1",
     "@material-ui/icons": "3.0.1",

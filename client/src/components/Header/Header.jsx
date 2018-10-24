@@ -41,7 +41,7 @@ function Header({...props}) {
         if (name) {
             return name;
         } else {
-            return "CSGigs";
+            return "";
         }
     }
 
