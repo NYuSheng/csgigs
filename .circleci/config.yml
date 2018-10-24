@@ -11,7 +11,7 @@ jobs:
           command: npm install --prefix client
       - run:
           name: Build client
-          command: npm run build --prefix client
+          command: CI=false npm run build --prefix client
       - run:
           name: Install server dependencies
           command: npm install --prefix server

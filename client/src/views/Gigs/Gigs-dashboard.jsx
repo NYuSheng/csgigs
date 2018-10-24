@@ -23,10 +23,8 @@ import Icon from "@material-ui/core/Icon";
 import BugReport from "@material-ui/icons/BugReport";
 import Code from "@material-ui/icons/Code";
 import Cloud from "@material-ui/icons/Cloud";
-import Warning from "@material-ui/icons/Warning";
 
 // core components
-import Danger from "components/Typography/Danger.jsx";
 import CardHeader from "components/Card/CardHeader.jsx";
 import CardIcon from "components/Card/CardIcon.jsx";
 import CardFooter from "components/Card/CardFooter.jsx";
