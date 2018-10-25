@@ -4,17 +4,19 @@ import React from "react";
 import withStyles from "@material-ui/core/styles/withStyles";
 
 // core components
-import Filter from "components/Gigs/Filter/Filter.jsx";
-import Table from "components/Gigs/Table/Table.jsx";
-import Card from "components/Card/Card.jsx";
-import CardHeader from "components/Card/CardHeader.jsx";
-import CardIcon from "components/Card/CardIcon.jsx";
-import CardBody from "components/Card/CardBody.jsx";
+import Filter from "components/Gigs/Filter/Filter";
+import Table from "components/Gigs/Table/Table";
+import Card from "components/Card/Card";
+import CardHeader from "components/Card/CardHeader";
+import CardIcon from "components/Card/CardIcon";
+import CardBody from "components/Card/CardBody";
 import GridContainer from "../../components/Grid/GridContainer";
 import GridItem from "../../components/Grid/GridItem";
+import Button from "components/CustomButtons/Button";
 
 // material-ui icons
 import Assignment from "@material-ui/icons/Assignment";
+import Create from "@material-ui/icons/NoteAdd";
 
 import {cardTitle} from "assets/jss/material-dashboard-pro-react.jsx";
 
@@ -59,6 +61,13 @@ class ManageGigs extends React.Component {
         });
     }
 
+    handleCreateGigPage() {
+        const {history} = this.props;
+        history.push({
+            pathname: "/gigs/create"
+        });
+    }
+
     render() {
         const {classes} = this.props;
 
@@ -75,6 +84,15 @@ class ManageGigs extends React.Component {
                                     filterFunction={this.filterGigsResults.bind(this)}
                             />
                         </GridItem>
+                        <GridItem xs={12} sm={3} md={3} lg={3}>
+                            <Button color="warning"
+                                    className={classes.marginRight}
+                                    onClick={this.handleCreateGigPage.bind(this)}>
+                                <Create className={classes.icons} />
+                                Create Gig
+                            </Button>
+                        </GridItem>
+
                     </GridContainer>
                 </CardHeader>
                 <CardBody>

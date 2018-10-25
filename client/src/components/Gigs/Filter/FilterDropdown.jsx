@@ -39,13 +39,13 @@ class FilterDropdown extends React.Component {
 
         this.setState({ open: false });
     }
-    handleCloseMenu(param){
+    handleCloseMenu(event, param){
         const { buttonText, onClickFunction } = this.props;
-        this.setState({ open: false });
+
         if (onClickFunction) {
             onClickFunction(buttonText, param);
         }
-
+        this.handleClose(event);
         if(this.props && this.props.onClick){
             this.props.onClick(param);
         }
@@ -113,7 +113,7 @@ class FilterDropdown extends React.Component {
                     return (
                         <MenuItem
                             key={key}
-                            onClick={() => this.handleCloseMenu(prop)}
+                            onClick={(e) => this.handleCloseMenu(e, prop)}
                             className={dropdownItem}
                         >
                             {prop}

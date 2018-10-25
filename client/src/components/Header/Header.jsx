@@ -85,7 +85,7 @@ function Header({...props}) {
                 </Hidden>
                 <div className={classes.flex}>
                     {/* Here we create navbar brand, based on route name */}
-                    <CardHeader className={classes.title} color="transparent">
+                    <CardHeader className={classes.title}>
                         {makeBrand()}
                     </CardHeader>
                 </div>
