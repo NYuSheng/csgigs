@@ -4,7 +4,7 @@ const Gig = require('../models/gig.model');
 var mongoose = require('mongoose');
 
 
-describe("Testing Gigs Controller", () => {
+describe("Gig Controller Tests", () => {
     beforeAll(()=> {
         var dev_db_url = 'mongodb://test1:test123@ds031895.mlab.com:31895/projectgigstest';
         var mongoDB = process.env.MONGODB_URI || dev_db_url;
@@ -24,52 +24,81 @@ describe("Testing Gigs Controller", () => {
         });
     }
 
-    test('creating gigs with required parameters should give status 200', () => {
+    describe('Retrieve All Gigs', () =>{
 
-        var body = {
-            channelId: "D1234",
-            name: "Pokemon Tour",
-            browniePoints: 100,
-            status: "NOT STARTED"
-        };
+        test('retrieving gigs should return array of gigs with status 200', () =>{
 
-        const request = createHttpMockRequest(body);
-
-        const response = httpMocks.createResponse();
-
-        return gig_controller.gig_create(request, response).then(() =>{
-            console.log(response._getData());
-            const responseData = response._getData();
-            expect(responseData.status).toBe(200);
+            const request = createHttpMockRequest({});
+    
+            const response = httpMocks.createResponse();
+    
+            return gig_controller.gigs_details(request, response).then(() =>{
+                const responseData = response._getData();
+                //_getData is already formed as an object here.
+                expect(responseData.status).toBe(200);
+            });
         });
+
     });
 
-    test('retrieving gigs should give status 200', () =>{
+    describe('Retrieve Gig By Id', () => {
 
-        const request = createHttpMockRequest({});
-
-        const response = httpMocks.createResponse();
-
-        return gig_controller.gigs_details(request, response).then(() =>{
-            const responseData = response._getData();
-            //_getData is already formed as an object here.
-            expect(responseData.status).toBe(200);
+        xtest('valid Gig ID should return gig with status 200', () => {
+    
         });
-    });
 
-    xtest('should not be able to create two gigs of same name', () => {
-
-    });
-
-    xtest('creating gig without specifying admins should return empty admin array', () => {
+        xtest('invalid Gig ID should return status 400', () => {
+    
+        });
 
     });
 
-    xtest('creating gig while specifying admins should return a filled admin array', () => {
+    describe('Create Gig', () => {
 
-    });
+        test('creating gigs with required parameters should return created gig with status 200', () => {
 
-    xtest('creating gig while specifying invalid admins should return error', () => {
+            var body = {
+                channelId: "D1234",
+                name: "Pokemon Tour",
+                browniePoints: 100,
+                status: "NOT STARTED"
+            };
+    
+            const request = createHttpMockRequest(body);
+    
+            const response = httpMocks.createResponse();
+    
+            return gig_controller.gig_create(request, response).then(() =>{
+                console.log(response._getData());
+                const responseData = response._getData();
+                expect(responseData.status).toBe(200);
+            });
+        });
+
+        //bad request
+        xtest('creating gigs without all required parameters should return status 400', () => {
+
+        });
+
+        //bad request
+        xtest('creating gig while specifying invalid admins should return status 400', () => {
+    
+        });
+
+        //conflict
+        xtest('creating a gig with a duplicate name should return status 409', () => {
+    
+        });
+    
+        //TBC
+        xtest('creating gig without specifying admins should return gig with empty admin array', () => {
+    
+        });
+    
+        //TBC
+        xtest('creating gig while specifying admins should return gig with filled admin array', () => {
+    
+        });
 
     });
 
