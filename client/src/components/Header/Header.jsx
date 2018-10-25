@@ -8,6 +8,7 @@ import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Hidden from "@material-ui/core/Hidden";
 
+
 // material-ui icons
 import Menu from "@material-ui/icons/Menu";
 import MoreVert from "@material-ui/icons/MoreVert";
@@ -16,6 +17,7 @@ import ViewList from "@material-ui/icons/ViewList";
 // core components
 import HeaderLinks from "./HeaderLinks";
 import Button from "components/CustomButtons/Button.jsx";
+import CardHeader from "components/Card/CardHeader.jsx";
 
 import headerStyle from "assets/jss/material-dashboard-pro-react/components/headerStyle.jsx";
 
@@ -83,9 +85,9 @@ function Header({...props}) {
                 </Hidden>
                 <div className={classes.flex}>
                     {/* Here we create navbar brand, based on route name */}
-                    <h2 className={classes.title} color="transparent">
+                    <CardHeader className={classes.title} color="transparent">
                         {makeBrand()}
-                    </h2>
+                    </CardHeader>
                 </div>
                 <Hidden smDown implementation="css">
                     <HeaderLinks rtlActive={rtlActive}/>
