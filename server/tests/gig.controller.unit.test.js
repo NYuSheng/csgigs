@@ -20,11 +20,12 @@ describe("Gig Controller Tests", () => {
         mongoose.disconnect();
     });
 
-    function createHttpMockRequest(bodyObj, requestType){
+    function createHttpMockRequest(bodyObj, paramObj, requestType){
         return request = httpMocks.createRequest({
             method : requestType,
             url : '/wew', //url here does not matter, this is just a mock
-            body : bodyObj
+            body : bodyObj,
+            params : paramObj
         });
     }
     
@@ -38,7 +39,7 @@ describe("Gig Controller Tests", () => {
                 status : "NOT STARTED"
             };
             
-            const request = createHttpMockRequest(body, 'POST');
+            const request = createHttpMockRequest(body, {}, 'POST');
             
             const response = httpMocks.createResponse();
             
@@ -79,7 +80,7 @@ describe("Gig Controller Tests", () => {
 
         test('retrieving gigs should return array of gigs with status 200', () =>{
 
-            const request = createHttpMockRequest({}, 'GET');
+            const request = createHttpMockRequest({}, {}, 'GET');
     
             const response = httpMocks.createResponse();
     
@@ -93,9 +94,8 @@ describe("Gig Controller Tests", () => {
     });
 
     describe('Retrieve Gig By Id', () => {
-        xtest('valid Gig ID should return gig with status 200', () => {
-            const request = createHttpMockRequest({name:'ポケモンサファリ＠台南'}, 'POST');
-
+        test('valid Gig ID should return gig with status 200', () => {
+            const request = createHttpMockRequest({}, {name:'ポケモンサファリ＠台南'}, 'GET');
             const response = httpMocks.createResponse();
     
             return gig_controller.gig_details(request, response).then(() =>{
@@ -108,7 +108,7 @@ describe("Gig Controller Tests", () => {
 
         //bad request
         test('invalid Gig ID should return status 400', () => {
-            const request = createHttpMockRequest({name:''}, 'POST');
+            const request = createHttpMockRequest({}, {name:''}, 'GET');
             const response = httpMocks.createResponse();
 
             return gig_controller.gig_details(request, response).then(() =>{

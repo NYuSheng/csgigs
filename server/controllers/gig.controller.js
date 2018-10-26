@@ -61,8 +61,7 @@ exports.gigs_details = asyncMiddleware(async (req, res, next) => {
 });
 
 exports.gig_details = asyncMiddleware(async (req, res, next) => {
-
-    return Gig.findOne({name: req.body.name}).exec().then((gig_retrieved) => {
+    return Gig.findOne({name: req.params.name}).exec().then((gig_retrieved) => {
         if(gig_retrieved === null){
             return res.status(400).send({
                 error: 'Cannot find gig of name' + req.body.name
@@ -79,7 +78,7 @@ exports.gig_details = asyncMiddleware(async (req, res, next) => {
 });
 
 exports.gig_update = function (req, res) {
-    Gig.findByIdAndUpdate(req.params.id, {$set: req.body}, function (err, gig) {
+    Gig.findByIdAndUpdate(req.params.name, {$set: req.body}, function (err, gig) {
         if (err) return next(err);
         res.send('Gig udpated.');
     });
