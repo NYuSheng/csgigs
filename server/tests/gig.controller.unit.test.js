@@ -47,6 +47,7 @@ describe("Gig Controller Tests", () => {
     
         });
 
+        //bad request
         xtest('invalid Gig ID should return status 400', () => {
     
         });
@@ -58,9 +59,8 @@ describe("Gig Controller Tests", () => {
         test('creating gigs with required parameters should return created gig with status 200', () => {
 
             var body = {
-                channelId: "D1234",
-                name: "Pokemon Tour",
-                browniePoints: 100,
+                name:'ポケモンサファリ＠台南',
+                points_budget: 100,
                 status: "NOT STARTED"
             };
     
