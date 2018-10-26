@@ -13,102 +13,121 @@ describe("Gig Controller Tests", () => {
     });
 
     afterAll(() => {
+        // mongoose.connection.db.dropDatabase();
+        for (var i in mongoose.connection.collections) {
+            mongoose.connection.collections[i].remove({});
+        }
         mongoose.disconnect();
     });
 
-    function createHttpMockRequest(bodyObj){
+    function createHttpMockRequest(bodyObj, requestType){
         return request = httpMocks.createRequest({
-            method: 'POST',
-            url: '/wew', //url here does not matter, this is just a mock
-            body: bodyObj
+            method : requestType,
+            url : '/wew', //url here does not matter, this is just a mock
+            body : bodyObj
         });
     }
-
+    
+    describe('Create Gig', () => {
+        
+        test('creating gigs with required parameters should return created gig with status 200', () => {
+            
+            var body = {
+                name :'ポケモンサファリ＠台南',
+                points_budget : 100,
+                status : "NOT STARTED"
+            };
+            
+            const request = createHttpMockRequest(body, 'POST');
+            
+            const response = httpMocks.createResponse();
+            
+            return gig_controller.gig_create(request, response).then(() =>{
+                const responseData = response._getData();
+                expect(response.statusCode).toBe(200);
+            });
+        });
+        
+        //bad request
+        xtest('creating gigs without all required parameters should return status 400', () => {
+            
+        });
+        
+        //bad request
+        xtest('creating gig while specifying invalid admins should return status 400', () => {
+            
+        });
+        
+        //conflict
+        xtest('creating a gig with a duplicate name should return status 409', () => {
+            
+        });
+        
+        //TBC
+        xtest('creating gig without specifying admins should return gig with empty admin array', () => {
+            
+        });
+        
+        //TBC
+        xtest('creating gig while specifying admins should return gig with filled admin array', () => {
+            
+        });
+        
+    });
+    
     describe('Retrieve All Gigs', () =>{
 
         test('retrieving gigs should return array of gigs with status 200', () =>{
 
-            const request = createHttpMockRequest({});
+            const request = createHttpMockRequest({}, 'GET');
     
             const response = httpMocks.createResponse();
     
             return gig_controller.gigs_details(request, response).then(() =>{
                 const responseData = response._getData();
                 //_getData is already formed as an object here.
-                expect(responseData.status).toBe(200);
+                expect(response.statusCode).toBe(200);
+                expect(responseData.gigs.length).toBeGreaterThanOrEqual(1);
             });
         });
-
     });
 
     describe('Retrieve Gig By Id', () => {
-
         xtest('valid Gig ID should return gig with status 200', () => {
-    
-        });
+            const request = createHttpMockRequest({name:'ポケモンサファリ＠台南'}, 'POST');
 
-        //bad request
-        xtest('invalid Gig ID should return status 400', () => {
-    
-        });
-
-    });
-
-    describe('Create Gig', () => {
-
-        test('creating gigs with required parameters should return created gig with status 200', () => {
-
-            var body = {
-                name:'ポケモンサファリ＠台南',
-                points_budget: 100,
-                status: "NOT STARTED"
-            };
-    
-            const request = createHttpMockRequest(body);
-    
             const response = httpMocks.createResponse();
     
-            return gig_controller.gig_create(request, response).then(() =>{
-                console.log(response._getData());
+            return gig_controller.gig_details(request, response).then(() =>{
                 const responseData = response._getData();
-                expect(responseData.status).toBe(200);
+                expect(response.statusCode).toBe(200);
+                expect(responseData.gig.name).toBe('ポケモンサファリ＠台南');
+                expect(responseData.gig.points_budget).toBe(100);
             });
         });
 
         //bad request
-        xtest('creating gigs without all required parameters should return status 400', () => {
+        test('invalid Gig ID should return status 400', () => {
+            const request = createHttpMockRequest({name:''}, 'POST');
+            const response = httpMocks.createResponse();
 
+            return gig_controller.gig_details(request, response).then(() =>{
+                console.log(response._getData());
+                expect(response.statusCode).toBe(400);
+            });
         });
-
-        //bad request
-        xtest('creating gig while specifying invalid admins should return status 400', () => {
-    
-        });
-
-        //conflict
-        xtest('creating a gig with a duplicate name should return status 409', () => {
-    
-        });
-    
-        //TBC
-        xtest('creating gig without specifying admins should return gig with empty admin array', () => {
-    
-        });
-    
-        //TBC
-        xtest('creating gig while specifying admins should return gig with filled admin array', () => {
-    
-        });
-
+        
     });
 
     //testing function directly
     //commented out until we've found a way to do unit testing for the db
     //currently this test will fail once anyone tampers/edit the data in gigs collection
     // test('retrieve all gigs', () =>{
-    //     return gig_controller.wew().then((result) =>{
-    //         expect(result).toHaveLength(2);
-    //     });
-    // });
-})
+        //     return gig_controller.wew().then((result) =>{
+            //         expect(result).toHaveLength(2);
+            //     });
+            // });
+});
 
+        
+        
