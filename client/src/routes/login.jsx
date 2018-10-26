@@ -47,9 +47,9 @@ var loginRoutes = [
         short: "Gig Login",
         component: LoginPage
     },
-    {path: "/widgets", name: "Widgets", icon: WidgetsIcon, component: Widgets},
-    {path: "/charts", name: "Charts", icon: Timeline, component: Charts},
-    {path: "/calendar", name: "Calendar", icon: DateRange, component: Calendar},
+    //{path: "/widgets", name: "Widgets", icon: WidgetsIcon, component: Widgets},
+    //{path: "/charts", name: "Charts", icon: Timeline, component: Charts},
+    //{path: "/calendar", name: "Calendar", icon: DateRange, component: Calendar},
     {redirect: true, path: "/", pathTo: "/login", name: "Gig Login"}
 ];
 export default loginRoutes;

@@ -216,6 +216,6 @@ var dashRoutes = [
     {path: "/charts", name: "Charts", icon: Timeline, component: Charts},
     {path: "/calendar", name: "Calendar", icon: DateRange, component: Calendar},
     //{redirect: true, path: "/", pathTo: "/pages/login", name: "Dashboard"}
-    //{redirect: true, path: "/", pathTo: "/dashboard", name: "Dashboard"}
+    {redirect: true, path: "/", pathTo: "/login", name: "Dashboard"}
 ];
 export default dashRoutes;

@@ -95,7 +95,7 @@ class PagesHeader extends React.Component {
           <Hidden smDown>
             <div className={classes.flex}>
               <Button href="#" className={classes.title} color="transparent">
-                Material Dashboard Pro React
+                Credit Suisse - GIGS
               </Button>
             </div>
           </Hidden>
@@ -106,7 +106,7 @@ class PagesHeader extends React.Component {
               </Button>
             </div>
           </Hidden>
-          <Hidden smDown>{list}</Hidden>
+          {/*<Hidden smDown>{list}</Hidden>*/}
           <Hidden mdUp>
             <Button
               className={classes.sidebarButton}

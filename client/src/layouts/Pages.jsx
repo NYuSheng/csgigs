@@ -38,7 +38,7 @@ class Pages extends React.Component {
                       return (
                           <Redirect from={prop.path} to={prop.pathTo} key={key} />
                       );
-                  }
+                  }console.log("PAGES ROUTE ACTIVATED");
                   return (
                       <Route
                           path={prop.path}
@@ -48,26 +48,6 @@ class Pages extends React.Component {
                   );
               })}
             </Switch>
-            <Switch>
-                {loginRoutes.map((prop, key) => {
-                    if (prop.collapse) {
-                        return null;
-                    }
-                    if (prop.redirect) {
-                        return (
-                            <Redirect from={prop.path} to={prop.pathTo} key={key} />
-                        );
-                    }
-                    return (
-                        <Route
-                            path={prop.path}
-                            component={prop.component}
-                            key={key}
-                        />
-                    );
-                })}
-            </Switch>
-            {/*<Footer white />*/}
           </div>
         </div>
       </div>
