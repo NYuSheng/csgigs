@@ -22,7 +22,6 @@ import Widgets from "views/Widgets/Widgets.jsx";
 import UserProfile from "views/Pages/UserProfile.jsx";
 import TimelinePage from "views/Pages/Timeline.jsx";
 import RTLSupport from "views/Pages/RTLSupport.jsx";
-
 import pagesRoutes from "./pages.jsx";
 import gigsRoutes from "./Gigs/GigRoutes.jsx";
 
@@ -37,6 +36,7 @@ import WidgetsIcon from "@material-ui/icons/Widgets";
 import Timeline from "@material-ui/icons/Timeline";
 import DateRange from "@material-ui/icons/DateRange";
 import Event from "@material-ui/icons/Event";
+import Fingerprint from "@material-ui/icons/Fingerprint";
 
 
 var pages = [
@@ -215,6 +215,7 @@ var dashRoutes = [
     {path: "/widgets", name: "Widgets", icon: WidgetsIcon, component: Widgets},
     {path: "/charts", name: "Charts", icon: Timeline, component: Charts},
     {path: "/calendar", name: "Calendar", icon: DateRange, component: Calendar},
-    {redirect: true, path: "/", pathTo: "/dashboard", name: "Dashboard"}
+    //{redirect: true, path: "/", pathTo: "/pages/login", name: "Dashboard"}
+    //{redirect: true, path: "/", pathTo: "/dashboard", name: "Dashboard"}
 ];
 export default dashRoutes;

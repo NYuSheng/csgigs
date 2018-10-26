@@ -10,7 +10,7 @@ import PagesHeader from "components/Header/PagesHeader.jsx";
 import Footer from "components/Footer/Footer.jsx";
 
 import pagesRoutes from "routes/pages.jsx";
-
+import loginRoutes from "routes/login.jsx";
 import pagesStyle from "assets/jss/material-dashboard-pro-react/layouts/pagesStyle.jsx";
 
 import bgImage from "assets/img/register.jpeg";
@@ -31,24 +31,43 @@ class Pages extends React.Component {
           >
             <Switch>
               {pagesRoutes.map((prop, key) => {
-                if (prop.collapse) {
-                  return null;
-                }
-                if (prop.redirect) {
+                  if (prop.collapse) {
+                      return null;
+                  }
+                  if (prop.redirect) {
+                      return (
+                          <Redirect from={prop.path} to={prop.pathTo} key={key} />
+                      );
+                  }
                   return (
-                    <Redirect from={prop.path} to={prop.pathTo} key={key} />
+                      <Route
+                          path={prop.path}
+                          component={prop.component}
+                          key={key}
+                      />
                   );
-                }
-                return (
-                  <Route
-                    path={prop.path}
-                    component={prop.component}
-                    key={key}
-                  />
-                );
               })}
             </Switch>
-            <Footer white />
+            <Switch>
+                {loginRoutes.map((prop, key) => {
+                    if (prop.collapse) {
+                        return null;
+                    }
+                    if (prop.redirect) {
+                        return (
+                            <Redirect from={prop.path} to={prop.pathTo} key={key} />
+                        );
+                    }
+                    return (
+                        <Route
+                            path={prop.path}
+                            component={prop.component}
+                            key={key}
+                        />
+                    );
+                })}
+            </Switch>
+            {/*<Footer white />*/}
           </div>
         </div>
       </div>
