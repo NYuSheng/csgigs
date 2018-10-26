@@ -31,7 +31,9 @@ class LoginPage extends React.Component {
         super(props);
         // we use this to make the card to appear after the page has been rendered
         this.state = {
-            cardAnimaton: "cardHidden"
+            cardAnimaton: "cardHidden",
+            username: '',
+            password: ''
         };
     }
 
@@ -63,11 +65,11 @@ class LoginPage extends React.Component {
                         <div className={classes.container}>
                             <GridContainer justify="center">
                                 <GridItem xs={12} sm={6} md={4}>
-                                    <form>
+                                    <form action="/admin-ui/dashboard">
                                         <Card login className={classes[this.state.cardAnimaton]}>
                                             <CardHeader
                                                 className={`${classes.cardHeader} ${classes.textCenter}`}
-                                                color="rose"
+                                                color="info"
                                             >
                                                 <h4 className={classes.cardTitle}>Log in using RocketChat
                                                     credentials</h4>
@@ -106,7 +108,7 @@ class LoginPage extends React.Component {
                                                 />
                                             </CardBody>
                                             <CardFooter className={classes.justifyContentCenter}>
-                                                <Button color="rose" simple size="lg" block>
+                                                <Button type="submit" color="info" simple size="lg" block>
                                                     Login
                                                 </Button>
                                             </CardFooter>
