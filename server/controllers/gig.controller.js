@@ -10,12 +10,26 @@ exports.test = asyncMiddleware(async (req, res) => {
 exports.gig_create = asyncMiddleware(async (req, res, next) => {
     let gig = new Gig(
         {
-            channelId:req.body.channelId,
-            name: req.body.name,
-            browniePoints: req.body.browniePoints,
-            status: req.body.status
+            name:req.body.name,
+            points_budget: req.body.points_budget,
+            status: req.body.status,
+            users_admin: req.body.users_admin
+
+            //Possible required fields in creation
+            // rc_channel_id: req.body.rc_channel_id,
+            // users_participants: req.body.users_participants,
+            // users_attendees: req.body.users_attendees
         }
     );
+
+    // gig_name:{type: String, required: true, unique: true},
+    // createdAt:{type: Date, required: true},
+    // rc_channel_id:{type: String},
+    // points_budget:{type: Number, required: true},
+    // status:{type: String, required: true},
+    // users_admin:[{type: String}],
+    // users_participants:[{type: String}],
+    // users_attendees:[{type: String}]
 
     return gig.save().then(gigCreated => {
         res.send({
