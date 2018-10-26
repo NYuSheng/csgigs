@@ -1,8 +1,6 @@
 const Gig = require('../models/gig.model');
 const asyncMiddleware = require('../utils/asyncMiddleware');
 
-
-
 exports.test = asyncMiddleware(async (req, res) => {
     res.send('Greetings from the Gig controller!');
 });
@@ -30,11 +28,6 @@ exports.gig_create = asyncMiddleware(async (req, res, next) => {
         console.log(err);
         res.status(400).send({error : err});
     });
-
-    // return gig.save(function (err) {
-    //     if (err) return next(err);
-    //     res.send('wew');
-    // })
 });
 
 exports.gigs_details = asyncMiddleware(async (req, res, next) => {
@@ -47,16 +40,6 @@ exports.gigs_details = asyncMiddleware(async (req, res, next) => {
         console.log(err);
         res.status(500).send({error : err});
     });
-
-    // return Gig.find({}, function(err, gigs){
-    //     if(err) {
-    //         return next(err);
-    //     }
-    //     res.send({
-    //         "status" : 200,
-    //         "gigs" : gigs
-    //     });
-    // });
 });
 
 exports.gig_details = asyncMiddleware(async (req, res, next) => {

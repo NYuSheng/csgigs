@@ -2,22 +2,16 @@ const httpMocks = require('node-mocks-http');
 const gig_controller = require('../controllers/gig.controller');
 const Gig = require('../models/gig.model');
 var mongoose = require('mongoose');
+const test_util = require('../utils/test.util');
 
 
 describe("Gig Controller Tests", () => {
     beforeAll(()=> {
-        var dev_db_url = 'mongodb://test1:test123@ds031895.mlab.com:31895/projectgigstest';
-        var mongoDB = process.env.MONGODB_URI || dev_db_url;
-        mongoose.connect(mongoDB);
-        mongoose.Promise = global.Promise;
+        test_util.setup(mongoose);
     });
 
     afterAll(() => {
-        // mongoose.connection.db.dropDatabase();
-        for (var i in mongoose.connection.collections) {
-            mongoose.connection.collections[i].remove({});
-        }
-        mongoose.disconnect();
+        test_util.cleanUp(mongoose);
     });
 
     function createHttpMockRequest(bodyObj, paramObj, requestType){
@@ -68,6 +62,7 @@ describe("Gig Controller Tests", () => {
             
             return gig_controller.gig_create(request, response).then(() =>{
                 const responseData = response._getData();
+                console.log(responseData);
                 expect(response.statusCode).toBe(200);
                 expect(responseData.gig.name).toBe('ジャンプフォース２０１８');
                 expect(responseData.gig.user_admins.length).toBe(5);
