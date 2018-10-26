@@ -8,7 +8,7 @@ const gig_controller = require('../controllers/gig.controller');
 // a simple test url to check that all of our files are communicating correctly.
 router.get('/', gig_controller.gigs_details);
 router.post('/create', gig_controller.gig_create);
-router.put('/update/:name', gig_controller.gig_update);
 router.post('/:name', gig_controller.gig_details);
+router.put('/update/:name', gig_controller.gig_update);
 
 module.exports = router;

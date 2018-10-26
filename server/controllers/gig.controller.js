@@ -13,7 +13,7 @@ exports.gig_create = asyncMiddleware(async (req, res, next) => {
             name :req.body.name,
             points_budget : req.body.points_budget,
             status : req.body.status,
-            users_admin : req.body.users_admin
+            user_admins : req.body.user_admins
 
             //Possible required fields in creation
             // rc_channel_id: req.body.rc_channel_id,
@@ -28,7 +28,7 @@ exports.gig_create = asyncMiddleware(async (req, res, next) => {
         });
     }).catch(err => {
         console.log(err);
-        res.status(500).send({error : err});
+        res.status(400).send({error : err});
     });
 
     // return gig.save(function (err) {
@@ -41,7 +41,6 @@ exports.gigs_details = asyncMiddleware(async (req, res, next) => {
 
     return Gig.find({}).exec().then((gigs) => {
         res.status(200).send({
-            "status" : 200,
             "gigs" : gigs
         });
     }).catch(err => {
