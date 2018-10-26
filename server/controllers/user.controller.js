@@ -24,19 +24,40 @@ exports.user_create = function (req, res, next) {
     })
 };
 
-exports.user_login = function (req, res, next) { 
-    var inputName = req.body.name; 
-    var inputPwd = req.body.password;
-    User.findOne({name: inputName}, function (err, user) {
+exports.user_login = function (req, res, next) {
+    var userName = req.body.username;
+    User.findOne({user_name: userName}, function (err, users) {
         if (err) return next(err);
-        
-        var password = user.password;
-        
-        if (password != inputPwd){
+
+        var role = users.role;
+
+        if (role != "admin"){
             res.send("Incorrect username/password");
-            return; 
+            return;
         }
 
-        res.send(user);
+        res.send(users);
     });
 };
+
+exports.user_login2 = function (req, res, next) {
+    return User.findOne({user_name:req.body.username}).exec().then((user_retrieved) => {
+        if(user_retrieved === null){
+            return res.status(400).send({
+                error: 'Cannot Find User ' + req.body.name
+            });
+        }
+        var role = user_retrieved.role;
+        if(role !=="admin"){
+            return res.status(400).send({
+                error: 'User is not an Admin. '
+            });
+        }
+        res.status(200).send({
+            adminuser: user_retrieved
+        });
+    }).catch(err=>{
+        res.status(400).send({error: err});
+    })
+
+}

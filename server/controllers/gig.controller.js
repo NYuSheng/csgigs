@@ -10,10 +10,10 @@ exports.test = asyncMiddleware(async (req, res) => {
 exports.gig_create = asyncMiddleware(async (req, res, next) => {
     let gig = new Gig(
         {
-            name:req.body.name,
-            points_budget: req.body.points_budget,
-            status: req.body.status,
-            users_admin: req.body.users_admin
+            name :req.body.name,
+            points_budget : req.body.points_budget,
+            status : req.body.status,
+            user_admins : req.body.user_admins
 
             //Possible required fields in creation
             // rc_channel_id: req.body.rc_channel_id,
@@ -22,23 +22,13 @@ exports.gig_create = asyncMiddleware(async (req, res, next) => {
         }
     );
 
-    // gig_name:{type: String, required: true, unique: true},
-    // createdAt:{type: Date, required: true},
-    // rc_channel_id:{type: String},
-    // points_budget:{type: Number, required: true},
-    // status:{type: String, required: true},
-    // users_admin:[{type: String}],
-    // users_participants:[{type: String}],
-    // users_attendees:[{type: String}]
-
     return gig.save().then(gigCreated => {
-        res.send({
-            "status": 200,
-            "gig": gigCreated
+        res.status(200).send({
+            "gig" : gigCreated
         });
     }).catch(err => {
         console.log(err);
-        res.status(500).send({error : err});
+        res.status(400).send({error : err});
     });
 
     // return gig.save(function (err) {
@@ -50,8 +40,7 @@ exports.gig_create = asyncMiddleware(async (req, res, next) => {
 exports.gigs_details = asyncMiddleware(async (req, res, next) => {
 
     return Gig.find({}).exec().then((gigs) => {
-        res.send({
-            "status" : 200,
+        res.status(200).send({
             "gigs" : gigs
         });
     }).catch(err => {
@@ -70,8 +59,25 @@ exports.gigs_details = asyncMiddleware(async (req, res, next) => {
     // });
 });
 
+exports.gig_details = asyncMiddleware(async (req, res, next) => {
+    return Gig.findOne({name: req.params.name}).exec().then((gig_retrieved) => {
+        if(gig_retrieved === null){
+            return res.status(400).send({
+                error: 'Cannot find gig of name' + req.body.name
+            });
+        }
+
+        res.status(200).send({
+            gig : gig_retrieved
+        });
+
+    }).catch(err => {
+        res.status(400).send({error : err});
+    });
+});
+
 exports.gig_update = function (req, res) {
-    Gig.findByIdAndUpdate(req.params.id, {$set: req.body}, function (err, gig) {
+    Gig.findByIdAndUpdate(req.params.name, {$set: req.body}, function (err, gig) {
         if (err) return next(err);
         res.send('Gig udpated.');
     });

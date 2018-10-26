@@ -1,11 +1,28 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+// const Task = require('../models/task.model');
+
+
+let Task = new Schema({
+    gig_name:{type:String, required:true},
+    task_id:{type:String, required:true},
+    points:{type:Number, required:true},
+    appliedAt:{type:Date, default: Date.now},
+    completeAt:{type:Date}
+});
 
 let UserSchema = new Schema({
-    channelId:{type:String, required: true, trim: true},
-    name:{type: String, required: true, unique: true, trim: true, max: 100},
-    password:{type: String, required: true},
-    authToken:{type: String, required: true}
+    user_name:{type:String, required:true},
+    user_id:{type:String, required:true, unique:true},
+    createdAt:{type:Date, default: Date.now},
+    role:{type:String, required:true},
+    name:{type:String, required:true},
+    email:[{
+        address:{type:String, required:true},
+        verified:{type:Boolean, required:true}
+    }],
+    task:[Task],
+    updatedAt:{type:Date}
 });
 
 // Export the model
