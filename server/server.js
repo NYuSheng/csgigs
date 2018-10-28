@@ -7,6 +7,8 @@ var bodyParser = require('body-parser');
 var product = require('./routes/product');
 var user = require('./routes/user.route');
 var gig = require('./routes/gig.route');
+var task = require('./routes/task.route');
+
 var app = express();
 
 
@@ -25,6 +27,7 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use('/products', product);
 app.use('/users', user);
 app.use('/gigs', gig);
+app.use('/tasks', task)
 
 app.use('/admin-ui', express.static(path.join(__dirname, './public')));
 app.get('/admin-ui/*', function (req, res) {
