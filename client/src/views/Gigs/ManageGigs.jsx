@@ -4,21 +4,23 @@ import React from "react";
 import withStyles from "@material-ui/core/styles/withStyles";
 
 // core components
-import Filter from "components/Gigs/Filter/Filter";
+// import Filter from "components/Gigs/Filter/Filter";
 import Table from "components/Gigs/Table/Table";
 import Card from "components/Card/Card";
 import CardHeader from "components/Card/CardHeader";
 import CardIcon from "components/Card/CardIcon";
 import CardBody from "components/Card/CardBody";
-import GridContainer from "../../components/Grid/GridContainer";
-import GridItem from "../../components/Grid/GridItem";
+import GridContainer from "components/Grid/GridContainer";
+import GridItem from "components/Grid/GridItem";
 import Button from "components/CustomButtons/Button";
 import TableCell from "@material-ui/core/TableCell";
 
 // material-ui icons
-import Assignment from "@material-ui/icons/Assignment";
+import Event from "@material-ui/icons/Event";
 import Create from "@material-ui/icons/NoteAdd";
+// import FilterIcon from "@material-ui/icons/Filter";
 
+// style sheets
 import {cardTitle} from "assets/jss/material-dashboard-pro-react.jsx";
 
 const style = {
@@ -34,22 +36,23 @@ class ManageGigs extends React.Component {
         super(props);
         this.state = {
             gigs: [],
-            filtered: []
+            // filtered: []
         };
     }
 
     componentDidMount() {
+        // insert api call to retrieve all gigs
         this.setupRawData();
     }
 
-    filterGigsResults(filterKey, filterValue) {
-        let gigs = this.state.gigs;
-        let filtered = gigs.filter(gig => gig[filterKey].toUpperCase() === filterValue.toUpperCase());
-
-        this.setState({
-            filtered: filtered
-        })
-    }
+    // filterGigsResults(filterKey, filterValue) {
+    //     let gigs = this.state.gigs;
+    //     let filtered = gigs.filter(gig => gig[filterKey].toUpperCase() === filterValue.toUpperCase());
+    //
+    //     this.setState({
+    //         filtered: filtered
+    //     })
+    // }
 
     setupTableCells(gig) {
         const {classes} = this.props;
@@ -60,7 +63,9 @@ class ManageGigs extends React.Component {
                     {gig.name}
                 </TableCell>
                 <TableCell colSpan="1" className={tableCellClasses}>
-                    {gig.admin}
+                    {gig.admins.map(function(admin){
+                        return admin.name;
+                    }).join(", ")}
                 </TableCell>
                 <TableCell colSpan="1" className={tableCellClasses}>
                     {gig.status}
@@ -93,23 +98,30 @@ class ManageGigs extends React.Component {
         return (
             <Card>
                 <CardHeader color="rose" icon>
-                    <CardIcon color="rose">
-                        <Assignment/>
-                    </CardIcon>
-                    <h4 className={classes.cardIconTitle}>G I G S</h4>
                     <GridContainer>
-                        <GridItem xs={12} sm={3} md={3} lg={3}>
-                            <Filter filterName="FILTER"
-                                    filterFunction={this.filterGigsResults.bind(this)}
-                            />
+                        <GridItem xs={8} sm={8} md={10} lg={10}>
+                            <CardIcon color="rose">
+                                <Event/>
+                            </CardIcon>
+                            <h4 className={classes.cardIconTitle}>Gigs</h4>
                         </GridItem>
-                        <GridItem xs={12} sm={3} md={3} lg={3}>
-                            <Button color="warning"
-                                    className={classes.marginRight}
-                                    onClick={this.handleCreateGigPage.bind(this)}>
-                                <Create className={classes.icons} />
-                                Create Gig
-                            </Button>
+                        <GridItem xs={4} sm={4} md={2} lg={2} style={{textAlign: 'right'}}>
+                            {/*<GridContainer  style={{textAlign: 'right'}}>*/}
+                                {/*<GridItem xs={6} sm={6} md={6} lg={6}>*/}
+                                    {/*<Filter filterName="filter"*/}
+                                            {/*filterFunction={this.filterGigsResults.bind(this)}*/}
+                                            {/*buttonIcon={FilterIcon}*/}
+                                    {/*/>*/}
+                                {/*</GridItem>*/}
+                                {/*<GridItem xs={6} sm={6} md={6} lg={6}>*/}
+                                    <Button color="warning"
+                                            onClick={this.handleCreateGigPage.bind(this)}
+                                            style={{width: '100%'}}>
+                                        <Create className={classes.buttonIcon}/>
+                                        Create Gig
+                                    </Button>
+                                {/*</GridItem>*/}
+                            {/*</GridContainer>*/}
                         </GridItem>
                     </GridContainer>
                 </CardHeader>
@@ -117,9 +129,8 @@ class ManageGigs extends React.Component {
                     <Table
                         hover
                         tableHeaderColor="primary"
-                        tableHead={["Gig Name", "Gig Admin", "Gig Status"]}
-                        // TO-DO: Pass in the array of gigs
-                        tableData={this.state.filtered}
+                        tableHead={["Gig Name", "Gig Admin(s)", "Gig Status"]}
+                        tableData={this.state.gigs}
                         tableFooter="true"
                         notFoundMessage="No gigs found"
                         setupTableCells={this.setupTableCells.bind(this)}
@@ -138,7 +149,7 @@ class ManageGigs extends React.Component {
             name: "Hackathon 2018",
             status: "Active",
             // Could potentially be a user object
-            admin: "Yu Sheng",
+            admins: [{ id: 123, name: "Yu Sheng"}, { id: 234, name: "Ernest"}],
             channel: "gigs chat",
             points: 400,
             tasks: [
@@ -164,7 +175,7 @@ class ManageGigs extends React.Component {
         });
         this.setState({
             gigs: gigs,
-            filtered: gigs
+            // filtered: gigs
         });
     }
 }

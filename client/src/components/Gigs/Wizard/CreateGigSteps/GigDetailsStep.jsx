@@ -4,7 +4,6 @@ import React from "react";
 import Event from "@material-ui/icons/Event";
 import Budget from "@material-ui/icons/AttachMoney";
 import Cancel from "@material-ui/icons/Cancel";
-import Warning from "@material-ui/icons/Warning";
 
 // @material-ui/core components
 import withStyles from "@material-ui/core/styles/withStyles";
@@ -19,9 +18,10 @@ import CardHeader from "components/Card/CardHeader";
 import CardBody from "components/Card/CardBody";
 import Table from "components/Gigs/Table/Table";
 import TableCell from "@material-ui/core/TableCell";
-
-import {NotificationManager} from "react-notifications";
 import AutoComplete from 'components/Gigs/AutoComplete/AutoComplete';
+
+// dependencies
+import {NotificationManager} from "react-notifications";
 
 const style = {
     infoText: {
@@ -63,7 +63,7 @@ class GigDetailsStep extends React.Component {
                     {admin.name}
                 </TableCell>
                 <TableCell colSpan="1" className={tableCellClasses} style={{textAlign: 'right'}}>
-                    <Cancel className={classes.icon} />
+                    <Cancel className={classes.icon}/>
                 </TableCell>
             </React.Fragment>
         );
@@ -137,12 +137,8 @@ class GigDetailsStep extends React.Component {
     }
 
     render() {
-        const { classes } = this.props;
-        const { nameState, adminState, budgetState, selectedAdmins } = this.state;
-        const searchButton =
-            classes.top +
-            " " +
-            classes.searchButton;
+        const {classes} = this.props;
+        const {nameState, adminState, budgetState, selectedAdmins} = this.state;
 
         return (
             <GridContainer justify="center">
@@ -204,25 +200,24 @@ class GigDetailsStep extends React.Component {
                 </GridItem>
                 <GridItem xs={12} sm={12} md={12} lg={10} align="center">
                     <h4>Assign Gigs Admins</h4>
-                            <Card>
-                                <CardHeader>
-                                    <AutoComplete selectInput={this.selectAdmin.bind(this)}/>
-                                </CardHeader>
-                                <CardBody>
-                                    <Table
-                                        error={adminState === "error"}
-                                        tableHeight="200px"
-                                        hover
-                                        tableHeaderColor="primary"
-                                        tableData={selectedAdmins}
-                                        tableFooter="false"
-                                        notFoundMessage="No admins selected"
-                                        setupTableCells={this.setupTableCells.bind(this)}
-                                        handleTableRowOnClick={this.deselectAdmin.bind(this)}
-                                    />
-                                </CardBody>
-                            </Card>
-
+                    <Card>
+                        <CardHeader>
+                            <AutoComplete selectInput={this.selectAdmin.bind(this)}/>
+                        </CardHeader>
+                        <CardBody>
+                            <Table
+                                error={adminState === "error"}
+                                tableHeight="200px"
+                                hover
+                                tableHeaderColor="primary"
+                                tableData={selectedAdmins}
+                                tableFooter="false"
+                                notFoundMessage="No admins selected"
+                                setupTableCells={this.setupTableCells.bind(this)}
+                                handleTableRowOnClick={this.deselectAdmin.bind(this)}
+                            />
+                        </CardBody>
+                    </Card>
                 </GridItem>
             </GridContainer>
         );

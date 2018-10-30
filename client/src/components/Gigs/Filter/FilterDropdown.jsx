@@ -1,7 +1,5 @@
 import React from "react";
-// nodejs library that concatenates classes
 import classNames from "classnames";
-// nodejs library to set properties for components
 import PropTypes from "prop-types";
 
 // @material-ui/core components
@@ -13,9 +11,11 @@ import Paper from "@material-ui/core/Paper";
 import Grow from "@material-ui/core/Grow";
 import Divider from "@material-ui/core/Divider";
 import Popper from "@material-ui/core/Popper";
+
 // core components
 import Button from "components/CustomButtons/Button.jsx";
 
+// style sheets
 import customDropdownStyle from "assets/jss/material-dashboard-pro-react/components/customDropdownStyle.jsx";
 
 class FilterDropdown extends React.Component {
@@ -30,28 +30,30 @@ class FilterDropdown extends React.Component {
     }
 
     handleClick = () => {
-        this.setState(state => ({ open: !state.open }));
+        this.setState(state => ({open: !state.open}));
     }
     handleClose = event => {
         if (this.anchorEl.contains(event.target)) {
             return;
         }
 
-        this.setState({ open: false });
+        this.setState({open: false});
     }
-    handleCloseMenu(event, param){
-        const { buttonText, onClickFunction } = this.props;
+
+    handleCloseMenu(event, param) {
+        const {buttonText, onClickFunction} = this.props;
 
         if (onClickFunction) {
             onClickFunction(buttonText, param);
         }
         this.handleClose(event);
-        if(this.props && this.props.onClick){
+        if (this.props && this.props.onClick) {
             this.props.onClick(param);
         }
     }
+
     render() {
-        const { open } = this.state;
+        const {open} = this.state;
         const {
             classes,
             buttonText,
@@ -63,7 +65,6 @@ class FilterDropdown extends React.Component {
             caret,
             hoverColor,
             dropPlacement,
-            rtlActive,
             noLiPadding,
             innerDropDown,
             navDropdown
@@ -71,14 +72,12 @@ class FilterDropdown extends React.Component {
         const caretClasses = classNames({
             [classes.caret]: true,
             [classes.caretDropup]: dropup && !open,
-            [classes.caretActive]: open && !dropup,
-            [classes.caretRTL]: rtlActive
+            [classes.caretActive]: open && !dropup
         });
         const dropdownItem = classNames({
             [classes.dropdownItem]: true,
             [classes[hoverColor + "Hover"]]: true,
-            [classes.noLiPadding]: noLiPadding,
-            [classes.dropdownItemRTL]: rtlActive
+            [classes.noLiPadding]: noLiPadding
         });
         const dropDownMenu = (
             <MenuList role="menu" className={classes.menuList}>
@@ -91,20 +90,12 @@ class FilterDropdown extends React.Component {
                     </MenuItem>
                 ) : null}
                 {dropdownList.map((prop, key) => {
-                    if (prop.divider) {
-                        return (
-                            <Divider
-                                key={key}
-                                onClick={() => this.handleCloseMenu("divider")}
-                                className={classes.dropdownDividerItem}
-                            />
-                        );
-                    } else if (prop.ref === "multi") {
+                    if (prop.ref === "multi") {
                         return (
                             <MenuItem
                                 key={key}
                                 className={dropdownItem}
-                                style={{ overflow: "visible", padding: 0 }}
+                                style={{overflow: "visible", padding: 0}}
                             >
                                 {prop}
                             </MenuItem>
@@ -136,10 +127,10 @@ class FilterDropdown extends React.Component {
                         onClick={this.handleClick}
                     >
                         {buttonIcon !== undefined ? (
-                            <this.props.buttonIcon className={classes.buttonIcon} />
+                            <this.props.buttonIcon className={classes.buttonIcon}/>
                         ) : null}
                         {buttonText !== undefined ? buttonText : null}
-                        {caret ? <b className={caretClasses} /> : null}
+                        {caret ? <b className={caretClasses}/> : null}
                     </Button>
                 </div>
                 <Popper
@@ -154,14 +145,14 @@ class FilterDropdown extends React.Component {
                         [classes.pooperNav]: open && navDropdown
                     })}
                 >
-                    {({ TransitionProps, placement }) => (
+                    {({TransitionProps, placement}) => (
                         <Grow
                             in={open}
                             id="menu-list"
                             style={
                                 dropup
-                                    ? { transformOrigin: "0 100% 0" }
-                                    : { transformOrigin: "0 0 0" }
+                                    ? {transformOrigin: "0 100% 0"}
+                                    : {transformOrigin: "0 0 0"}
                             }
                         >
                             <Paper className={classes.dropdown}>

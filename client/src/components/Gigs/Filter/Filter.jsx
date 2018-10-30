@@ -6,9 +6,10 @@ import FilterDropdown from "components/Gigs/Filter/FilterDropdown.jsx";
 class Filter extends React.Component {
 
     render() {
-        const { filterName, filterFunction } = this.props;
+        const { buttonIcon, filterName, filterFunction } = this.props;
         return(
             <FilterDropdown
+                buttonIcon={buttonIcon}
                 buttonText={filterName}
                 hoverColor="info"
                 buttonProps={{
