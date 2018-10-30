@@ -34,15 +34,36 @@ class GigsTable extends React.Component {
         this.setState({rowsPerPage: event.target.value});
     };
 
-    setupTableCell = (colspan, value) => {
-        const {classes} = this.props;
-        const tableCellClasses = classes.tableCell;
+    setupTableRow = (prop, key) => {
+        const {
+            classes,
+            handleTableRowOnClick,
+            setupTableCells,
+            hover,
+            striped
+        } = this.props;
+
+        var rowColor = "";
+        var rowColored = false;
+        const tableRowClasses = cx({
+            [classes.tableRowHover]: hover,
+            [classes[rowColor + "Row"]]: rowColored,
+            [classes.tableStripedRow]: striped && key % 2 === 0
+        });
         return (
-            <TableCell colSpan={colspan} className={tableCellClasses}>
-                {value}
-            </TableCell>
+            <TableRow
+                key={key}
+                hover={hover}
+                className={classes.tableRow + " " + tableRowClasses}
+                onClick={() => {
+                    (handleTableRowOnClick) ? handleTableRowOnClick(prop) : null
+                }}
+                style={{'cursor': 'pointer'}}
+            >
+                {setupTableCells(prop)}
+            </TableRow>
         );
-    };
+    }
 
     render() {
         const {
@@ -50,18 +71,19 @@ class GigsTable extends React.Component {
             tableHead,
             tableData,
             tableHeaderColor,
-            hover,
-            striped,
             tableShopping,
             customHeadCellClasses,
             customHeadClassesForCells,
-            handleTableRowOnClick
+            notFoundMessage,
+            tableFooter,
+            tableHeight,
+            error
         } = this.props;
         const {page, rowsPerPage} = this.state;
 
         return (
-            <div className={classes.tableResponsive}>
-                <Table className={classes.table}>
+            <div className={classes.tableResponsive} style={{height: tableHeight}}>
+                <Table className={classes.table} style={{borderBottom: error? '1px solid red': ''}}>
                     {tableHead !== undefined ? (
                         <TableHead className={classes[tableHeaderColor]}>
                             <TableRow className={classes.tableRow}>
@@ -90,49 +112,42 @@ class GigsTable extends React.Component {
                     ) : null}
                     <TableBody>
                         {tableData.length ?
-                            (tableData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((prop, key) => {
-                                var rowColor = "";
-                                var rowColored = false;
-                                const tableRowClasses = cx({
-                                    [classes.tableRowHover]: hover,
-                                    [classes[rowColor + "Row"]]: rowColored,
-                                    [classes.tableStripedRow]: striped && key % 2 === 0
-                                });
-                                return (
-                                    <TableRow
-                                        key={key}
-                                        hover={hover}
-                                        className={classes.tableRow + " " + tableRowClasses}
-                                        onClick={() => {
-                                            (handleTableRowOnClick) ? handleTableRowOnClick(prop) : null
-                                        }}
-                                        style={{'cursor': 'pointer'}}
-                                    >
-                                        {this.setupTableCell(1, prop.name)}
-                                        {this.setupTableCell(1, prop.admin)}
-                                        {this.setupTableCell(1, prop.status)}
-                                    </TableRow>
-                                );
-                            })) :
+                            (
+                                tableFooter === "true" ? (
+                                    tableData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((prop, key) => {
+                                        return this.setupTableRow(prop, key);
+                                    })
+                                ) : (
+                                    tableData.map((prop, key) => {
+                                        return this.setupTableRow(prop, key);
+                                    })
+                                )
+                            ) :
                             (
                                 <TableRow>
-                                    {this.setupTableCell(3, "No gigs found")}
+                                    <TableCell colSpan="3" className={classes.tableCell}>
+                                        {notFoundMessage}
+                                    </TableCell>
                                 </TableRow>
                             )}
                     </TableBody>
-                    <TableFooter>
-                        <TableRow>
-                            <TablePagination
-                                colSpan={3}
-                                count={tableData.length}
-                                rowsPerPage={rowsPerPage}
-                                page={page}
-                                onChangePage={this.handleChangePage}
-                                onChangeRowsPerPage={this.handleChangeRowsPerPage}
-                                ActionsComponent={Pagination}
-                            />
-                        </TableRow>
-                    </TableFooter>
+                    {
+                        tableFooter === "true" ? (
+                            <TableFooter>
+                                <TableRow>
+                                    <TablePagination
+                                        colSpan={3}
+                                        count={tableData.length}
+                                        rowsPerPage={rowsPerPage}
+                                        page={page}
+                                        onChangePage={this.handleChangePage}
+                                        onChangeRowsPerPage={this.handleChangeRowsPerPage}
+                                        ActionsComponent={Pagination}
+                                    />
+                                </TableRow>
+                            </TableFooter>
+                        ) : null
+                    }
                 </Table>
             </div>
         );

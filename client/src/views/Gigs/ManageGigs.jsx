@@ -13,6 +13,7 @@ import CardBody from "components/Card/CardBody";
 import GridContainer from "../../components/Grid/GridContainer";
 import GridItem from "../../components/Grid/GridItem";
 import Button from "components/CustomButtons/Button";
+import TableCell from "@material-ui/core/TableCell";
 
 // material-ui icons
 import Assignment from "@material-ui/icons/Assignment";
@@ -48,6 +49,24 @@ class ManageGigs extends React.Component {
         this.setState({
             filtered: filtered
         })
+    }
+
+    setupTableCells(gig) {
+        const {classes} = this.props;
+        const tableCellClasses = classes.tableCell;
+        return (
+            <React.Fragment>
+                <TableCell colSpan="1" className={tableCellClasses}>
+                    {gig.name}
+                </TableCell>
+                <TableCell colSpan="1" className={tableCellClasses}>
+                    {gig.admin}
+                </TableCell>
+                <TableCell colSpan="1" className={tableCellClasses}>
+                    {gig.status}
+                </TableCell>
+            </React.Fragment>
+        );
     }
 
     handleTableRowOnClick(gig) {
@@ -92,7 +111,6 @@ class ManageGigs extends React.Component {
                                 Create Gig
                             </Button>
                         </GridItem>
-
                     </GridContainer>
                 </CardHeader>
                 <CardBody>
@@ -102,6 +120,9 @@ class ManageGigs extends React.Component {
                         tableHead={["Gig Name", "Gig Admin", "Gig Status"]}
                         // TO-DO: Pass in the array of gigs
                         tableData={this.state.filtered}
+                        tableFooter="true"
+                        notFoundMessage="No gigs found"
+                        setupTableCells={this.setupTableCells.bind(this)}
                         handleTableRowOnClick={this.handleTableRowOnClick.bind(this)}
                     />
                 </CardBody>

@@ -2,23 +2,27 @@ import React from "react";
 import cx from "classnames";
 import PropTypes from "prop-types";
 import {Switch, Route, Redirect} from "react-router-dom";
-// creates a beautiful scrollbar
-import PerfectScrollbar from "perfect-scrollbar";
-import "perfect-scrollbar/css/perfect-scrollbar.css";
 
 // @material-ui/core components
 import withStyles from "@material-ui/core/styles/withStyles";
 
+// material-ui icons
+import image from "assets/img/sidebar-2.jpg";
+import logo from "assets/img/logo-white.svg";
+
+// routes
+import dashboardRoutes from "routes/dashboard.jsx";
+
 // core components
 import Header from "components/Header/Header.jsx";
 import Sidebar from "components/Sidebar/Sidebar.jsx";
+import PerfectScrollbar from "perfect-scrollbar";
+import "perfect-scrollbar/css/perfect-scrollbar.css";
+import {NotificationContainer} from 'react-notifications';
 
-import dashboardRoutes from "routes/dashboard.jsx";
-
+// style sheets
 import appStyle from "assets/jss/material-dashboard-pro-react/layouts/dashboardStyle.jsx";
-
-import image from "assets/img/sidebar-2.jpg";
-import logo from "assets/img/logo-white.svg";
+import 'react-notifications/lib/notifications.css';
 
 const switchRoutes = (
     <Switch>
@@ -134,6 +138,7 @@ class Dashboard extends React.Component {
                         <div className={classes.map}>{switchRoutes}</div>
                     )}
                 </div>
+                <NotificationContainer/>
             </div>
         );
     }

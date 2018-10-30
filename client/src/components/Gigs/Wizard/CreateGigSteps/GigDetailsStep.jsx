@@ -1,9 +1,10 @@
 import React from "react";
 
 // @material-ui/icons
-import Face from "@material-ui/icons/Face";
-import RecordVoiceOver from "@material-ui/icons/RecordVoiceOver";
-import Email from "@material-ui/icons/Email";
+import Event from "@material-ui/icons/Event";
+import Budget from "@material-ui/icons/AttachMoney";
+import Cancel from "@material-ui/icons/Cancel";
+import Warning from "@material-ui/icons/Warning";
 
 // @material-ui/core components
 import withStyles from "@material-ui/core/styles/withStyles";
@@ -12,8 +13,15 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 // core components
 import GridContainer from "components/Grid/GridContainer.jsx";
 import GridItem from "components/Grid/GridItem.jsx";
-import PictureUpload from "components/CustomUpload/PictureUpload.jsx";
-import CustomInput from "components/CustomInput/CustomInput.jsx";
+import CustomInput from "components/Gigs/CustomInput/CustomInput.jsx";
+import Card from "components/Card/Card";
+import CardHeader from "components/Card/CardHeader";
+import CardBody from "components/Card/CardBody";
+import Table from "components/Gigs/Table/Table";
+import TableCell from "@material-ui/core/TableCell";
+
+import {NotificationManager} from "react-notifications";
+import AutoComplete from 'components/Gigs/AutoComplete/AutoComplete';
 
 const style = {
     infoText: {
@@ -34,14 +42,11 @@ class GigDetailsStep extends React.Component {
         super(props);
         this.state = {
             name: "",
-            admins: [],
+            nameState: "",
+            selectedAdmins: [],
+            adminState: "",
             budget: 0,
-            firstname: "",
-            firstnameState: "",
-            lastname: "",
-            lastnameState: "",
-            email: "",
-            emailState: ""
+            budgetState: ""
         };
     }
 
@@ -49,75 +54,103 @@ class GigDetailsStep extends React.Component {
         return this.state;
     }
 
-    // function that returns true if value is email, false otherwise
-    verifyEmail(value) {
-        var emailRex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        if (emailRex.test(value)) {
-            return true;
-        }
-        return false;
+    setupTableCells(admin) {
+        const {classes} = this.props;
+        const tableCellClasses = classes.tableCell;
+        return (
+            <React.Fragment>
+                <TableCell colSpan="1" className={tableCellClasses}>
+                    {admin.name}
+                </TableCell>
+                <TableCell colSpan="1" className={tableCellClasses} style={{textAlign: 'right'}}>
+                    <Cancel className={classes.icon} />
+                </TableCell>
+            </React.Fragment>
+        );
     }
 
-    // function that verifies if a string has a given length or not
-    verifyLength(value, length) {
-        if (value.length >= length) {
-            return true;
+    selectAdmin(admin) {
+        var selectedAdmins = this.state.selectedAdmins;
+        const existingAdmins = selectedAdmins.filter(selectedAdmin => selectedAdmin.id === admin.id)
+        if (existingAdmins.length >= 1) {
+            NotificationManager.error("User " + admin.name + " has been selected");
+        } else {
+            selectedAdmins.push(admin);
         }
-        return false;
+        this.setState({
+            selectedAdmins: selectedAdmins,
+            adminState: "success"
+        })
     }
 
-    change(event, stateName, type, stateNameEqualTo) {
-        switch (type) {
-            case "email":
-                if (this.verifyEmail(event.target.value)) {
-                    this.setState({[stateName + "State"]: "success"});
-                } else {
-                    this.setState({[stateName + "State"]: "error"});
-                }
-                break;
-            case "length":
-                if (this.verifyLength(event.target.value, stateNameEqualTo)) {
-                    this.setState({[stateName + "State"]: "success"});
-                } else {
-                    this.setState({[stateName + "State"]: "error"});
-                }
-                break;
-            default:
-                break;
+    deselectAdmin(admin) {
+        const selectedAdmins = this.state.selectedAdmins;
+        const adminsAfterRemoval = selectedAdmins.filter(selectedAdmin => selectedAdmin.id !== admin.id);
+        if (!adminsAfterRemoval.length) {
+            this.setState({
+                adminState: ""
+            });
         }
-        this.setState({[stateName]: event.target.value});
+        this.setState({
+            selectedAdmins: adminsAfterRemoval
+        });
+    }
+
+    validateNumber(event) {
+        const budget = event.target.value;
+        this.setState({budget: budget});
+        budget > 0 ?
+            this.setState({budgetState: "success"})
+            :
+            this.setState({budgetState: "error"})
+    }
+
+    validateName(event) {
+        const name = event.target.value;
+        this.setState({name: name});
+        name ?
+            this.setState({nameState: "success"})
+            :
+            this.setState({nameState: "error"})
     }
 
     isValidated() {
         if (
-            this.state.firstnameState === "success" &&
-            this.state.lastnameState === "success" &&
-            this.state.emailState === "success"
+            this.state.nameState === "success" &&
+            this.state.budgetState === "success" &&
+            this.state.adminState === "success"
         ) {
             return true;
         } else {
-            if (this.state.firstnameState !== "success") {
-                this.setState({firstnameState: "error"});
+            if (this.state.nameState !== "success") {
+                this.setState({nameState: "error"});
             }
-            if (this.state.lastnameState !== "success") {
-                this.setState({lastnameState: "error"});
+            if (this.state.budgetState !== "success") {
+                this.setState({budgetState: "error"});
             }
-            if (this.state.emailState !== "success") {
-                this.setState({emailState: "error"});
+            if (this.state.adminState !== "success") {
+                this.setState({adminState: "error"});
             }
+
         }
         return false;
     }
 
     render() {
-        const {classes} = this.props;
+        const { classes } = this.props;
+        const { nameState, adminState, budgetState, selectedAdmins } = this.state;
+        const searchButton =
+            classes.top +
+            " " +
+            classes.searchButton;
+
         return (
             <GridContainer justify="center">
                 <GridItem xs={12} sm={12} md={12} lg={8} align="center">
                     <h4>Name of Gig</h4>
                     <CustomInput
-                        success={this.state.firstnameState === "success"}
-                        error={this.state.firstnameState === "error"}
+                        success={nameState === "success"}
+                        error={nameState === "error"}
                         labelText={
                             <span>
                                 Gig Name <small>(required)</small>
@@ -128,13 +161,13 @@ class GigDetailsStep extends React.Component {
                             fullWidth: true
                         }}
                         inputProps={{
-                            onChange: event => this.change(event, "firstname", "length", 3),
+                            onChange: event => this.validateName(event),
                             endAdornment: (
                                 <InputAdornment
                                     position="end"
                                     className={classes.inputAdornment}
                                 >
-                                    <Face className={classes.inputAdornmentIcon}/>
+                                    <Event className={classes.inputAdornmentIcon}/>
                                 </InputAdornment>
                             )
                         }}
@@ -144,8 +177,8 @@ class GigDetailsStep extends React.Component {
                 <GridItem xs={12} sm={12} md={12} lg={8} align="center">
                     <h4>Budget for Brownie Points</h4>
                     <CustomInput
-                        success={this.state.firstnameState === "success"}
-                        error={this.state.firstnameState === "error"}
+                        success={budgetState === "success"}
+                        error={budgetState === "error"}
                         labelText={
                             <span>
                                 Brownie Points <small>(required)</small>
@@ -156,20 +189,41 @@ class GigDetailsStep extends React.Component {
                             fullWidth: true
                         }}
                         inputProps={{
-                            onChange: event => this.change(event, "firstname", "length", 3),
+                            onChange: event => this.validateNumber(event),
                             endAdornment: (
                                 <InputAdornment
                                     position="end"
                                     className={classes.inputAdornment}
                                 >
-                                    <Face className={classes.inputAdornmentIcon}/>
+                                    <Budget className={classes.inputAdornmentIcon}/>
                                 </InputAdornment>
                             )
                         }}
                         inputType="number"
                     />
                 </GridItem>
+                <GridItem xs={12} sm={12} md={12} lg={10} align="center">
+                    <h4>Assign Gigs Admins</h4>
+                            <Card>
+                                <CardHeader>
+                                    <AutoComplete selectInput={this.selectAdmin.bind(this)}/>
+                                </CardHeader>
+                                <CardBody>
+                                    <Table
+                                        error={adminState === "error"}
+                                        tableHeight="200px"
+                                        hover
+                                        tableHeaderColor="primary"
+                                        tableData={selectedAdmins}
+                                        tableFooter="false"
+                                        notFoundMessage="No admins selected"
+                                        setupTableCells={this.setupTableCells.bind(this)}
+                                        handleTableRowOnClick={this.deselectAdmin.bind(this)}
+                                    />
+                                </CardBody>
+                            </Card>
 
+                </GridItem>
             </GridContainer>
         );
     }

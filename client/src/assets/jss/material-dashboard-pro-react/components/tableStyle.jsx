@@ -87,7 +87,8 @@ const tableStyle = theme => ({
   tableResponsive: {
     // width: "100%",
     minHeight: "0.1%",
-    overflowX: "auto"
+    overflowX: "auto",
+    overflowY: "auto"
   },
   tableStripedRow: {
     backgroundColor: "#f9f9f9"
