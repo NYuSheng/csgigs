@@ -78,7 +78,7 @@ class ManageGigs extends React.Component {
         const {history} = this.props;
         history.push({
             headername: `${gig.name}`,
-            pathname: `/gigs/${gig.id}`,
+            pathname: `/gigs/${gig.name}`,
             state: {
                 gig: gig
             }
@@ -156,18 +156,21 @@ class ManageGigs extends React.Component {
                 {
                     category: "Logistics",
                     taskname: "Prepare food",
+                    description: "Meet at Woodlands at 10am to collect food and set up food area by 3pm",
                     status: "Unassigned",
                     assignees: []
                 },
                 {
                     category: "Admin",
                     taskname: "Get sign ups",
+                    description: "",
                     status: "Unassigned",
                     assignees: []
                 },
                 {
                     category: "Operation",
                     taskname: "Man the area during event",
+                    description: "",
                     status: "Unassigned",
                     assignees: []
                 }

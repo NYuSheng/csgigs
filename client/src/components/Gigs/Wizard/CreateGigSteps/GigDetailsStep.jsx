@@ -8,6 +8,7 @@ import Cancel from "@material-ui/icons/Cancel";
 // @material-ui/core components
 import withStyles from "@material-ui/core/styles/withStyles";
 import InputAdornment from "@material-ui/core/InputAdornment";
+import TableCell from "@material-ui/core/TableCell";
 
 // core components
 import GridContainer from "components/Grid/GridContainer.jsx";
@@ -17,7 +18,6 @@ import Card from "components/Card/Card";
 import CardHeader from "components/Card/CardHeader";
 import CardBody from "components/Card/CardBody";
 import Table from "components/Gigs/Table/Table";
-import TableCell from "@material-ui/core/TableCell";
 import AutoComplete from 'components/Gigs/AutoComplete/AutoComplete';
 
 // dependencies
@@ -152,7 +152,7 @@ class GigDetailsStep extends React.Component {
                                 Gig Name <small>(required)</small>
                             </span>
                         }
-                        id="firstname"
+                        id="gigname"
                         formControlProps={{
                             fullWidth: true
                         }}
@@ -180,7 +180,7 @@ class GigDetailsStep extends React.Component {
                                 Brownie Points <small>(required)</small>
                             </span>
                         }
-                        id="firstname"
+                        id="budgetpoints"
                         formControlProps={{
                             fullWidth: true
                         }}

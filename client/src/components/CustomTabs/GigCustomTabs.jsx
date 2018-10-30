@@ -6,16 +6,19 @@ import PropTypes from "prop-types";
 
 // material-ui components
 import withStyles from "@material-ui/core/styles/withStyles";
-import Search from "@material-ui/icons/Search";
 
 // core components
 import Card from "components/Card/Card.jsx";
 import CardBody from "components/Card/CardBody.jsx";
 import CardHeader from "components/Card/CardHeader.jsx";
+import GridContainer from "components/Grid/GridContainer";
+import GridItem from "components/Grid/GridItem";
+import Button from "components/CustomButtons/Button";
+
+import Tabs from "@material-ui/core/Tabs";
+import Tab from "@material-ui/core/Tab";
 
 import customTabsStyle from "assets/jss/material-dashboard-pro-react/components/customTabsStyle.jsx";
-import CustomInput from "../CustomInput/CustomInput";
-import Button from "../CustomButtons/Button";
 
 class GigCustomTabs extends React.Component {
   state = {
@@ -40,40 +43,52 @@ class GigCustomTabs extends React.Component {
       [classes.cardTitleRTL]: rtlActive
     });
 
-      const searchButton =
-          classes.top +
-          " " +
-          classes.searchButton;
-
     return (
       <Card plain={plainTabs}>
         <CardHeader color={headerColor} plain={plainTabs}>
-          {title !== undefined ? (
-            <div className={cardTitle}>{title}</div>
-          ) : null}
-            <CustomInput
-                formControlProps={{
-                    className: classes.top + " " + classes.search
-                }}
-                inputProps={{
-                    placeholder: "Search",
-                    inputProps: {
-                        "aria-label": "Search",
-                        className: classes.searchInput
-                    }
-                }}
-            />
-            <Button
-                color="white"
-                aria-label="edit"
-                justIcon
-                round
-                className={searchButton}
-            >
-                <Search
-                    className={classes.headerLinksSvg + " " + classes.searchIcon}
-                />
-            </Button>
+            <GridContainer>
+                <GridItem xs={1} sm={1} md={1} lg={1}>
+                    <div className={cardTitle}>
+                        {title}
+                    </div>
+                </GridItem>
+                <GridItem xs={9} sm={9} md={9} lg={9}>
+                    <Tabs
+                        value={this.state.value}
+                        onChange={this.handleChange}
+                        classes={{
+                            root: classes.tabsRoot,
+                            indicator: classes.displayNone
+                        }}
+                    >
+                        {tabs.map((prop, key) => {
+                            var icon = {};
+                            if (prop.tabIcon) {
+                                icon = {
+                                    icon: <prop.tabIcon />
+                                };
+                            }
+                            return (
+                                <Tab
+                                    classes={{
+                                        root: classes.tabRootButton,
+                                        labelContainer: classes.tabLabelContainer,
+                                        label: classes.tabLabel,
+                                        selected: classes.tabSelected,
+                                        wrapper: classes.tabWrapper
+                                    }}
+                                    key={key}
+                                    label={prop.tabName}
+                                    {...icon}
+                                />
+                            );
+                        })}
+                    </Tabs>
+                </GridItem>
+                <GridItem xs={2} sm={2} md={2} lg={2} style={{textAlign: 'right'}}>
+                    <Button>Add</Button>
+                </GridItem>
+            </GridContainer>
         </CardHeader>
         <CardBody>
           {tabs.map((prop, key) => {

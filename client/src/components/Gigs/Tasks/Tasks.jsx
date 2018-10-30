@@ -18,20 +18,19 @@ import Assigned from "@material-ui/icons/AssignmentInd";
 // Stylesheet
 import tasksStyle from "assets/jss/material-dashboard-pro-react/components/tasksStyle.jsx";
 
-class GigTasks extends React.Component {
-
+class Tasks extends React.Component {
     render() {
-        const {classes, tasksIndexes, tasks} = this.props;
+        const {classes, tasksIndexes, tasks, editTask} = this.props;
         return (
             <Table className={classes.table}>
                 <TableBody>
                     {tasksIndexes.map(value => (
                         <TableRow key={value} className={classes.tableRow}>
                             <TableCell className={classes.tableCell}>
-                                {tasks[value]}
+                                {tasks[value].taskname}
                             </TableCell>
                             <TableCell className={classes.tableCell}>
-                                Unassigned
+                                {tasks[value].status}
                             </TableCell>
                             <TableCell className={classes.tableActions}>
                                 <Tooltip
@@ -60,6 +59,7 @@ class GigTasks extends React.Component {
                                     <IconButton
                                         aria-label="Edit"
                                         className={classes.tableActionButton}
+                                        onClick={()=> {editTask(tasks[value])}}
                                     >
                                         <Edit
                                             className={
@@ -94,10 +94,8 @@ class GigTasks extends React.Component {
     }
 }
 
-GigTasks.propTypes = {
-    classes: PropTypes.object.isRequired,
-    tasksIndexes: PropTypes.arrayOf(PropTypes.number),
-    tasks: PropTypes.arrayOf(PropTypes.node)
+Tasks.propTypes = {
+    classes: PropTypes.object.isRequired
 };
 
-export default withStyles(tasksStyle)(GigTasks);
+export default withStyles(tasksStyle)(Tasks);
