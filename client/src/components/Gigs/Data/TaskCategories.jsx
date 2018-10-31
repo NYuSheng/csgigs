@@ -12,9 +12,9 @@ export const renderTaskCategories = function () {
     return (
         <React.Fragment>
             {
-                categories.map((prop) => {
+                categories.map((prop, key) => {
                     return (
-                        <option value={prop}>{prop}</option>
+                        <option key={key} value={prop}>{prop}</option>
                     );
                 })
             }

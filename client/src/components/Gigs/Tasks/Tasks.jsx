@@ -20,7 +20,7 @@ import tasksStyle from "assets/jss/material-dashboard-pro-react/components/tasks
 
 class Tasks extends React.Component {
     render() {
-        const {classes, tasksIndexes, tasks, editTask} = this.props;
+        const {classes, tasksIndexes, tasks, editTask, removeTask} = this.props;
         return (
             <Table className={classes.table}>
                 <TableBody>
@@ -77,6 +77,7 @@ class Tasks extends React.Component {
                                     <IconButton
                                         aria-label="Close"
                                         className={classes.tableActionButton}
+                                        onClick={()=> {removeTask(tasks[value])}}
                                     >
                                         <Close
                                             className={

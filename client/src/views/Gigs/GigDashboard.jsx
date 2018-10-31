@@ -28,6 +28,7 @@ import GridContainer from "components/Grid/GridContainer";
 import GridItem from "components/Grid/GridItem";
 import Button from "components/CustomButtons/Button";
 import EditTask from "components/Gigs/Tasks/EditTask";
+import RemoveTask from "components/Gigs/Tasks/RemoveTask";
 
 // style sheets
 import {bugs, website, server} from "variables/general.jsx";
@@ -71,7 +72,8 @@ class GigDashboard extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            editTask: null
+            editTask: null,
+            removeTask: null
         };
     }
 
@@ -96,16 +98,26 @@ class GigDashboard extends React.Component {
         console.log(task)
         this.setState({
             editTask: (
-                <EditTask hideEditTask={this.hideEditTask.bind(this)}
+                <EditTask hideTask={this.hideTask.bind(this)}
                           task={task}
                 />
             )
         });
     }
 
-    hideEditTask() {
+    removeTask(task) {
         this.setState({
-            editTask: null
+            removeTask: (
+                <RemoveTask hideTask={this.hideTask.bind(this)}
+                          task={task}
+                />
+            )
+        });
+    }
+
+    hideTask(taskState) {
+        this.setState({
+            [taskState]: null
         });
     }
 
@@ -137,6 +149,7 @@ class GigDashboard extends React.Component {
                             tasksIndexes={tasksIndexesArray}
                             tasks={organizedContent[key]}
                             editTask={this.editTask.bind(this)}
+                            removeTask={this.removeTask.bind(this)}
                         />
                     )
                 });
@@ -152,6 +165,7 @@ class GigDashboard extends React.Component {
 
         return (
             <div>
+                {this.state.removeTask}
                 {this.state.editTask}
                 <GridContainer justify="center">
                     <GridItem xs={12}>

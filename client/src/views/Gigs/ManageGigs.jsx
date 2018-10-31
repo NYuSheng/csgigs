@@ -154,6 +154,7 @@ class ManageGigs extends React.Component {
             points: 400,
             tasks: [
                 {
+                    id: 1,
                     category: "Logistics",
                     taskname: "Prepare food",
                     description: "Meet at Woodlands at 10am to collect food and set up food area by 3pm",
@@ -161,6 +162,7 @@ class ManageGigs extends React.Component {
                     assignees: []
                 },
                 {
+                    id: 2,
                     category: "Admin",
                     taskname: "Get sign ups",
                     description: "",
@@ -168,6 +170,7 @@ class ManageGigs extends React.Component {
                     assignees: []
                 },
                 {
+                    id: 3,
                     category: "Operation",
                     taskname: "Man the area during event",
                     description: "",
