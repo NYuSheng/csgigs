@@ -20,7 +20,7 @@ import tasksStyle from "assets/jss/material-dashboard-pro-react/components/tasks
 
 class Tasks extends React.Component {
     render() {
-        const {classes, tasksIndexes, tasks, editTask, removeTask} = this.props;
+        const { classes, tasksIndexes, tasks, editTask, removeTask, assignUsers } = this.props;
         return (
             <Table className={classes.table}>
                 <TableBody>
@@ -42,6 +42,7 @@ class Tasks extends React.Component {
                                     <IconButton
                                         aria-label="Edit"
                                         className={classes.tableActionButton}
+                                        onClick={()=> {assignUsers(tasks[value])}}
                                     >
                                         <Assigned
                                             className={

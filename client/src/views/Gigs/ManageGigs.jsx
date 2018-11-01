@@ -159,7 +159,10 @@ class ManageGigs extends React.Component {
                     taskname: "Prepare food",
                     description: "Meet at Woodlands at 10am to collect food and set up food area by 3pm",
                     status: "Unassigned",
-                    assignees: []
+                    assignees: [{
+                        id: "123",
+                        name: "Brandon"
+                    }]
                 },
                 {
                     id: 2,

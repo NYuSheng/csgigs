@@ -29,6 +29,7 @@ import GridItem from "components/Grid/GridItem";
 import Button from "components/CustomButtons/Button";
 import EditTask from "components/Gigs/Tasks/EditTask";
 import RemoveTask from "components/Gigs/Tasks/RemoveTask";
+import AssignUsers from "components/Gigs/Tasks/AssignUsers";
 
 // style sheets
 import {bugs, website, server} from "variables/general.jsx";
@@ -73,7 +74,8 @@ class GigDashboard extends React.Component {
         super(props);
         this.state = {
             editTask: null,
-            removeTask: null
+            removeTask: null,
+            assignUsers: null
         };
     }
 
@@ -109,10 +111,21 @@ class GigDashboard extends React.Component {
         this.setState({
             removeTask: (
                 <RemoveTask hideTask={this.hideTask.bind(this)}
-                          task={task}
+                            task={task}
                 />
             )
         });
+    }
+
+    assignUsers(task) {
+        this.setState({
+            assignUsers: (
+                <AssignUsers hideTask={this.hideTask.bind(this)}
+                             task={task}
+                />
+            )
+        })
+
     }
 
     hideTask(taskState) {
@@ -150,6 +163,7 @@ class GigDashboard extends React.Component {
                             tasks={organizedContent[key]}
                             editTask={this.editTask.bind(this)}
                             removeTask={this.removeTask.bind(this)}
+                            assignUsers={this.assignUsers.bind(this)}
                         />
                     )
                 });
@@ -160,13 +174,15 @@ class GigDashboard extends React.Component {
     }
 
     render() {
-        const {classes} = this.props;
+        const { classes } = this.props;
+        const { assignUsers, removeTask, editTask } = this.state;
         const gig = this.props.location.state.gig;
 
         return (
             <div>
-                {this.state.removeTask}
-                {this.state.editTask}
+                {assignUsers}
+                {removeTask}
+                {editTask}
                 <GridContainer justify="center">
                     <GridItem xs={12}>
                         <Button className={classes.marginRight} onClick={this.returnToHomepage.bind(this)}>
