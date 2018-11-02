@@ -23,9 +23,9 @@ exports.create_tasks = function (req, res, next) {
 
 exports.get_tasks_gigs = function (req, res, next) {
     return Task.find({gig_name:req.params.gigname}).exec().then((tasks_retrieved) => {
-        if(tasks_retrieved === null){
+        if(tasks_retrieved.length === 0){
             return res.status(400).send({
-                error: 'Cannot related task for GIG: ' + req.body.gig_name
+                error: 'Cannot related task for GIG: ' + req.params.gigname
             });
         }
         res.status(200).send({
