@@ -96,7 +96,7 @@ exports.get_gigs_everything = function (req, res) {
     ]).exec().then((gigs_retrieved) => {
         if(gigs_retrieved.length === 0){
             return res.status(400).send({
-                error: 'Cannot find any GIGs under status: ' + req.params.gigname
+                error: 'Cannot find any GIGs: ' + req.params.gigname
             });
         }
         res.status(200).send({
