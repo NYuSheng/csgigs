@@ -32,10 +32,28 @@ class LoginPage extends React.Component {
         // we use this to make the card to appear after the page has been rendered
         this.state = {
             cardAnimaton: "cardHidden",
-            username: '',
+            username: 0,
             password: ''
         };
+
+        this.handleUsernameChange = this.handleUsernameChange.bind(this);
+        this.handlePasswordChange = this.handlePasswordChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
     }
+
+    handleUsernameChange(e) {
+        //this.setState({[e.target.name]: e.target.value});
+        this.setState({
+            username: e.target.value
+        });
+    }
+
+    handlePasswordChange(e) {
+        this.setState({
+            password: e.target.value
+        });
+    }
+
 
     componentDidMount() {
         // we add a hidden class to the card and after 700 ms we delete it and the transition appears
@@ -52,8 +70,71 @@ class LoginPage extends React.Component {
         this.timeOutFunction = null;
     }
 
+    login() {
+        const loginDetails = {
+            username: this.state.username,
+            password: this.state.password
+        }
+
+        fetch('/users/login2', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(loginDetails)
+        }).then(data => {
+            if (data.status !== 200) throw Error("Login failed");
+            else {
+                const {history} = this.props;
+                history.push({
+                    pathname: "/dashboard"
+                });
+            }
+        })
+
+
+        /*.then(function(response){ return response.json();
+
+        }).then(function(data) {
+                const items = data;
+                console.log(items);
+                //if (data.adminuser === null) throw Error("Login failed");
+                // else {
+                //     const {history} = this.props;
+                //     history.push({
+                //         pathname: "/dashboard"
+                //     });
+                // }
+        })*/
+
+        /*
+        .then(data => {
+            console.log(data.json());
+            if (data.status !== 200) throw Error("Login failed");
+            else {
+                const {history} = this.props;
+                history.push({
+                    pathname: "/dashboard"
+                });
+            }
+        })
+         */
+
+        /*
+        .then(function(response){ return response.json(); })
+.then(function(data) {
+    const items = data;
+    console.log(items)
+})
+         */
+    }
+
+    handleSubmit(e) {
+        e.preventDefault();
+        this.login();
+    }
+
     render() {
         const {classes, ...rest} = this.props;
+
         return (
             <div>
                 <PagesHeader {...rest} />
@@ -65,7 +146,7 @@ class LoginPage extends React.Component {
                         <div className={classes.container}>
                             <GridContainer justify="center">
                                 <GridItem xs={12} sm={6} md={4}>
-                                    <form action="/admin-ui/dashboard">
+                                    <form onSubmit={this.handleSubmit}>
                                         <Card login className={classes[this.state.cardAnimaton]}>
                                             <CardHeader
                                                 className={`${classes.cardHeader} ${classes.textCenter}`}
@@ -82,13 +163,16 @@ class LoginPage extends React.Component {
                                                     formControlProps={{
                                                         fullWidth: true
                                                     }}
+
                                                     inputProps={{
+                                                        onChange: event => this.handleUsernameChange(event),
                                                         endAdornment: (
                                                             <InputAdornment position="end">
                                                                 <Face className={classes.inputAdornmentIcon}/>
                                                             </InputAdornment>
                                                         )
                                                     }}
+                                                    value={this.state.username}
                                                 />
                                                 <CustomInput
                                                     labelText="Password"
@@ -97,6 +181,7 @@ class LoginPage extends React.Component {
                                                         fullWidth: true
                                                     }}
                                                     inputProps={{
+                                                        onChange: event => this.handlePasswordChange(event),
                                                         endAdornment: (
                                                             <InputAdornment position="end">
                                                                 <Icon className={classes.inputAdornmentIcon}>
