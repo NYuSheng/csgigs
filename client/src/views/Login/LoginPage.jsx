@@ -76,7 +76,7 @@ class LoginPage extends React.Component {
             password: this.state.password
         }
 
-        fetch('/users/login2', {
+        fetch('/admin-ui/users/login2', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(loginDetails)
