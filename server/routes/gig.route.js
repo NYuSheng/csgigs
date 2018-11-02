@@ -11,5 +11,6 @@ router.post('/create', gig_controller.gig_create);
 router.post('/getGigs/:name', gig_controller.gig_details);
 router.put('/update/:name', gig_controller.gig_update);
 router.post('/getGigsByStatus/:status', gig_controller.get_gigs_status);
+router.post('/getGigsDetails/:gigname', gig_controller.get_gigs_everything);
 
 module.exports = router;

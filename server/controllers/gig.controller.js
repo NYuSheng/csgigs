@@ -82,6 +82,31 @@ exports.get_gigs_status = function (req, res) {
     })
 }
 
+exports.get_gigs_everything = function (req, res) {
+    return Gig.aggregate([
+        {$match: {name: req.params.gigname}},
+        {
+            $lookup: {
+                from: 'tasks',
+                localField: 'name',
+                foreignField: 'gig_name',
+                as: 'task_list'
+            }
+        }
+    ]).exec().then((gigs_retrieved) => {
+        if(gigs_retrieved.length === 0){
+            return res.status(400).send({
+                error: 'Cannot find any GIGs under status: ' + req.params.gigname
+            });
+        }
+        res.status(200).send({
+            gigs: gigs_retrieved
+        });
+    }).catch(err=>{
+        res.status(400).send({error: err});
+    })
+}
+
 
 //method shouldnt be here, may need to further discuss on location of method
 // exports.retrive_gigs = async (req, res, next) => {
