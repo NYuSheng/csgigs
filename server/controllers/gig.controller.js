@@ -10,13 +10,12 @@ exports.gig_create = asyncMiddleware(async (req, res, next) => {
         {
             name :req.body.name,
             points_budget : req.body.points_budget,
-            status : req.body.status,
-            user_admins : req.body.user_admins
+            status : "draft",
+            user_admins : req.body.user_admins,
 
             //Possible required fields in creation
-            // rc_channel_id: req.body.rc_channel_id,
-            // users_participants: req.body.users_participants,
-            // users_attendees: req.body.users_attendees
+            users_participants: [],
+            users_attendees: []
         }
     );
 
@@ -60,11 +59,47 @@ exports.gig_details = asyncMiddleware(async (req, res, next) => {
 });
 
 //input ID
-exports.gig_update = function (req, res) {
+exports.gig_update = function (req, res, next) {
     Gig.findByIdAndUpdate(req.params.name, {$set: req.body}, function (err, gig) {
         if (err) return next(err);
         res.send('Gig udpated.');
     });
+};
+
+exports.gig_add_user_participant = function (req, res, next) {
+    return Gig.findOneAndUpdate(
+        {name: req.params.name},
+        {$push: {"user_participants": req.params.participant_name}}, //add participant to array
+        {'new': true},
+        function(err, gig){
+            if(err || gig == null) {
+                return res.status(400).send({
+                    error: 'Cannot find gig of name ' + req.params.name
+                });
+            } else {
+                res.status(200).send({
+                    gig : gig
+                });
+            }
+        });
+};
+
+exports.gig_add_user_attendee = function (req, res, next) {
+    return Gig.findOneAndUpdate(
+        {name: req.params.name},
+        {$push: {"user_attendees": req.params.attendee_name}}, //add participant to array
+        {'new': true},
+        function(err, gig){
+            if(err || gig == null) {
+                return res.status(400).send({
+                    error: 'Cannot find gig of name ' + req.params.name
+                });
+            } else {
+                res.status(200).send({
+                    gig : gig
+                });
+            }
+        });
 };
 
 exports.get_gigs_status = function (req, res) {
