@@ -27,9 +27,11 @@ import GigTable from "components/Gigs/Table/Table";
 import GridContainer from "components/Grid/GridContainer";
 import GridItem from "components/Grid/GridItem";
 import Button from "components/CustomButtons/Button";
-import EditTask from "components/Gigs/Tasks/EditTask";
-import RemoveTask from "components/Gigs/Tasks/RemoveTask";
-import AssignUsers from "components/Gigs/Tasks/AssignUsers";
+import EditTask from "components/Gigs/PopupModals/EditTask";
+import RemoveTask from "components/Gigs/PopupModals/RemoveTask";
+import AssignUsers from "components/Gigs/PopupModals/AssignUsers";
+import EditGigAdmins from "components/Gigs/PopupModals/EditGigAdmins";
+import AddTask from "components/Gigs/PopupModals/AddTask";
 
 // style sheets
 import {bugs, website, server} from "variables/general.jsx";
@@ -75,7 +77,9 @@ class GigDashboard extends React.Component {
         this.state = {
             editTask: null,
             removeTask: null,
-            assignUsers: null
+            assignUsers: null,
+            editGigAdmins: null,
+            addTask: null
         };
     }
 
@@ -97,20 +101,27 @@ class GigDashboard extends React.Component {
     }
 
     editTask(task) {
-        console.log(task)
         this.setState({
             editTask: (
-                <EditTask hideTask={this.hideTask.bind(this)}
+                <EditTask hideTask={this.hidePopup.bind(this)}
                           task={task}
                 />
             )
         });
     }
 
+    addTask() {
+        this.setState({
+            addTask: (
+                <AddTask hideTask={this.hidePopup.bind(this)} />
+            )
+        })
+    }
+
     removeTask(task) {
         this.setState({
             removeTask: (
-                <RemoveTask hideTask={this.hideTask.bind(this)}
+                <RemoveTask hideTask={this.hidePopup.bind(this)}
                             task={task}
                 />
             )
@@ -120,17 +131,27 @@ class GigDashboard extends React.Component {
     assignUsers(task) {
         this.setState({
             assignUsers: (
-                <AssignUsers hideTask={this.hideTask.bind(this)}
+                <AssignUsers hideTask={this.hidePopup.bind(this)}
                              task={task}
                 />
             )
         })
-
     }
 
-    hideTask(taskState) {
+    editGigAdmins() {
+        const gig = this.props.location.state.gig;
         this.setState({
-            [taskState]: null
+            editGigAdmins: (
+                <EditGigAdmins hidePopup={this.hidePopup.bind(this)}
+                               admins={gig.admins}
+                />
+            )
+        })
+    }
+
+    hidePopup(popupState) {
+        this.setState({
+            [popupState]: null
         });
     }
 
@@ -174,8 +195,8 @@ class GigDashboard extends React.Component {
     }
 
     render() {
-        const { classes } = this.props;
-        const { assignUsers, removeTask, editTask } = this.state;
+        const {classes} = this.props;
+        const {assignUsers, removeTask, editTask, editGigAdmins, addTask} = this.state;
         const gig = this.props.location.state.gig;
 
         return (
@@ -183,6 +204,8 @@ class GigDashboard extends React.Component {
                 {assignUsers}
                 {removeTask}
                 {editTask}
+                {addTask}
+                {editGigAdmins}
                 <GridContainer justify="center">
                     <GridItem xs={12}>
                         <Button className={classes.marginRight} onClick={this.returnToHomepage.bind(this)}>
@@ -195,7 +218,7 @@ class GigDashboard extends React.Component {
                                 <Card>
                                     <CardHeader color="warning" stats icon>
                                         <CardIcon color="warning">
-                                            <Status />
+                                            <Status/>
                                         </CardIcon>
                                         <p className={classes.cardCategory}>Gigs Status</p>
                                         <h3 className={classes.cardTitle}>
@@ -209,7 +232,7 @@ class GigDashboard extends React.Component {
                                 <Card>
                                     <CardHeader color="warning" stats icon>
                                         <CardIcon color="warning">
-                                            <Chat />
+                                            <Chat/>
                                         </CardIcon>
                                         <p className={classes.cardCategory}>Gigs Channel</p>
                                         <h3 className={classes.cardTitle}>
@@ -225,11 +248,18 @@ class GigDashboard extends React.Component {
                             <GridItem xs={12} sm={12} md={12} lg={12}>
                                 <Card>
                                     <CardHeader color="rose" icon>
-                                        <CardIcon color="rose">
-                                            <People/>
-                                        </CardIcon>
-                                        <h4 className={classes.cardCategory}>Gig Admin(s)</h4>
-                                        {/*Edit admins*/}
+                                        <GridContainer>
+                                            <GridItem xs={10} sm={10} md={10} lg={10}>
+                                                <CardIcon color="rose">
+                                                    <People/>
+                                                </CardIcon>
+                                                <h4 className={classes.cardCategory}>Gig Admin(s)</h4>
+                                            </GridItem>
+                                            <GridItem xs={2} sm={2} md={2} lg={2} style={{textAlign: 'right'}}>
+                                                {/*Edit admins (only super admin)*/}
+                                                <Button onClick={this.editGigAdmins.bind(this)}>Edit</Button>
+                                            </GridItem>
+                                        </GridContainer>
                                     </CardHeader>
                                     <CardBody>
                                         <GigTable
@@ -288,6 +318,7 @@ class GigDashboard extends React.Component {
                             title="Tasks:"
                             headerColor="rose"
                             tabs={this.organizeTabContent(gig.tasks)}
+                            addContent={this.addTask.bind(this)}
                         />
                     </GridItem>
                 </GridContainer>

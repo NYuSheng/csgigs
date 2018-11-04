@@ -22,30 +22,30 @@ import {NotificationManager} from "react-notifications";
 // style sheets
 import sweetAlertStyle from "assets/jss/material-dashboard-pro-react/views/sweetAlertStyle.jsx"
 
-class AssignUsers extends React.Component {
+class EditGigAdmins extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            selectedUsers: [],
+            selectedAdmins: [],
             status: "",
         };
     }
 
     componentDidMount() {
-        const {task} = this.props;
+        const {admins} = this.props;
         this.setState({
-            selectedUsers: task.assignees,
+            selectedAdmins: admins,
             status: "working"
         })
     }
 
-    setupTableCells(user) {
+    setupTableCells(admin) {
         const {classes} = this.props;
         const tableCellClasses = classes.tableCell;
         return (
             <React.Fragment>
                 <TableCell colSpan="1" className={tableCellClasses}>
-                    {user.name}
+                    {admin.name}
                 </TableCell>
                 <TableCell colSpan="1" className={tableCellClasses} style={{textAlign: 'right'}}>
                     <Cancel className={classes.icon}/>
@@ -54,28 +54,28 @@ class AssignUsers extends React.Component {
         );
     }
 
-    selectUsers(user) {
-        const selectedUsers = this.state.selectedUsers;
-        const existingUsers = selectedUsers.filter(selectedUser => selectedUser.id === user.id)
-        if (existingUsers.length >= 1) {
-            NotificationManager.error("User " + user.name + " has been selected");
+    selectAdmin(admin) {
+        const selectedAdmins = this.state.selectedAdmins;
+        const existingAdmins = selectedAdmins.filter(selectedAdmin => selectedAdmin.id === admin.id)
+        if (existingAdmins.length >= 1) {
+            NotificationManager.error("User " + admin.name + " has been selected");
         } else {
             this.setState({
-                selectedUsers: selectedUsers.concat([user])
+                selectedAdmins: [admin].concat(selectedAdmins)
             });
         }
     }
 
-    deselectUser(user) {
-        const selectedUsers = this.state.selectedUsers;
-        const usersAfterRemoval = selectedUsers.filter(selectedUser => selectedUser.id !== user.id);
+    deselectAdmin(admin) {
+        const selectedAdmins = this.state.selectedAdmins;
+        const adminsAfterRemoval = selectedAdmins.filter(selectedAdmin => selectedAdmin.id !== admin.id);
         this.setState({
-            selectedUsers: usersAfterRemoval
+            selectedAdmins: adminsAfterRemoval
         });
     }
 
-    confirmUserAssign() {
-        const {hideTask} = this.props;
+    confirmAdminAssign() {
+        const {hidePopup} = this.props;
         const {status} = this.state;
         if (status !== "success") {
             this.setState({
@@ -92,13 +92,13 @@ class AssignUsers extends React.Component {
                 });
             }, 1000);
         } else {
-            hideTask("assignUsers");
+            hidePopup("editGigAdmins");
         }
     }
 
     render() {
-        const {classes, hideTask, task} = this.props;
-        const {selectedUsers, status} = this.state;
+        const {classes, hidePopup} = this.props;
+        const {selectedAdmins, status} = this.state;
 
         return (
             <SweetAlert
@@ -107,11 +107,11 @@ class AssignUsers extends React.Component {
                     display: "block",
                     overflow: "visible"
                 }}
-                title={(status === "working") ? "Assign Users" : (status === "success") ? "Users Assigned" : false}
-                onConfirm={() => this.confirmUserAssign()}
+                title={(status === "working") ? "Edit Admins" : (status === "success") ? "Admins Edited" : false}
+                onConfirm={() => this.confirmAdminAssign()}
                 onCancel={() => {
                     if (status !== "loading") {
-                        hideTask("assignUsers")
+                        hidePopup("assignUsers")
                     }
                 }}
                 confirmBtnCssClass={
@@ -140,18 +140,18 @@ class AssignUsers extends React.Component {
                         (
                             <Card>
                                 <CardHeader>
-                                    <AutoComplete selectInput={this.selectUsers.bind(this)}/>
+                                    <AutoComplete selectInput={this.selectAdmin.bind(this)}/>
                                 </CardHeader>
                                 <CardBody>
                                     <Table
                                         tableHeight="100px"
                                         hover
                                         tableHeaderColor="primary"
-                                        tableData={selectedUsers}
+                                        tableData={selectedAdmins}
                                         tableFooter="false"
-                                        notFoundMessage="No users selected"
+                                        notFoundMessage="No admins selected"
                                         setupTableCells={this.setupTableCells.bind(this)}
-                                        handleTableRowOnClick={this.deselectUser.bind(this)}
+                                        handleTableRowOnClick={this.deselectAdmin.bind(this)}
                                     />
                                 </CardBody>
                             </Card>
@@ -166,4 +166,4 @@ class AssignUsers extends React.Component {
     }
 }
 
-export default withStyles(sweetAlertStyle)(AssignUsers);
+export default withStyles(sweetAlertStyle)(EditGigAdmins);

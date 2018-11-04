@@ -64,23 +64,37 @@ class EditTask extends React.Component {
             this.setState({taskNameState: "error"})
     }
 
+    isValidated() {
+        const { taskNameState } = this.state;
+        if ( taskNameState === "success" ) {
+            return true;
+        } else {
+            if (taskNameState !== "success") {
+                this.setState({taskNameState: "error"});
+            }
+        }
+        return false;
+    }
+
     confirmTaskEdit() {
         const { hideTask } = this.props;
         const { status } = this.state;
         if (status !== "success") {
-            this.setState({
-                status: "loading"
-            });
-
-            // API call here to post the edited task
-            // Build your payload using buildPayLoad() method below
-
-            // dummy function to simulate api call
-            setTimeout(() => {
+            if (this.isValidated()) {
                 this.setState({
-                    status: "success"
+                    status: "loading"
                 });
-            }, 1000);
+
+                // API call here to post the edited task
+                // Build your payload using buildPayLoad() method below
+
+                // dummy function to simulate api call
+                setTimeout(() => {
+                    this.setState({
+                        status: "success"
+                    });
+                }, 1000);
+            }
         } else {
             hideTask("editTask");
         }

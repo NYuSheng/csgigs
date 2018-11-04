@@ -36,7 +36,8 @@ class GigCustomTabs extends React.Component {
       plainTabs,
       tabs,
       title,
-      rtlActive
+      rtlActive,
+      addContent
     } = this.props;
     const cardTitle = classNames({
       [classes.cardTitle]: true,
@@ -47,12 +48,10 @@ class GigCustomTabs extends React.Component {
       <Card plain={plainTabs}>
         <CardHeader color={headerColor} plain={plainTabs}>
             <GridContainer>
-                <GridItem xs={1} sm={1} md={1} lg={1}>
+                <GridItem xs={10} sm={10} md={10} lg={10}>
                     <div className={cardTitle}>
                         {title}
                     </div>
-                </GridItem>
-                <GridItem xs={9} sm={9} md={9} lg={9}>
                     <Tabs
                         value={this.state.value}
                         onChange={this.handleChange}
@@ -86,7 +85,7 @@ class GigCustomTabs extends React.Component {
                     </Tabs>
                 </GridItem>
                 <GridItem xs={2} sm={2} md={2} lg={2} style={{textAlign: 'right'}}>
-                    <Button>Add</Button>
+                    <Button onClick={addContent}>Add</Button>
                 </GridItem>
             </GridContainer>
         </CardHeader>
