@@ -26,6 +26,8 @@ import pagesStyle from "assets/jss/material-dashboard-pro-react/layouts/pagesSty
 import PagesHeader from "../../components/Header/PagesHeader";
 import bgImage from "assets/img/register.jpeg";
 
+import {NotificationManager, NotificationContainer} from "react-notifications";
+
 class LoginPage extends React.Component {
     constructor(props) {
         super(props);
@@ -81,8 +83,10 @@ class LoginPage extends React.Component {
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(loginDetails)
         }).then(data => {
-            if (data.status !== 200) throw Error("Login failed");
-            else {
+            console.log(data)
+            if (data.status !== 200) {
+                NotificationManager.error("Login failed");
+            } else {
                 const {history} = this.props;
                 history.push({
                     pathname: "/dashboard"
@@ -145,7 +149,7 @@ class LoginPage extends React.Component {
                     >
                         <div className={classes.container}>
                             <GridContainer justify="center">
-                                <GridItem xs={12} sm={6} md={4}>
+                                <GridItem xs={8} sm={8} md={4} lg={4}>
                                     <form onSubmit={this.handleSubmit}>
                                         <Card login className={classes[this.state.cardAnimaton]}>
                                             <CardHeader
@@ -204,6 +208,7 @@ class LoginPage extends React.Component {
                         </div>
                     </div>
                 </div>
+                <NotificationContainer/>
             </div>
         );
     }
