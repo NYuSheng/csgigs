@@ -1,3 +1,4 @@
+const httpMocks = require('node-mocks-http');
 
 exports.setup = function(mongoose){
     var dev_db_url = 'mongodb://test1:test123@ds031895.mlab.com:31895/projectgigstest';
@@ -11,4 +12,13 @@ exports.cleanUp = function(mongoose) {
         mongoose.connection.collections[i].remove({});
     }
     mongoose.disconnect();
+}
+
+exports.createHttpMockRequest = function(bodyObj, paramObj, requestType){
+    return request = httpMocks.createRequest({
+        method : requestType,
+        url : '/wew', //url here does not matter, this is just a mock
+        body : bodyObj,
+        params : paramObj
+    });
 }

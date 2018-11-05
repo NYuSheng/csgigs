@@ -1,27 +1,17 @@
 const httpMocks = require('node-mocks-http');
 const gig_controller = require('../controllers/gig.controller');
-const Gig = require('../models/gig.model');
 var mongoose = require('mongoose');
 const test_util = require('../utils/test.util');
 
 
 describe("Gig Controller Tests", () => {
-    beforeAll(()=> {
+    beforeAll(() => {
         test_util.setup(mongoose);
     });
 
     afterAll(() => {
         test_util.cleanUp(mongoose);
     });
-
-    function createHttpMockRequest(bodyObj, paramObj, requestType){
-        return request = httpMocks.createRequest({
-            method : requestType,
-            url : '/wew', //url here does not matter, this is just a mock
-            body : bodyObj,
-            params : paramObj
-        });
-    }
     
     describe('Create Gig', () => {
         
@@ -33,7 +23,7 @@ describe("Gig Controller Tests", () => {
                 status : "NOT STARTED"
             };
             
-            const request = createHttpMockRequest(body, {}, 'POST');
+            const request = test_util.createHttpMockRequest(body, {}, 'POST');
             
             const response = httpMocks.createResponse();
             
@@ -56,13 +46,12 @@ describe("Gig Controller Tests", () => {
                 user_admins: ['brandon','dewang','kevin','yusheng','ernest']
             };
             
-            const request = createHttpMockRequest(body, {}, 'POST');
+            const request = test_util.createHttpMockRequest(body, {}, 'POST');
             
             const response = httpMocks.createResponse();
             
             return gig_controller.gig_create(request, response).then(() =>{
                 const responseData = response._getData();
-                console.log(responseData);
                 expect(response.statusCode).toBe(200);
                 expect(responseData.gig.name).toBe('ジャンプフォース２０１８');
                 expect(responseData.gig.user_admins.length).toBe(5);
@@ -80,7 +69,7 @@ describe("Gig Controller Tests", () => {
                 user_admins: ['brandon','dewang','kevin','yusheng']
             };
 
-            const request = createHttpMockRequest(body, {}, 'POST');
+            const request = test_util.createHttpMockRequest(body, {}, 'POST');
             
             const response = httpMocks.createResponse();
             
@@ -98,7 +87,7 @@ describe("Gig Controller Tests", () => {
                 user_admins: ['ernest']
             };
             
-            const request = createHttpMockRequest(body, {}, 'POST');
+            const request = test_util.createHttpMockRequest(body, {}, 'POST');
             
             const response = httpMocks.createResponse();
             
@@ -118,7 +107,7 @@ describe("Gig Controller Tests", () => {
 
         test('should return array of gigs with status 200', () =>{
 
-            const request = createHttpMockRequest({}, {}, 'GET');
+            const request = test_util.createHttpMockRequest({}, {}, 'GET');
     
             const response = httpMocks.createResponse();
     
@@ -133,7 +122,7 @@ describe("Gig Controller Tests", () => {
 
     describe('Retrieve Gig By Id', () => {
         test('valid gig name should return gig with status 200', () => {
-            const request = createHttpMockRequest({}, {name:'ポケモンサファリ＠台南'}, 'GET');
+            const request = test_util.createHttpMockRequest({}, {name:'ポケモンサファリ＠台南'}, 'GET');
             const response = httpMocks.createResponse();
     
             return gig_controller.gig_details(request, response).then(() =>{
@@ -146,7 +135,7 @@ describe("Gig Controller Tests", () => {
 
         //bad request
         test('invalid gig name should return status 400', () => {
-            const request = createHttpMockRequest({}, {name:''}, 'GET');
+            const request = test_util.createHttpMockRequest({}, {name:''}, 'GET');
             const response = httpMocks.createResponse();
 
             return gig_controller.gig_details(request, response).then(() =>{
@@ -166,6 +155,3 @@ describe("Gig Controller Tests", () => {
             //     });
             // });
 });
-
-        
-        
