@@ -45,15 +45,6 @@ class ManageGigs extends React.Component {
         this.setupRawData();
     }
 
-    // filterGigsResults(filterKey, filterValue) {
-    //     let gigs = this.state.gigs;
-    //     let filtered = gigs.filter(gig => gig[filterKey].toUpperCase() === filterValue.toUpperCase());
-    //
-    //     this.setState({
-    //         filtered: filtered
-    //     })
-    // }
-
     setupTableCells(gig) {
         const {classes} = this.props;
         const tableCellClasses = classes.tableCell;
@@ -159,6 +150,7 @@ class ManageGigs extends React.Component {
                     taskname: "Prepare food",
                     description: "Meet at Woodlands at 10am to collect food and set up food area by 3pm",
                     status: "Unassigned",
+                    points: 100,
                     assignees: [{
                         id: "123",
                         name: "Brandon"
@@ -170,6 +162,7 @@ class ManageGigs extends React.Component {
                     taskname: "Get sign ups",
                     description: "",
                     status: "Unassigned",
+                    points: 100,
                     assignees: []
                 },
                 {
@@ -178,6 +171,7 @@ class ManageGigs extends React.Component {
                     taskname: "Man the area during event",
                     description: "",
                     status: "Unassigned",
+                    points: 100,
                     assignees: []
                 }
             ]
