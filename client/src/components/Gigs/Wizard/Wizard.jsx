@@ -171,7 +171,7 @@ class Wizard extends React.Component {
                 undefined) &&
             this.props.finishButtonClick !== undefined
         ) {
-            this.props.finishButtonClick();
+            this.props.finishButtonClick(this[this.props.steps[this.state.currentStep].stepId].sendState());
         }
     }
     refreshAnimation(index) {
