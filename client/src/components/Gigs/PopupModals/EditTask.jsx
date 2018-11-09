@@ -37,6 +37,7 @@ class EditTask extends React.Component {
         this.setState({
             taskId: task.id,
             taskName: task.taskname,
+            taskNameState: "success",
             taskDescription: task.description,
             taskCategory: task.category,
             status: "working"
@@ -55,9 +56,13 @@ class EditTask extends React.Component {
         })
     }
 
-    validateTaskName(event) {
+    onChangeTaskName(event) {
         const name = event.target.value;
         this.setState({taskName: name});
+        this.validateTaskName(name);
+    }
+
+    validateTaskName(name) {
         name ?
             this.setState({taskNameState: "success"})
             :
@@ -65,20 +70,18 @@ class EditTask extends React.Component {
     }
 
     isValidated() {
-        const { taskNameState } = this.state;
-        if ( taskNameState === "success" ) {
+        const {taskNameState} = this.state;
+        if (taskNameState === "success") {
             return true;
         } else {
-            if (taskNameState !== "success") {
-                this.setState({taskNameState: "error"});
-            }
+            this.setState({taskNameState: "error"});
         }
         return false;
     }
 
     confirmTaskEdit() {
-        const { hideTask } = this.props;
-        const { status } = this.state;
+        const {hideTask} = this.props;
+        const {status} = this.state;
         if (status !== "success") {
             if (this.isValidated()) {
                 this.setState({
@@ -158,7 +161,7 @@ class EditTask extends React.Component {
                                         }}
                                         inputProps={{
                                             defaultValue: task.taskname,
-                                            onChange: event => this.validateTaskName(event)
+                                            onChange: event => this.onChangeTaskName(event)
                                         }}
                                         inputType="text"
                                     />

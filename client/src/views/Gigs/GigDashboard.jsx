@@ -32,10 +32,14 @@ import RemoveTask from "components/Gigs/PopupModals/RemoveTask";
 import AssignUsers from "components/Gigs/PopupModals/AssignUsers";
 import EditGigAdmins from "components/Gigs/PopupModals/EditGigAdmins";
 import AddTask from "components/Gigs/PopupModals/AddTask";
+import BrownieAllocation from "components/Gigs/PopupModals/BrownieAllocation";
+
+// dependencies
+import CircularProgressbar from 'react-circular-progressbar';
 
 // style sheets
-import {bugs, website, server} from "variables/general.jsx";
 import {cardTitle, roseColor} from "assets/jss/material-dashboard-pro-react.jsx";
+import 'react-circular-progressbar/dist/styles.css';
 
 const style = {
     cardTitle,
@@ -71,6 +75,8 @@ const style = {
 
 };
 
+
+
 class GigDashboard extends React.Component {
     constructor(props) {
         super(props);
@@ -78,8 +84,9 @@ class GigDashboard extends React.Component {
             editTask: null,
             removeTask: null,
             assignUsers: null,
-            editGigAdmins: null,
-            addTask: null
+            editGigAdmins: false,
+            addTask: false,
+            brownieAllocation: false
         };
     }
 
@@ -112,9 +119,7 @@ class GigDashboard extends React.Component {
 
     addTask() {
         this.setState({
-            addTask: (
-                <AddTask hideTask={this.hidePopup.bind(this)} />
-            )
+            addTask: true
         })
     }
 
@@ -139,19 +144,20 @@ class GigDashboard extends React.Component {
     }
 
     editGigAdmins() {
-        const gig = this.props.location.state.gig;
         this.setState({
-            editGigAdmins: (
-                <EditGigAdmins hidePopup={this.hidePopup.bind(this)}
-                               admins={gig.admins}
-                />
-            )
+            editGigAdmins: true
+        })
+    }
+
+    editBrownieAllocation() {
+        this.setState({
+            brownieAllocation: true
         })
     }
 
     hidePopup(popupState) {
         this.setState({
-            [popupState]: null
+            [popupState]: false
         });
     }
 
@@ -194,9 +200,28 @@ class GigDashboard extends React.Component {
         return toReturn;
     }
 
+    calculatePoints(gig) {
+        var tasksAllocations = 0;
+        gig.tasks.forEach(function (task) {
+            tasksAllocations += task.points;
+        });
+        return tasksAllocations;
+    }
+
+    calculatePointsPercentage(gig) {
+        return this.calculatePoints(gig) / gig.points * 100;
+    }
+
     render() {
         const {classes} = this.props;
-        const {assignUsers, removeTask, editTask, editGigAdmins, addTask} = this.state;
+        const {
+            assignUsers,
+            removeTask,
+            editTask,
+            editGigAdmins,
+            addTask,
+            brownieAllocation
+        } = this.state;
         const gig = this.props.location.state.gig;
 
         return (
@@ -204,8 +229,9 @@ class GigDashboard extends React.Component {
                 {assignUsers}
                 {removeTask}
                 {editTask}
-                {addTask}
-                {editGigAdmins}
+                <AddTask modalOpen={addTask} hideTask={this.hidePopup.bind(this)}/>
+                <EditGigAdmins modalOpen={editGigAdmins} hidePopup={this.hidePopup.bind(this)} admins={gig.admins}/>
+                <BrownieAllocation modalOpen={brownieAllocation} hidePopup={this.hidePopup.bind(this)} gig={gig}/>
                 <GridContainer justify="center">
                     <GridItem xs={12}>
                         <Button className={classes.marginRight} onClick={this.returnToHomepage.bind(this)}>
@@ -275,20 +301,36 @@ class GigDashboard extends React.Component {
                     </GridItem>
                     <GridItem xs={12} sm={12} md={4} lg={4}>
                         <Card pricing>
+                            <CardHeader color="warning" stats icon>
+                                <CardIcon color="warning">
+                                    <BrowniePoints/>
+                                </CardIcon>
+                            </CardHeader>
                             <CardBody pricing>
+                                <CircularProgressbar
+                                    className={classes.icon}
+                                    percentage={this.calculatePointsPercentage(gig)}
+                                    text={`${this.calculatePoints(gig)}/${gig.points}`}
+                                    strokeWidth={2}
+                                    styles={{
+                                        root: {},
+                                        path: {
+                                            stroke: '#f88',
+                                            strokeLinecap: 'butt',
+                                            transition: 'stroke-dashoffset 0.5s ease 0s',
+                                        },
+                                        trail: {
+                                            stroke: '#d6d6d6',
+                                        },
+                                        text: {
+                                            fill: '#f88',
+                                            fontSize: '20px',
+                                        },
+                                    }}
+                                />
                                 <h6 className={classes.cardCategory}>Brownie Points Total Budget</h6>
-                                <div className={classes.icon}>
-                                    <BrowniePoints className={classes.iconRose}/>
-                                </div>
-                                <h3 className={`${classes.cardTitle} ${classes.marginTop30}`}>
-                                    {gig.points}
-                                </h3>
-                                <p className={classes.cardDescription}>
-                                    The budget of {gig.name} is {gig.points} brownie points
-                                </p>
-                                <Button round color="rose">
-                                    {/*TO-DO: Popup for task points allocation view*/}
-                                    View Allocation
+                                <Button round color="rose" onClick={this.editBrownieAllocation.bind(this)}>
+                                    Edit Allocation
                                 </Button>
                             </CardBody>
                         </Card>
