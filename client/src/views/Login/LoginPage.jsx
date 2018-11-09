@@ -82,53 +82,17 @@ class LoginPage extends React.Component {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(loginDetails)
-        }).then(data => {
-            console.log(data)
-            if (data.status !== 200) {
-                NotificationManager.error("Login failed");
-            } else {
-                const {history} = this.props;
-                history.push({
-                    pathname: "/dashboard"
-                });
-            }
         })
-
-
-        /*.then(function(response){ return response.json();
-
-        }).then(function(data) {
-                const items = data;
-                console.log(items);
-                //if (data.adminuser === null) throw Error("Login failed");
-                // else {
-                //     const {history} = this.props;
-                //     history.push({
-                //         pathname: "/dashboard"
-                //     });
-                // }
-        })*/
-
-        /*
-        .then(data => {
-            console.log(data.json());
-            if (data.status !== 200) throw Error("Login failed");
-            else {
-                const {history} = this.props;
-                history.push({
-                    pathname: "/dashboard"
-                });
-            }
-        })
-         */
-
-        /*
-        .then(function(response){ return response.json(); })
-.then(function(data) {
-    const items = data;
-    console.log(items)
-})
-         */
+            .then(loginoutput => loginoutput.json())
+            .then(data => {
+                if (data.adminuser === undefined) NotificationManager.error("Login failed");
+                else {
+                    const {history} = this.props;
+                    history.push({
+                        pathname: "/dashboard"
+                    });
+                }
+            })
     }
 
     handleSubmit(e) {
