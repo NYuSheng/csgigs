@@ -5,7 +5,7 @@ import Wizard from "components/Gigs/Wizard/Wizard";
 import GridContainer from "components/Grid/GridContainer";
 import GridItem from "components/Grid/GridItem";
 import {CreateGigSteps} from "components/Gigs/Wizard/CreateGigSteps/CompiledGigSteps";
-import {NotificationManager, NotificationContainer} from "react-notifications";
+import {NotificationManager} from "react-notifications";
 
 class CreateGig extends React.Component {
     finishButtonClick(step) {

@@ -73,8 +73,6 @@ const style = {
     },
 };
 
-var taskForEdit = {}
-
 class GigDashboard extends React.Component {
     constructor(props) {
         super(props);

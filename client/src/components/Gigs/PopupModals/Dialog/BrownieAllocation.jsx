@@ -1,5 +1,4 @@
 import React from "react";
-import SweetAlert from "react-bootstrap-sweetalert";
 
 // @material-ui/core components
 import withStyles from "@material-ui/core/styles/withStyles";
@@ -22,7 +21,7 @@ import GridItem from "components/Grid/GridItem";
 
 // dependencies
 import Loader from 'react-loader-spinner';
-import {NotificationManager} from "react-notifications";
+// import {NotificationManager} from "react-notifications";
 
 // style sheets
 import notificationsStyle from "assets/jss/material-dashboard-pro-react/views/notificationsStyle.jsx";

@@ -1,5 +1,4 @@
 import React from "react";
-import SweetAlert from "react-bootstrap-sweetalert";
 
 // @material-ui/core components
 import withStyles from "@material-ui/core/styles/withStyles";
