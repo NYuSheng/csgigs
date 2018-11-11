@@ -287,7 +287,7 @@ class Sidebar extends React.Component {
                                                 <ListItem key={key} className={classes.collapseItem}>
                                                     <NavLink to={prop.path} className={navLinkClasses}>
                             <span className={collapseItemMini}>
-                                { (prop.mini) ? prop.mini : <prop.icon /> }
+                                {(prop.mini) ? prop.mini : <prop.icon/>}
                             </span>
                                                         <ListItemText
                                                             primary={prop.name}
@@ -352,13 +352,18 @@ class Sidebar extends React.Component {
                 [classes.whiteAfter]: bgColor === "white"
             });
         var brand = (
-            <div className={logoClasses}>
-                <a href="https://www.creative-tim.com" className={logoMini}>
-                    <img src={logo} alt="logo" className={classes.img}/>
-                </a>
-                <a href="https://www.creative-tim.com" className={logoNormal}>
-                    {logoText}
-                </a>
+            <div className={logoClasses} >
+                <div style={{display: "inline-block", paddingLeft: 50.742}}>
+                    <a href="https://www.credit-suisse.com/sg/en.html" className={logoNormal}>
+                        {logoText}
+                    </a>
+                </div>
+
+                <div style={{display: "inline-block"}} >
+                    <a href="https://www.credit-suisse.com/sg/en.html" className={logoNormal}>
+                        <img src={logo} alt="logo" className={classes.img}/>
+                    </a>
+                </div>
             </div>
         );
         const drawerPaper =

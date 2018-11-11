@@ -11,6 +11,7 @@ import DialogActions from "@material-ui/core/DialogActions";
 
 // @material-ui/icons
 import Close from "@material-ui/icons/Close";
+import Success from "@material-ui/icons/CheckCircle";
 
 // core components
 import Table from "components/Gigs/Table/Table";
@@ -51,6 +52,11 @@ class BrownieAllocation extends React.Component {
 
     validatePointAllocation = (points, inputRefId) => {
         const {tasks} = this.state;
+
+        if (isNaN(points)) {
+            points = 0;
+        }
+
         var result = tasks.find(task => {
             return task.id === inputRefId
         })
@@ -125,6 +131,12 @@ class BrownieAllocation extends React.Component {
 
     closeModal() {
         const {hidePopup} = this.props;
+        const {tasks} = this.state;
+        tasks.forEach((task) => {
+            const editableTableCell = this.cells[`task${task.id}`];
+            if (editableTableCell) editableTableCell.clearState();
+        });
+
         hidePopup("brownieAllocation");
     }
 
@@ -159,8 +171,7 @@ class BrownieAllocation extends React.Component {
                                 {
                                     (status === "working") ?
                                         "Edit Allocations"
-                                        : (status === "success") ?
-                                        "Allocations Edited" : null
+                                        : null
                                 }
                             </h4>
                         </GridItem>
@@ -218,39 +229,42 @@ class BrownieAllocation extends React.Component {
                                 />
                             ) : null
                     }
+                    {
+                        status === "success" ? (
+                            <React.Fragment>
+                                <Success className={classes.icon} style={{height: 100, width: 100, fill: "green"}}/>
+                                <h4 className={classes.modalTitle} style={{fontWeight: "bold"}}>Allocations Edited</h4>
+                            </React.Fragment>
+                        ) : null
+                    }
                 </DialogContent>
-                <DialogActions className={classes.modalFooter}>
-                    <GridContainer>
-                        <GridItem xs={6} sm={6} md={6} lg={6} style={{textAlign: "left"}}>
-                            {
-                                status === "working" ? (
-                                    <h4>Budget: {gig.points} Points</h4>
-                                ) : null
-                            }
-                        </GridItem>
-                        <GridItem xs={6} sm={6} md={6} lg={6} style={{textAlign: "right"}}>
-                            {
-                                status === "working" ? (
+                {
+                    status === "working" ? (
+                        <DialogActions className={classes.modalFooter}>
+                            <GridContainer>
+                                <GridItem xs={6} sm={6} md={6} lg={6} style={{textAlign: "left"}}>
+                                    {
+                                        status === "working" ? (
+                                            <h4 style={{fontWeight: "bold"}}>Budget: {gig.points} Points</h4>
+                                        ) : null
+                                    }
+                                </GridItem>
+                                <GridItem xs={6} sm={6} md={6} lg={6} style={{textAlign: "right"}}>
+
                                     <Button onClick={() => this.confirmAdminAssign()}
                                             className={classes.button + " " + classes.success}
                                             color="success">
                                         Edit
-                                    </Button>) : null
-                            }
-
-                            {
-                                status !== "loading" ? (
+                                    </Button>
                                     <Button onClick={() => this.closeModal()}
                                             className={classes.button + " " + classes.danger}
                                             color="danger">
-                                        {
-                                            status === "working" ? "Cancel" : "Close"
-                                        }
-                                    </Button>) : null
-                            }
-                        </GridItem>
-                    </GridContainer>
-                </DialogActions>
+                                        Cancel
+                                    </Button>
+                                </GridItem>
+                            </GridContainer>
+                        </DialogActions>) : null
+                }
             </Dialog>
         );
     }

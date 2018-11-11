@@ -77,6 +77,7 @@ var dashRoutes = [
     },
 
     {
+        hide: true,
         collapse: true,
         path: "-page",
         name: "Pages",
@@ -85,6 +86,7 @@ var dashRoutes = [
         views: pages
     },
     {
+        hide: true,
         collapse: true,
         path: "/components",
         name: "Components",
@@ -131,6 +133,7 @@ var dashRoutes = [
         ]
     },
     {
+        hide: true,
         collapse: true,
         path: "/forms",
         name: "Forms",
@@ -159,6 +162,7 @@ var dashRoutes = [
         ]
     },
     {
+        hide: true,
         collapse: true,
         path: "/tables",
         name: "Tables",
@@ -186,6 +190,7 @@ var dashRoutes = [
         ]
     },
     {
+        hide: true,
         collapse: true,
         path: "/maps",
         name: "Maps",
@@ -212,9 +217,9 @@ var dashRoutes = [
             }
         ]
     },
-    {path: "/widgets", name: "Widgets", icon: WidgetsIcon, component: Widgets},
-    {path: "/charts", name: "Charts", icon: Timeline, component: Charts},
-    {path: "/calendar", name: "Calendar", icon: DateRange, component: Calendar},
+    {hide: true, path: "/widgets", name: "Widgets", icon: WidgetsIcon, component: Widgets},
+    {hide: true, path: "/charts", name: "Charts", icon: Timeline, component: Charts},
+    {hide: true, path: "/calendar", name: "Calendar", icon: DateRange, component: Calendar},
     //{redirect: true, path: "/", pathTo: "/pages/login", name: "Dashboard"}
     {redirect: true, path: "/", pathTo: "/login", name: "Dashboard"}
 ];

@@ -12,6 +12,7 @@ import DialogActions from "@material-ui/core/DialogActions";
 // @material-ui/icons
 import Cancel from "@material-ui/icons/Cancel";
 import Close from "@material-ui/icons/Close";
+import Success from "@material-ui/icons/CheckCircle";
 
 // core components
 import Card from "components/Card/Card";
@@ -141,8 +142,7 @@ class EditGigAdmins extends React.Component {
                                 {
                                     (status === "working") ?
                                         "Edit Admins"
-                                        : (status === "success") ?
-                                        "Admins Edited" : null
+                                        : null
                                 }
                             </h4>
                         </GridItem>
@@ -206,29 +206,30 @@ class EditGigAdmins extends React.Component {
                                 </Card>
                             ) : null
                     }
-                </DialogContent>
-                <DialogActions className={classes.modalFooter} style={{paddingTop: 15}}>
                     {
-                        status === "working" ? (
+                        status === "success" ? (
+                            <React.Fragment>
+                                <Success className={classes.icon} style={{height: 100, width: 100, fill: "green"}}/>
+                                <h4 className={classes.modalTitle} style={{fontWeight: "bold"}}>Admins Edited</h4>
+                            </React.Fragment>
+                        ) : null
+                    }
+                </DialogContent>
+                {
+                    status === "working" ? (
+                        <DialogActions className={classes.modalFooter} style={{paddingTop: 15}}>
                             <Button onClick={() => this.confirmAdminAssign()}
                                     className={classes.button + " " + classes.success}
                                     color="success">
                                 Edit
-                            </Button>) : null
-                    }
-
-                    {
-                        status !== "loading" ? (
+                            </Button>
                             <Button onClick={() => this.closeModal()}
                                     className={classes.button + " " + classes.danger}
                                     color="danger">
-                                {
-                                    status === "working" ? "Cancel" : "Close"
-                                }
-                            </Button>) : null
-                    }
-
-                </DialogActions>
+                                Cancel
+                            </Button>
+                        </DialogActions>) : null
+                }
             </Dialog>
         );
     }

@@ -19,6 +19,10 @@ class EditableTableCell extends React.Component {
     }
 
     componentDidMount() {
+        this.clearState();
+    }
+
+    clearState() {
         this.setState({
             cellValueState: "success",
             edit: false
@@ -83,7 +87,7 @@ class EditableTableCell extends React.Component {
                             inputProps={{
                                 onBlur: this.disableEdit.bind(this),
                                 style: {width: 100},
-                                defaultValue: cellValue,
+                                value: (isNaN(cellValue)) ? 0 : cellValue,
                                 onChange: event => this.onChangeCellValue(event)
                             }}
                             inputType="number"

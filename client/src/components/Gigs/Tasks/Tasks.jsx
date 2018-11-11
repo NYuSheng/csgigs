@@ -26,13 +26,13 @@ class Tasks extends React.Component {
                 <TableBody>
                     {tasksIndexes.map(value => (
                         <TableRow key={value} className={classes.tableRow}>
-                            <TableCell className={classes.tableCell}>
+                            <TableCell className={classes.tableCell} style={{width: "65%"}}>
                                 {tasks[value].taskname}
                             </TableCell>
-                            <TableCell className={classes.tableCell}>
+                            <TableCell className={classes.tableCell} style={{width: "20%"}}>
                                 {tasks[value].status}
                             </TableCell>
-                            <TableCell className={classes.tableActions}>
+                            <TableCell className={classes.tableActions} style={{width: "15%", textAlign: "center"}}>
                                 <Tooltip
                                     id="tooltip-top"
                                     title="Show Assigned"
