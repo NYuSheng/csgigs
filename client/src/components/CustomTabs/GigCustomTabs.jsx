@@ -21,107 +21,108 @@ import Tab from "@material-ui/core/Tab";
 import customTabsStyle from "assets/jss/material-dashboard-pro-react/components/customTabsStyle.jsx";
 
 class GigCustomTabs extends React.Component {
-  state = {
-    value: 0
-  };
+    state = {
+        value: 0
+    };
 
-  handleChange = (event, value) => {
-    this.setState({ value });
-  };
+    handleChange = (event, value) => {
+        this.setState({value});
+    };
 
-  render() {
-    const {
-      classes,
-      headerColor,
-      plainTabs,
-      tabs,
-      title,
-      rtlActive,
-      addContent
-    } = this.props;
-    const cardTitle = classNames({
-      [classes.cardTitle]: true,
-      [classes.cardTitleRTL]: rtlActive
-    });
+    render() {
+        const {
+            classes,
+            headerColor,
+            plainTabs,
+            tabs,
+            title,
+            rtlActive,
+            addContent
+        } = this.props;
+        const cardTitle = classNames({
+            [classes.cardTitle]: true,
+            [classes.cardTitleRTL]: rtlActive
+        });
 
-    return (
-      <Card plain={plainTabs}>
-        <CardHeader color={headerColor} plain={plainTabs}>
-            <GridContainer>
-                <GridItem xs={10} sm={10} md={10} lg={10}>
-                    <div className={cardTitle}>
-                        {title}
-                    </div>
-                    <Tabs
-                        value={this.state.value}
-                        onChange={this.handleChange}
-                        classes={{
-                            root: classes.tabsRoot,
-                            indicator: classes.displayNone
-                        }}
-                    >
-                        {tabs.map((prop, key) => {
-                            var icon = {};
-                            if (prop.tabIcon) {
-                                icon = {
-                                    icon: <prop.tabIcon />
-                                };
-                            }
-                            return (
-                                <Tab
-                                    classes={{
-                                        root: classes.tabRootButton,
-                                        labelContainer: classes.tabLabelContainer,
-                                        label: classes.tabLabel,
-                                        selected: classes.tabSelected,
-                                        wrapper: classes.tabWrapper
-                                    }}
-                                    key={key}
-                                    label={prop.tabName}
-                                    {...icon}
-                                />
-                            );
-                        })}
-                    </Tabs>
-                </GridItem>
-                <GridItem xs={2} sm={2} md={2} lg={2} style={{textAlign: 'right'}}>
-                    <Button onClick={addContent}>Add</Button>
-                </GridItem>
-            </GridContainer>
-        </CardHeader>
-        <CardBody>
-          {tabs.map((prop, key) => {
-            if (key === this.state.value) {
-              return <div key={key}>{prop.tabContent}</div>;
-            }
-            return null;
-          })}
-        </CardBody>
-      </Card>
-    );
-  }
+        return (
+            <Card plain={plainTabs}>
+                <CardHeader color={headerColor} plain={plainTabs}>
+                    <GridContainer>
+                        <GridItem xs={9} sm={9} md={9} lg={9}>
+                            <div className={cardTitle}>
+                                {title}
+                            </div>
+                            <Tabs
+                                value={this.state.value}
+                                onChange={this.handleChange}
+                                classes={{
+                                    root: classes.tabsRoot,
+                                    indicator: classes.displayNone
+                                }}
+                            >
+                                {tabs.map((prop, key) => {
+                                    var icon = {};
+                                    if (prop.tabIcon) {
+                                        icon = {
+                                            icon: <prop.tabIcon/>
+                                        };
+                                    }
+                                    return (
+                                        <Tab
+                                            classes={{
+                                                root: classes.tabRootButton,
+                                                labelContainer: classes.tabLabelContainer,
+                                                label: classes.tabLabel,
+                                                selected: classes.tabSelected,
+                                                wrapper: classes.tabWrapper
+                                            }}
+                                            key={key}
+                                            label={prop.tabName}
+                                            {...icon}
+                                        />
+                                    );
+                                })}
+                            </Tabs>
+                        </GridItem>
+                        <GridItem xs={3} sm={3} md={3} lg={3} style={{textAlign: 'right'}}>
+                            <Button onClick={addContent}>Add</Button>
+                        </GridItem>
+                    </GridContainer>
+                </CardHeader>
+                <CardBody>
+                    {tabs.map((prop, key) => {
+                        if (key === this.state.value) {
+                            return <div key={key}>{prop.tabContent}</div>;
+                        }
+                        return null;
+                    })}
+                </CardBody>
+            </Card>
+        );
+    }
 }
 
 GigCustomTabs.propTypes = {
-  classes: PropTypes.object.isRequired,
-  headerColor: PropTypes.oneOf([
-    "warning",
-    "success",
-    "danger",
-    "info",
-    "primary",
-    "rose"
-  ]),
-  title: PropTypes.string,
-  tabs: PropTypes.arrayOf(
-    PropTypes.shape({
-      tabName: PropTypes.string.isRequired,
-      tabIcon: PropTypes.func,
-      tabContent: PropTypes.node.isRequired
-    })
-  ),
-  rtlActive: PropTypes.bool,
-  plainTabs: PropTypes.bool
+    classes: PropTypes.object.isRequired,
+    headerColor: PropTypes.oneOf([
+        "warning",
+        "success",
+        "danger",
+        "info",
+        "primary",
+        "rose",
+        "teal"
+    ]),
+    title: PropTypes.string,
+    tabs: PropTypes.arrayOf(
+        PropTypes.shape({
+            tabName: PropTypes.string.isRequired,
+            tabIcon: PropTypes.func,
+            tabContent: PropTypes.node.isRequired
+        })
+    ),
+    rtlActive: PropTypes.bool,
+    plainTabs: PropTypes.bool
 };
 
 export default withStyles(customTabsStyle)(GigCustomTabs);

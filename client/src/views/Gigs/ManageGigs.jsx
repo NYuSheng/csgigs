@@ -174,6 +174,92 @@ class ManageGigs extends React.Component {
                     points: 100,
                     assignees: []
                 }
+            ],
+            participants: [
+                {
+                    id: "team_id1",
+                    name: "booya",
+                    members: [
+                        {
+                            id: 123,
+                            name: "Yu Sheng"
+                        },
+                        {
+                            id: 234,
+                            name: "Ernest"
+                        }
+                    ]
+                },
+                {
+                    id: "team_id2",
+                    name: "booya",
+                    members: [
+                        {
+                            id: 123,
+                            name: "Yu Sheng"
+                        },
+                        {
+                            id: 234,
+                            name: "Ernest"
+                        }
+                    ]
+                },
+                {
+                    id: "team_id3",
+                    name: "booya",
+                    members: [
+                        {
+                            id: 123,
+                            name: "Yu Sheng"
+                        },
+                        {
+                            id: 234,
+                            name: "Ernest"
+                        }
+                    ]
+                },
+                {
+                    id: "team_id4",
+                    name: "booya",
+                    members: [
+                        {
+                            id: 123,
+                            name: "Yu Sheng"
+                        },
+                        {
+                            id: 234,
+                            name: "Ernest"
+                        }
+                    ]
+                },
+                {
+                    id: "team_id5",
+                    name: "booya",
+                    members: [
+                        {
+                            id: 123,
+                            name: "Yu Sheng"
+                        },
+                        {
+                            id: 234,
+                            name: "Ernest"
+                        }
+                    ]
+                },
+                {
+                    id: "team_id6",
+                    name: "booya",
+                    members: [
+                        {
+                            id: 123,
+                            name: "Yu Sheng"
+                        },
+                        {
+                            id: 234,
+                            name: "Ernest"
+                        }
+                    ]
+                }
             ]
         });
         this.setState({

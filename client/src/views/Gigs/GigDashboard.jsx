@@ -8,12 +8,9 @@ import TableCell from "@material-ui/core/TableCell";
 import KeyboardArrowLeft from "@material-ui/icons/KeyboardArrowLeft";
 import BrowniePoints from "@material-ui/icons/AttachMoney";
 import Status from "@material-ui/icons/Timeline";
-import Icon from "@material-ui/core/Icon";
 import Chat from "@material-ui/icons/Chat";
 import People from "@material-ui/icons/People";
-import BugReport from "@material-ui/icons/BugReport";
-import Code from "@material-ui/icons/Code";
-import Cloud from "@material-ui/icons/Cloud";
+import Participants from "@material-ui/icons/PeopleOutline";
 
 // core components
 import Card from "components/Card/Card";
@@ -27,12 +24,14 @@ import GigTable from "components/Gigs/Table/Table";
 import GridContainer from "components/Grid/GridContainer";
 import GridItem from "components/Grid/GridItem";
 import Button from "components/CustomButtons/Button";
-import EditTask from "components/Gigs/PopupModals/EditTask";
-import RemoveTask from "components/Gigs/PopupModals/RemoveTask";
-import AssignUsers from "components/Gigs/PopupModals/AssignUsers";
-import EditGigAdmins from "components/Gigs/PopupModals/EditGigAdmins";
-import AddTask from "components/Gigs/PopupModals/AddTask";
-import BrownieAllocation from "components/Gigs/PopupModals/BrownieAllocation";
+import EditTask from "components/Gigs/PopupModals/SweetAlert/EditTask";
+import RemoveTask from "components/Gigs/PopupModals/SweetAlert/RemoveTask";
+import AssignUsers from "components/Gigs/PopupModals/SweetAlert/AssignUsers";
+import EditGigParticipants from "components/Gigs/PopupModals/SweetAlert/Participants";
+import EditGigAdmins from "components/Gigs/PopupModals/Dialog/EditGigAdmins";
+import AddTask from "components/Gigs/PopupModals/Dialog/AddTask";
+import BrownieAllocation from "components/Gigs/PopupModals/Dialog/BrownieAllocation";
+import Table from "components/Gigs/Table/Table";
 
 // dependencies
 import CircularProgressbar from 'react-circular-progressbar';
@@ -72,25 +71,29 @@ const style = {
     iconRose: {
         color: roseColor
     },
-
 };
 
-
+var taskForEdit = {}
 
 class GigDashboard extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            editTask: null,
             removeTask: null,
             assignUsers: null,
+            editGigParticipants: null,
+            editTask: false,
             editGigAdmins: false,
             addTask: false,
-            brownieAllocation: false
+            brownieAllocation: false,
+            Draft: "info",
+            Active: "warning",
+            Completed: "success",
+            Cancelled: "danger"
         };
     }
 
-    setupTableCells(admin) {
+    setupAdminTableCells(admin) {
         const {classes} = this.props;
         const tableCellClasses = classes.tableCell;
         return (
@@ -100,7 +103,25 @@ class GigDashboard extends React.Component {
         );
     }
 
+    setupParticipantTableCells(group) {
+        const {classes} = this.props;
+        const tableCellClasses = classes.tableCell;
+        return (
+            <TableCell colSpan="1" className={tableCellClasses}>
+                {group.name}
+            </TableCell>
+        );
+    }
+
     returnToHomepage() {
+        const {history} = this.props;
+        history.push({
+            pathname: '/gigs/manage'
+        });
+    }
+
+    completeGig() {
+        // TO-DO: Complete the gig
         const {history} = this.props;
         history.push({
             pathname: '/gigs/manage'
@@ -146,6 +167,16 @@ class GigDashboard extends React.Component {
     editGigAdmins() {
         this.setState({
             editGigAdmins: true
+        })
+    }
+
+    editGigParticipants(group){
+        this.setState({
+            editGigParticipants: (
+                <EditGigParticipants hidePopup={this.hidePopup.bind(this)}
+                                     participants={group}
+                />
+            )
         })
     }
 
@@ -218,6 +249,7 @@ class GigDashboard extends React.Component {
             assignUsers,
             removeTask,
             editTask,
+            editGigParticipants,
             editGigAdmins,
             addTask,
             brownieAllocation
@@ -229,13 +261,22 @@ class GigDashboard extends React.Component {
                 {assignUsers}
                 {removeTask}
                 {editTask}
+                {editGigParticipants}
                 <AddTask modalOpen={addTask} hideTask={this.hidePopup.bind(this)}/>
                 <EditGigAdmins modalOpen={editGigAdmins} hidePopup={this.hidePopup.bind(this)} admins={gig.admins}/>
                 <BrownieAllocation modalOpen={brownieAllocation} hidePopup={this.hidePopup.bind(this)} gig={gig}/>
                 <GridContainer justify="center">
-                    <GridItem xs={12}>
-                        <Button className={classes.marginRight} onClick={this.returnToHomepage.bind(this)}>
+                    <GridItem xs={6}>
+                        <Button className={classes.marginRight} onClick={this.completeGig.bind(this)}>
                             <KeyboardArrowLeft className={classes.icons}/> Back
+                        </Button>
+                    </GridItem>
+                    <GridItem xs={6} style={{textAlign: "right"}}>
+                        <Button className={classes.marginRight}
+                                onClick={this.returnToHomepage.bind(this)}
+                                color="success"
+                        >
+                            Complete
                         </Button>
                     </GridItem>
                     <GridItem xs={12} sm={12} md={8} lg={8}>
@@ -243,7 +284,7 @@ class GigDashboard extends React.Component {
                             <GridItem xs={12} sm={12} md={6} lg={6}>
                                 <Card>
                                     <CardHeader color="warning" stats icon>
-                                        <CardIcon color="warning">
+                                        <CardIcon color={this.state[gig.status]}>
                                             <Status/>
                                         </CardIcon>
                                         <p className={classes.cardCategory}>Gigs Status</p>
@@ -256,8 +297,8 @@ class GigDashboard extends React.Component {
                             </GridItem>
                             <GridItem xs={12} sm={12} md={6} lg={6}>
                                 <Card>
-                                    <CardHeader color="warning" stats icon>
-                                        <CardIcon color="warning">
+                                    <CardHeader color="chat" stats icon>
+                                        <CardIcon color="chat">
                                             <Chat/>
                                         </CardIcon>
                                         <p className={classes.cardCategory}>Gigs Channel</p>
@@ -275,13 +316,13 @@ class GigDashboard extends React.Component {
                                 <Card>
                                     <CardHeader color="rose" icon>
                                         <GridContainer>
-                                            <GridItem xs={10} sm={10} md={10} lg={10}>
+                                            <GridItem xs={9} sm={9} md={9} lg={9}>
                                                 <CardIcon color="rose">
                                                     <People/>
                                                 </CardIcon>
                                                 <h4 className={classes.cardCategory}>Gig Admin(s)</h4>
                                             </GridItem>
-                                            <GridItem xs={2} sm={2} md={2} lg={2} style={{textAlign: 'right'}}>
+                                            <GridItem xs={3} sm={3} md={3} lg={3} style={{textAlign: 'right'}}>
                                                 {/*Edit admins (only super admin)*/}
                                                 <Button onClick={this.editGigAdmins.bind(this)}>Edit</Button>
                                             </GridItem>
@@ -289,10 +330,8 @@ class GigDashboard extends React.Component {
                                     </CardHeader>
                                     <CardBody>
                                         <GigTable
-                                            hover
                                             tableData={gig.admins}
-                                            setupTableCells={this.setupTableCells.bind(this)}
-                                            handleTableRowOnClick={null}
+                                            setupTableCells={this.setupAdminTableCells.bind(this)}
                                         />
                                     </CardBody>
                                 </Card>
@@ -315,7 +354,7 @@ class GigDashboard extends React.Component {
                                     styles={{
                                         root: {},
                                         path: {
-                                            stroke: '#f88',
+                                            stroke: '#ff9800',
                                             strokeLinecap: 'butt',
                                             transition: 'stroke-dashoffset 0.5s ease 0s',
                                         },
@@ -323,13 +362,13 @@ class GigDashboard extends React.Component {
                                             stroke: '#d6d6d6',
                                         },
                                         text: {
-                                            fill: '#f88',
+                                            fill: '#ff9800',
                                             fontSize: '20px',
                                         },
                                     }}
                                 />
                                 <h6 className={classes.cardCategory}>Brownie Points Total Budget</h6>
-                                <Button round color="rose" onClick={this.editBrownieAllocation.bind(this)}>
+                                <Button round color="warning" onClick={this.editBrownieAllocation.bind(this)}>
                                     Edit Allocation
                                 </Button>
                             </CardBody>
@@ -337,28 +376,30 @@ class GigDashboard extends React.Component {
                     </GridItem>
                     <GridItem xs={12} sm={12} md={4} lg={4}>
                         <Card pricing>
+                            <CardHeader color="brown" stats icon>
+                                <CardIcon color="brown">
+                                    <Participants/>
+                                </CardIcon>
+                                <p className={classes.cardCategory} style={{fontSize: 20, marginTop: 15}}>Gig Participants</p>
+                            </CardHeader>
                             <CardBody pricing>
-                                <h6 className={classes.cardCategory}>Brownie Points Total Budget</h6>
-                                <div className={classes.icon}>
-                                    <BrowniePoints className={classes.iconRose}/>
-                                </div>
-                                <h3 className={`${classes.cardTitle} ${classes.marginTop30}`}>
-                                    {gig.points}
-                                </h3>
-                                <p className={classes.cardDescription}>
-                                    INSERT PARTICIPANTS HERE
-                                </p>
-                                <Button round color="rose">
-                                    {/*TO-DO: Popup for task points allocation view*/}
-                                    View Allocation
-                                </Button>
+                                <Table
+                                    tableHeight="250px"
+                                    hover
+                                    tableHeaderColor="primary"
+                                    tableData={gig.participants}
+                                    tableFooter="false"
+                                    notFoundMessage="No participants found"
+                                    setupTableCells={this.setupParticipantTableCells.bind(this)}
+                                    handleTableRowOnClick={this.editGigParticipants.bind(this)}
+                                />
                             </CardBody>
                         </Card>
                     </GridItem>
                     <GridItem xs={12} sm={12} md={8} lg={8}>
                         <GigCustomTabs
                             title="Tasks:"
-                            headerColor="rose"
+                            headerColor="teal"
                             tabs={this.organizeTabContent(gig.tasks)}
                             addContent={this.addTask.bind(this)}
                         />

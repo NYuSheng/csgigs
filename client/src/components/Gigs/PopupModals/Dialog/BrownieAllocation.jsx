@@ -44,7 +44,7 @@ class BrownieAllocation extends React.Component {
     componentWillReceiveProps() {
         const {gig} = this.props;
         this.setState({
-            tasks: gig.tasks,
+            tasks: JSON.parse(JSON.stringify(gig.tasks)),
             status: "working"
         })
         this.cells = {}
@@ -155,8 +155,8 @@ class BrownieAllocation extends React.Component {
                     disableTypography
                 >
                     <GridContainer className={classes.modalHeader}>
-                        <GridItem xs={6} sm={6} md={6} lg={6}>
-                            <h4 className={classes.modalTitle}>
+                        <GridItem xs={6} sm={6} md={6} lg={6} style={{textAlign: "left"}}>
+                            <h4 className={classes.modalTitle} style={{fontWeight: "bold"}}>
                                 {
                                     (status === "working") ?
                                         "Edit Allocations"
@@ -186,7 +186,7 @@ class BrownieAllocation extends React.Component {
                 <DialogContent
                     id="classic-modal-slide-description"
                     className={classes.modalBody}
-                    style={{paddingBottom: 35, paddingTop: 0, width: 500}}
+                    style={{padding: 35, paddingTop: 0, width: 490}}
                 >
                     {
                         status === "loading" ?

@@ -58,7 +58,7 @@ class GigsTable extends React.Component {
                 onClick={() => {
                     (handleTableRowOnClick) ? handleTableRowOnClick(prop) : null
                 }}
-                style={{'cursor': 'pointer'}}
+                style={{'cursor': (handleTableRowOnClick) ? 'pointer' : 'auto'}}
             >
                 {setupTableCells(prop)}
             </TableRow>

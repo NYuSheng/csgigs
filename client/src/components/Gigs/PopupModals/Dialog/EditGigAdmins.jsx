@@ -137,8 +137,8 @@ class EditGigAdmins extends React.Component {
                     disableTypography
                 >
                     <GridContainer className={classes.modalHeader}>
-                        <GridItem xs={6} sm={6} md={6} lg={6}>
-                            <h4 className={classes.modalTitle}>
+                        <GridItem xs={6} sm={6} md={6} lg={6} style={{textAlign: "left"}}>
+                            <h4 className={classes.modalTitle} style={{fontWeight: "bold"}}>
                                 {
                                     (status === "working") ?
                                         "Edit Admins"
@@ -168,7 +168,7 @@ class EditGigAdmins extends React.Component {
                 <DialogContent
                     id="classic-modal-slide-description"
                     className={classes.modalBody}
-                    style={{paddingBottom: 35, paddingTop: 0, width: 450}}
+                    style={{paddingBottom: 35, paddingTop: 0, width: 490}}
                 >
                     {
                         status === "loading" ?
@@ -231,47 +231,6 @@ class EditGigAdmins extends React.Component {
 
                 </DialogActions>
             </Dialog>
-            // <SweetAlert
-            //     success={(status === "success")}
-            //     style={{
-            //         display: "block",
-            //         overflow: "visible"
-            //     }}
-            //     title={(status === "working") ? "Edit Admins" : (status === "success") ? "Admins Edited" : false}
-            //     onConfirm={() => this.confirmAdminAssign()}
-            //     onCancel={() => {
-            //         if (status !== "loading") {
-            //             hidePopup("editGigAdmins")
-            //         }
-            //     }}
-            //     confirmBtnCssClass={
-            //         classes.button + " " + classes.success
-            //     }
-            //     cancelBtnCssClass={
-            //         classes.button + " " + classes.danger
-            //     }
-            //     cancelBtnText="Cancel"
-            //     showCancel={(!status.match("loading|success"))}
-            //     showConfirm={(status !== "loading")}
-            // >
-            //     {
-            //         status === "loading" ?
-            //             (
-            //                 <Loader
-            //                     type="ThreeDots"
-            //                     color="black"
-            //                     height="100"
-            //                     width="100"
-            //                 />
-            //             ) : null
-            //     }
-            //     {
-            //         status === "working" ?
-            //             (
-            //
-            //             ) : null
-            //     }
-            // </SweetAlert>
         );
     }
 
