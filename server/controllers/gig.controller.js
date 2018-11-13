@@ -58,7 +58,6 @@ exports.gig_details = asyncMiddleware(async (req, res, next) => {
     });
 });
 
-//input ID
 exports.gig_update = function (req, res, next) {
     Gig.findByIdAndUpdate(req.params.name, {$set: req.body}, function (err, gig) {
         if (err) return next(err);
