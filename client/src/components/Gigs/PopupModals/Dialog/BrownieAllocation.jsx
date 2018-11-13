@@ -196,7 +196,7 @@ class BrownieAllocation extends React.Component {
                 <DialogContent
                     id="classic-modal-slide-description"
                     className={classes.modalBody}
-                    style={{padding: 35, paddingTop: 0, width: 490}}
+                    style={{padding: 35, paddingTop: 0, width: 500}}
                 >
                     {
                         status === "loading" ?
@@ -254,7 +254,7 @@ class BrownieAllocation extends React.Component {
                                     <Button onClick={() => this.confirmAdminAssign()}
                                             className={classes.button + " " + classes.success}
                                             color="success">
-                                        Edit
+                                        Save
                                     </Button>
                                     <Button onClick={() => this.closeModal()}
                                             className={classes.button + " " + classes.danger}

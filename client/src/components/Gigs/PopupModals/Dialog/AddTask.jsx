@@ -179,7 +179,7 @@ class AddTask extends React.Component {
                 <DialogContent
                     id="classic-modal-slide-description"
                     className={classes.modalBody}
-                    style={{paddingBottom: 35, paddingTop: 0, width: 490}}
+                    style={{paddingBottom: 35, paddingTop: 0, width: 500}}
                 >
                     {
                         status === "loading" ?

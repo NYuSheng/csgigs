@@ -69,10 +69,10 @@ class RemoveTask extends React.Component {
                 }}
                 confirmBtnCssClass={classes.button + " " + classes.success}
                 cancelBtnCssClass={classes.button + " " + classes.danger}
-                confirmBtnText="Remove"
+                confirmBtnText="Ok"
                 cancelBtnText="Cancel"
-                showCancel={status === "working" ? true : false}
-                showConfirm={status === "working" ? true : false}
+                showCancel={status === "working"}
+                showConfirm={status !== "loading"}
             >
                 {
                     status === "loading" ?
