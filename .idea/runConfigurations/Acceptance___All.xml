@@ -1,0 +1,5 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Acceptance - All" type="NodeJSConfigurationType" factoryName="Node.js" application-parameters="-s ./features/step_definitions -p ./features/page_objects -o ./features/shared_objects -r ./features/reports" path-to-js-file="node_modules/selenium-cucumber-js/index.js" working-dir="$PROJECT_DIR$/client">
+    <method />
+  </configuration>
+</component>
