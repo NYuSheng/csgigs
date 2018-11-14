@@ -61,6 +61,7 @@
     "prettier": "1.14.3"
   },
   "devDependencies": {
-    "selenium-cucumber-js": "^1.6.2"
+    "selenium-cucumber-js": "^1.6.2",
+    "selenium-webdriver": "^4.0.0-alpha.1"
   }
 }
