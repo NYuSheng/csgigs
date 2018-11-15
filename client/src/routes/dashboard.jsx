@@ -63,7 +63,7 @@ var pages = [
 var dashRoutes = [
     {
         path: "/dashboard",
-        name: "Dashboard",
+        name: "Leaderboard",
         icon: DashboardIcon,
         component: Dashboard
     },

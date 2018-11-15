@@ -112,97 +112,97 @@ class Sidebar extends React.Component {
         const caret = classes.caret;
         const collapseItemMini = classes.collapseItemMini;
         const photo = classes.photo;
-        var user = (
-            <div className={userWrapperClass}>
-                <div className={photo}>
-                    <img src={avatar} className={classes.avatarImg} alt="..."/>
-                </div>
-                <List className={classes.list}>
-                    <ListItem className={classes.item + " " + classes.userItem}>
-                        <NavLink
-                            to={"#"}
-                            className={classes.itemLink + " " + classes.userCollapseButton}
-                            onClick={(e) => {
-                                e.preventDefault();
-                                this.openCollapse("openAvatar");
-                            }}
-                        >
-                            <ListItemText
-                                primary="Tania Andrew"
-                                secondary={
-                                    <b
-                                        className={
-                                            caret +
-                                            " " +
-                                            classes.userCaret +
-                                            " " +
-                                            (this.state.openAvatar ? classes.caretActive : "")
-                                        }
-                                    />
-                                }
-                                disableTypography={true}
-                                className={itemText + " " + classes.userItemText}
-                            />
-                        </NavLink>
-                        <Collapse in={this.state.openAvatar} unmountOnExit>
-                            <List className={classes.list + " " + classes.collapseList}>
-                                <ListItem className={classes.collapseItem}>
-                                    <NavLink
-                                        to="#"
-                                        className={
-                                            classes.itemLink + " " + classes.userCollapseLinks
-                                        }
-                                    >
-                    <span className={collapseItemMini}>
-                      MP
-                    </span>
-                                        <ListItemText
-                                            primary="My Profile"
-                                            disableTypography={true}
-                                            className={collapseItemText}
-                                        />
-                                    </NavLink>
-                                </ListItem>
-                                <ListItem className={classes.collapseItem}>
-                                    <NavLink
-                                        to="#"
-                                        className={
-                                            classes.itemLink + " " + classes.userCollapseLinks
-                                        }
-                                    >
-                    <span className={collapseItemMini}>
-                      EP
-                    </span>
-                                        <ListItemText
-                                            primary="Edit Profile"
-                                            disableTypography={true}
-                                            className={collapseItemText}
-                                        />
-                                    </NavLink>
-                                </ListItem>
-                                <ListItem className={classes.collapseItem}>
-                                    <NavLink
-                                        to="#"
-                                        className={
-                                            classes.itemLink + " " + classes.userCollapseLinks
-                                        }
-                                    >
-                    <span className={collapseItemMini}>
-                      S
-                    </span>
-                                        <ListItemText
-                                            primary="Settings"
-                                            disableTypography={true}
-                                            className={collapseItemText}
-                                        />
-                                    </NavLink>
-                                </ListItem>
-                            </List>
-                        </Collapse>
-                    </ListItem>
-                </List>
-            </div>
-        );
+        // var user = (
+        //         //     <div className={userWrapperClass}>
+        //         //         <div className={photo}>
+        //         //             <img src={avatar} className={classes.avatarImg} alt="..."/>
+        //         //         </div>
+        //         //         <List className={classes.list}>
+        //         //             <ListItem className={classes.item + " " + classes.userItem}>
+        //         //                 <NavLink
+        //         //                     to={"#"}
+        //         //                     className={classes.itemLink + " " + classes.userCollapseButton}
+        //         //                     onClick={(e) => {
+        //         //                         e.preventDefault();
+        //         //                         this.openCollapse("openAvatar");
+        //         //                     }}
+        //         //                 >
+        //         //                     <ListItemText
+        //         //                         primary="Tania Andrew"
+        //         //                         secondary={
+        //         //                             <b
+        //         //                                 className={
+        //         //                                     caret +
+        //         //                                     " " +
+        //         //                                     classes.userCaret +
+        //         //                                     " " +
+        //         //                                     (this.state.openAvatar ? classes.caretActive : "")
+        //         //                                 }
+        //         //                             />
+        //         //                         }
+        //         //                         disableTypography={true}
+        //         //                         className={itemText + " " + classes.userItemText}
+        //         //                     />
+        //         //                 </NavLink>
+        //         //                 <Collapse in={this.state.openAvatar} unmountOnExit>
+        //         //                     <List className={classes.list + " " + classes.collapseList}>
+        //         //                         <ListItem className={classes.collapseItem}>
+        //         //                             <NavLink
+        //         //                                 to="#"
+        //         //                                 className={
+        //         //                                     classes.itemLink + " " + classes.userCollapseLinks
+        //         //                                 }
+        //         //                             >
+        //         //             <span className={collapseItemMini}>
+        //         //               MP
+        //         //             </span>
+        //         //                                 <ListItemText
+        //         //                                     primary="My Profile"
+        //         //                                     disableTypography={true}
+        //         //                                     className={collapseItemText}
+        //         //                                 />
+        //         //                             </NavLink>
+        //         //                         </ListItem>
+        //         //                         <ListItem className={classes.collapseItem}>
+        //         //                             <NavLink
+        //         //                                 to="#"
+        //         //                                 className={
+        //         //                                     classes.itemLink + " " + classes.userCollapseLinks
+        //         //                                 }
+        //         //                             >
+        //         //             <span className={collapseItemMini}>
+        //         //               EP
+        //         //             </span>
+        //         //                                 <ListItemText
+        //         //                                     primary="Edit Profile"
+        //         //                                     disableTypography={true}
+        //         //                                     className={collapseItemText}
+        //         //                                 />
+        //         //                             </NavLink>
+        //         //                         </ListItem>
+        //         //                         <ListItem className={classes.collapseItem}>
+        //         //                             <NavLink
+        //         //                                 to="#"
+        //         //                                 className={
+        //         //                                     classes.itemLink + " " + classes.userCollapseLinks
+        //         //                                 }
+        //         //                             >
+        //         //             <span className={collapseItemMini}>
+        //         //               S
+        //         //             </span>
+        //         //                                 <ListItemText
+        //         //                                     primary="Settings"
+        //         //                                     disableTypography={true}
+        //         //                                     className={collapseItemText}
+        //         //                                 />
+        //         //                             </NavLink>
+        //         //                         </ListItem>
+        //         //                     </List>
+        //         //                 </Collapse>
+        //         //             </ListItem>
+        //         //         </List>
+        //         //     </div>
+        //         // );
         var links = (
             <List className={classes.list}>
                 {routes.map((prop, key) => {
@@ -399,7 +399,7 @@ class Sidebar extends React.Component {
                         {brand}
                         <SidebarWrapper
                             className={sidebarWrapper}
-                            user={user}
+                            // user={user}
                             headerLinks={<HeaderLinks rtlActive={rtlActive}/>}
                             links={links}
                         />
@@ -425,7 +425,7 @@ class Sidebar extends React.Component {
                         {brand}
                         <SidebarWrapper
                             className={sidebarWrapper}
-                            user={user}
+                            // user={user}
                             links={links}
                         />
                         {image !== undefined ? (
