@@ -111,7 +111,7 @@ class GigsTable extends React.Component {
                         </TableHead>
                     ) : null}
                     <TableBody>
-                        {tableData.length ?
+                        {tableData && tableData.length ?
                             (
                                 tableFooter === "true" ? (
                                     tableData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((prop, key) => {

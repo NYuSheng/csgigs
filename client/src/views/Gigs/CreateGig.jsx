@@ -1,16 +1,24 @@
 import React from "react";
 
-// @material-ui/core components
+// core components
 import Wizard from "components/Gigs/Wizard/Wizard";
 import GridContainer from "components/Grid/GridContainer";
 import GridItem from "components/Grid/GridItem";
+import CreateAGig from "components/Gigs/PopupModals/SweetAlert/CreateAGig";
 import {CreateGigSteps} from "components/Gigs/Wizard/CreateGigSteps/CompiledGigSteps";
 import {NotificationManager} from "react-notifications";
 
 class CreateGig extends React.Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            createGigSuccess: null,
+        };
+    }
+
     finishButtonClick(step) {
         const {history} = this.props;
-        console.log(step);
         fetch('/admin-ui/gigs/create', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
@@ -25,37 +33,42 @@ class CreateGig extends React.Component {
                 data.json().then(json =>{
                     NotificationManager.error(json.error.errmsg);
                 });
-                
             } else {
-                //If success
-                //Redirect to gigs individual dashboard
-                
-                // data.json().then(json =>{
-                //     history.push({
-                //         headername: `${json.gig.name}`,
-                //         pathname: `/gigs/${json.gig.name}`,
-                //         state: {
-                //             gig: json.gig
-                //         }
-                //     });
-                // });
+                data.json().then(json =>{
+                    this.createGigSuccess(json.gig);
+                });
             }
         });
     }
 
+    createGigSuccess(gig) {
+        this.setState({
+            createGigSuccess: (
+                <CreateAGig {...this.props}
+                            gig={gig}
+                />
+            )
+        })
+    }
+
     render() {
+        const {createGigSuccess, wizard} = this.state;
+
         return (
-            <GridContainer justify="center">
-                <GridItem xs={12} sm={8}>
-                    <Wizard
-                        validate
-                        steps={CreateGigSteps}
-                        title="Create a Gig"
-                        subtitle="Please fill in the below information to create a gig."
-                        finishButtonClick={this.finishButtonClick.bind(this)}
-                    />
-                </GridItem>
-            </GridContainer>
+            <div>
+                {createGigSuccess}
+                <GridContainer justify="center">
+                    <GridItem xs={12} sm={8}>
+                        <Wizard
+                            validate
+                            steps={CreateGigSteps}
+                            title="Create a Gig"
+                            subtitle="Please fill in the below information to create a gig."
+                            finishButtonClick={this.finishButtonClick.bind(this)}
+                        />
+                    </GridItem>
+                </GridContainer>
+            </div>
         );
     }
 }

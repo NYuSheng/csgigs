@@ -194,35 +194,37 @@ class GigDashboard extends React.Component {
         var toReturn = [];
         var organizedContent = [];
 
-        tasks.forEach(function (task) {
-            var category = task.category;
-            if (organizedContent.hasOwnProperty(category)) {
-                organizedContent[category].push(task)
-            } else {
-                organizedContent[category] = [];
-                organizedContent[category].push(task)
-            }
-        });
-
-        for (var key in organizedContent) {
-            if (organizedContent.hasOwnProperty(key)) {
-                var i;
-                var tasksIndexesArray = []
-                for (i = 0; i < organizedContent[key].length; i++) {
-                    tasksIndexesArray.push(i);
+        if (tasks) {
+            tasks.forEach(function (task) {
+                var category = task.category;
+                if (organizedContent.hasOwnProperty(category)) {
+                    organizedContent[category].push(task)
+                } else {
+                    organizedContent[category] = [];
+                    organizedContent[category].push(task)
                 }
-                toReturn.push({
-                    tabName: key,
-                    tabContent: (
-                        <GigTasks
-                            tasksIndexes={tasksIndexesArray}
-                            tasks={organizedContent[key]}
-                            editTask={this.editTask.bind(this)}
-                            removeTask={this.removeTask.bind(this)}
-                            assignUsers={this.assignUsers.bind(this)}
-                        />
-                    )
-                });
+            });
+
+            for (var key in organizedContent) {
+                if (organizedContent.hasOwnProperty(key)) {
+                    var i;
+                    var tasksIndexesArray = []
+                    for (i = 0; i < organizedContent[key].length; i++) {
+                        tasksIndexesArray.push(i);
+                    }
+                    toReturn.push({
+                        tabName: key,
+                        tabContent: (
+                            <GigTasks
+                                tasksIndexes={tasksIndexesArray}
+                                tasks={organizedContent[key]}
+                                editTask={this.editTask.bind(this)}
+                                removeTask={this.removeTask.bind(this)}
+                                assignUsers={this.assignUsers.bind(this)}
+                            />
+                        )
+                    });
+                }
             }
         }
 
@@ -231,14 +233,18 @@ class GigDashboard extends React.Component {
 
     calculatePoints(gig) {
         var tasksAllocations = 0;
-        gig.tasks.forEach(function (task) {
-            tasksAllocations += task.points;
-        });
+
+        if (gig.tasks) {
+            gig.tasks.forEach(function (task) {
+                tasksAllocations += task.points;
+            });
+        }
+
         return tasksAllocations;
     }
 
     calculatePointsPercentage(gig) {
-        return this.calculatePoints(gig) / gig.points * 100;
+        return this.calculatePoints(gig) / gig.points_budget * 100;
     }
 
     render() {
@@ -261,7 +267,7 @@ class GigDashboard extends React.Component {
                 {editTask}
                 {editGigParticipants}
                 <AddTask modalOpen={addTask} hideTask={this.hidePopup.bind(this)}/>
-                <EditGigAdmins modalOpen={editGigAdmins} hidePopup={this.hidePopup.bind(this)} admins={gig.admins}/>
+                <EditGigAdmins modalOpen={editGigAdmins} hidePopup={this.hidePopup.bind(this)} admins={gig.user_admins}/>
                 <BrownieAllocation modalOpen={brownieAllocation} hidePopup={this.hidePopup.bind(this)} gig={gig}/>
                 <GridContainer justify="center">
                     <GridItem xs={6}>
@@ -309,7 +315,7 @@ class GigDashboard extends React.Component {
                                         <h3 className={classes.cardTitle}>
                                             {/*link to rocketchat*/}
                                             <a href="https://csgigs.com/group/csgigs-dev" target="_blank">
-                                                {gig.channel}
+                                                {gig.rc_channel_id}
                                             </a>
                                         </h3>
                                     </CardHeader>
@@ -334,7 +340,7 @@ class GigDashboard extends React.Component {
                                     </CardHeader>
                                     <CardBody>
                                         <GigTable
-                                            tableData={gig.admins}
+                                            tableData={gig.user_admins}
                                             setupTableCells={this.setupAdminTableCells.bind(this)}
                                         />
                                     </CardBody>
@@ -353,7 +359,7 @@ class GigDashboard extends React.Component {
                                 <CircularProgressbar
                                     className={classes.icon}
                                     percentage={this.calculatePointsPercentage(gig)}
-                                    text={`${this.calculatePoints(gig)}/${gig.points}`}
+                                    text={`${this.calculatePoints(gig)}/${gig.points_budget}`}
                                     strokeWidth={2}
                                     styles={{
                                         root: {},
@@ -391,7 +397,7 @@ class GigDashboard extends React.Component {
                                     tableHeight="250px"
                                     hover
                                     tableHeaderColor="primary"
-                                    tableData={gig.participants}
+                                    tableData={gig.user_participants}
                                     tableFooter="false"
                                     notFoundMessage="No participants found"
                                     setupTableCells={this.setupParticipantTableCells.bind(this)}

@@ -43,10 +43,12 @@ class BrownieAllocation extends React.Component {
 
     componentWillReceiveProps() {
         const {gig} = this.props;
-        this.setState({
-            tasks: JSON.parse(JSON.stringify(gig.tasks)),
-            status: "working"
-        })
+        if (gig.tasks) {
+            this.setState({
+                tasks: JSON.parse(JSON.stringify(gig.tasks)),
+                status: "working"
+            })
+        }
         this.cells = {}
     }
 

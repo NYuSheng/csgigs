@@ -54,7 +54,7 @@ class ManageGigs extends React.Component {
                     {gig.name}
                 </TableCell>
                 <TableCell colSpan="1" className={tableCellClasses}>
-                    {gig.admins.map(function(admin){
+                    {gig.user_admins.map(function(admin){
                         return admin.name;
                     }).join(", ")}
                 </TableCell>
@@ -136,13 +136,13 @@ class ManageGigs extends React.Component {
         // Fake data for gigs
         let gigs = [];
         gigs.push({
-            id: 10000,
+            _id: 10000,
             name: "Hackathon 2018",
             status: "Active",
             // Could potentially be a user object
-            admins: [{ id: 123, name: "Brandon"}, { id: 234, name: "Ernest"}],
-            channel: "gigs chat",
-            points: 400,
+            user_admins: [{ id: 123, name: "Brandon"}, { id: 234, name: "Ernest"}],
+            rc_channel_id: "gigs chat",
+            points_budget: 400,
             tasks: [
                 {
                     id: 1,
@@ -175,7 +175,7 @@ class ManageGigs extends React.Component {
                     assignees: []
                 }
             ],
-            participants: [
+            user_participants: [
                 {
                     id: "team_id1",
                     name: "Hackers@Work",
