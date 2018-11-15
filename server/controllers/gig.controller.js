@@ -97,10 +97,10 @@ function aggregation_with_tasks_and_users(gig_name){
             'foreignField': 'gig_name',
             'as': 'task_list'
         }},
-        { "$unwind": "$user_participants" },
+        { "$unwind": "$user_admins" },
         { "$lookup": {
             "from": "users",
-            "localField": "user_participants",
+            "localField": "user_admins",
             "foreignField": "user_name",
             "as": "userObjects"
         }},
@@ -108,8 +108,8 @@ function aggregation_with_tasks_and_users(gig_name){
         { "$group": {
         "_id": "$_id",
         "rc_channel_id": {"$first": "$rc_channel_id"},  
-        "user_admins": {"$first": "$user_admins"},
-        "user_participants": { "$push": "$user_participants" },
+        "user_participants": {"$first": "$user_participants"},
+        "user_admins": { "$push": "$user_admins" },
         "userObjects": { "$push": "$userObjects" },
         "user_attendees": {"$first": "$user_attendees"},
         "name": {"$first": "$name"},
