@@ -33,7 +33,7 @@ exports.gig_create = asyncMiddleware(async (req, res, next) => {
                 }
             }
         ])
-            .populate('user_participants')
+            // .populate('user_participants')
             .exec().then((gigs_retrieved) => {
                 if(gigs_retrieved.length === 0){
                     return res.status(400).send({
@@ -136,7 +136,7 @@ exports.gigs_details = asyncMiddleware(async (req, res, next) => {
 
 exports.gig_details = asyncMiddleware(async (req, res, next) => {
     return Gig.findOne({name: req.params.name})
-        .populate('user_participants')
+        // .populate('user_participants')
         .exec().then((gig_retrieved) => {
         if(gig_retrieved === null){
             return res.status(400).send({
