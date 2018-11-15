@@ -265,13 +265,19 @@ class GigDashboard extends React.Component {
                 <BrownieAllocation modalOpen={brownieAllocation} hidePopup={this.hidePopup.bind(this)} gig={gig}/>
                 <GridContainer justify="center">
                     <GridItem xs={6}>
-                        <Button className={classes.marginRight} onClick={this.completeGig.bind(this)}>
+                        <Button className={classes.marginRight} onClick={this.returnToHomepage.bind(this)}>
                             <KeyboardArrowLeft className={classes.icons}/> Back
                         </Button>
                     </GridItem>
                     <GridItem xs={6} style={{textAlign: "right"}}>
                         <Button className={classes.marginRight}
-                                onClick={this.returnToHomepage.bind(this)}
+                                // onClick={this.completeGig.bind(this)}
+                                color="warning"
+                        >
+                            Publish
+                        </Button>
+                        <Button className={classes.marginRight}
+                                onClick={this.completeGig.bind(this)}
                                 color="success"
                         >
                             Complete

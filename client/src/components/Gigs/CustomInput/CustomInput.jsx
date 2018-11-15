@@ -33,7 +33,8 @@ class CustomInput extends React.Component {
             inputRootCustomClasses,
             success,
             helpText,
-            inputType
+            inputType,
+            inputFocus
         } = this.props;
 
         const labelClasses = classNames({
@@ -84,7 +85,7 @@ class CustomInput extends React.Component {
                         disabled: classes.disabled,
                         underline: underlineClasses
                     }}
-                    inputRef={this.focusInputField}
+                    inputRef={inputFocus ? this.focusInputField : null}
                     id={id}
                     type={inputType}
                     {...inputProps}

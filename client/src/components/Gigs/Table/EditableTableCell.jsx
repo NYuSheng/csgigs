@@ -91,6 +91,7 @@ class EditableTableCell extends React.Component {
                                 onChange: event => this.onChangeCellValue(event)
                             }}
                             inputType="number"
+                            inputFocus={true}
                         />
                     ) : cellValue
                 }
