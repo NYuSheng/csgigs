@@ -11,7 +11,7 @@ class CreateGig extends React.Component {
     finishButtonClick(step) {
         const {history} = this.props;
         console.log(step);
-        fetch('/gigs/create', {
+        fetch('/admin-ui/gigs/create', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
