@@ -41,7 +41,7 @@ class CreateAGig extends React.Component {
     }
 
     render() {
-        const {classes} = this.props;
+        const {classes, hidePopup} = this.props;
 
         return (
             <SweetAlert
@@ -49,9 +49,13 @@ class CreateAGig extends React.Component {
                 style={{display: "block", marginTop: "-100px"}}
                 title="Gig Created"
                 onConfirm={() => this.redirectToDashboard()}
+                onCancel={hidePopup}
                 confirmBtnCssClass={classes.button + " " + classes.success}
+                cancelBtnCssClass={classes.button + " " + classes.danger}
                 confirmBtnText="Individual Gig Dashboard"
-                showConfirm={true}
+                cancelBtnText="Close"
+                showConfirm
+                showCancel
             />
         );
     }
