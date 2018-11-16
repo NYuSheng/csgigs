@@ -29,7 +29,7 @@ exports.gig_create = asyncMiddleware(async (req, res, next) => {
                     from: 'tasks',
                     localField: 'name',
                     foreignField: 'gig_name',
-                    as: 'task_list'
+                    as: 'tasks'
                 }
             }
         ])
@@ -95,7 +95,7 @@ function aggregation_with_tasks_and_users(gig_name){
             'from': 'tasks',
             'localField': 'name',
             'foreignField': 'gig_name',
-            'as': 'task_list'
+            'as': 'tasks'
         }},
         { "$unwind": "$user_admins" },
         { "$lookup": {
@@ -116,7 +116,7 @@ function aggregation_with_tasks_and_users(gig_name){
         "status": {"$first": "$status"},
         "createdAt": {"$first": "$createdAt"},
         "__v": {"$first": "$__v"},
-        "task_list": {"$first": "$task_list"}
+        "tasks": {"$first": "$tasks"}
         }}
     ]
 }
