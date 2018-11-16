@@ -10,7 +10,7 @@ exports.gig_create = asyncMiddleware(async (req, res, next) => {
         {
             name :req.body.name,
             points_budget : req.body.points_budget,
-            status : "NOT STARTED",
+            status : "DRAFT",
             user_admins : req.body.user_admins,
 
             //Possible required fields in creation
@@ -57,7 +57,7 @@ exports.gig_create_temp = asyncMiddleware(async (req, res, next) => {
         {
             name :req.body.name,
             points_budget : req.body.points_budget,
-            status : "NOT STARTED",
+            status : "DRAFT",
             user_admins : req.body.user_admins,
 
             //Possible required fields in creation
