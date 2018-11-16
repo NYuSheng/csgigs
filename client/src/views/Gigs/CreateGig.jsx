@@ -19,27 +19,26 @@ class CreateGig extends React.Component {
 
     finishButtonClick(step) {
         const {history} = this.props;
-        this.createGigSuccess(null);
-        // fetch('/admin-ui/gigs/create', {
-        //     method: 'POST',
-        //     headers: {'Content-Type': 'application/json'},
-        //     body: JSON.stringify({
-        //         name :step.name,
-        //         points_budget : step.budget,
-        //         status : "NOT STARTED",
-        //         user_admins: step.selectedAdmins.map(admin => admin.id)
-        //     })
-        // }).then(data => {
-        //     if (data.status !== 200) {
-        //         data.json().then(json =>{
-        //             NotificationManager.error(json.error.errmsg);
-        //         });
-        //     } else {
-        //         data.json().then(json =>{
-        //             this.createGigSuccess(json.gig);
-        //         });
-        //     }
-        // });
+        fetch('/admin-ui/gigs/create', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                name :step.name,
+                points_budget : step.budget,
+                status : "NOT STARTED",
+                user_admins: step.selectedAdmins.map(admin => admin.id)
+            })
+        }).then(data => {
+            if (data.status !== 200) {
+                data.json().then(json =>{
+                    NotificationManager.error(json.error.errmsg);
+                });
+            } else {
+                data.json().then(json =>{
+                    this.createGigSuccess(json.gig);
+                });
+            }
+        });
     }
 
     createGigSuccess(gig) {
