@@ -26,7 +26,7 @@ class CreateGig extends React.Component {
                 name :step.name,
                 points_budget : step.budget,
                 status : "Draft",
-                user_admins: step.selectedAdmins.map(admin => admin.id)
+                user_admins: step.selectedAdmins.map(admin => admin.username)
             })
         }).then(data => {
             if (data.status !== 200) {
