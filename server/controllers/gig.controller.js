@@ -10,7 +10,7 @@ exports.gig_create = asyncMiddleware(async (req, res, next) => {
         {
             name :req.body.name,
             points_budget : req.body.points_budget,
-            status : "DRAFT",
+            status : "Draft",
             user_admins : req.body.user_admins,
 
             //Possible required fields in creation
@@ -57,7 +57,7 @@ exports.gig_create_temp = asyncMiddleware(async (req, res, next) => {
         {
             name :req.body.name,
             points_budget : req.body.points_budget,
-            status : "DRAFT",
+            status : "Draft",
             user_admins : req.body.user_admins,
 
             //Possible required fields in creation
@@ -77,7 +77,7 @@ exports.gig_create_temp = asyncMiddleware(async (req, res, next) => {
                     });
                 }
                 res.status(200).send({
-                    gigs: gigs_retrieved[0]
+                    gig: gigs_retrieved[0]
                 });
             }).catch(err=>{
             res.status(400).send({error: err});
