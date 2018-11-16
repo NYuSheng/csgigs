@@ -28,11 +28,8 @@ app.use(bodyParser.urlencoded({extended: false}));
 
 app.use('/products', product);
 
-<<<<<<< Updated upstream
 
-=======
-app.use('/admin-ui/tasks', task)
->>>>>>> Stashed changes
+app.use('/admin-ui/tasks', task);
 
 app.use('/admin-ui', express.static(path.join(__dirname, './public')));
 app.use('/admin-ui/users', user);
