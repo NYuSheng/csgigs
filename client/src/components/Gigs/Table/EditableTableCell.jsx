@@ -11,11 +11,8 @@ class EditableTableCell extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            cellValueState: "",
-            edit: ""
+            cellValueState: ""
         };
-
-        this.enableEdit = this.enableEdit.bind(this);
     }
 
     componentDidMount() {
@@ -24,38 +21,24 @@ class EditableTableCell extends React.Component {
 
     clearState() {
         this.setState({
-            cellValueState: "success",
-            edit: false
+            cellValueState: "success"
         })
-    }
-
-    enableEdit() {
-        this.setState({
-            edit: true
-        })
-    }
-
-    disableEdit() {
-        const {cellValueState} = this.state;
-        if (cellValueState === "success") {
-            this.setState({
-                edit: false
-            })
-        }
     }
 
     onChangeCellValue(event) {
         const {inputRefId, reRenderAllEditableCells} = this.props;
         const cellValue = event.target.value;
-        this.validateCellValue(cellValue);
-        if (reRenderAllEditableCells) {
-            reRenderAllEditableCells(inputRefId);
+        if (cellValue) {
+            this.validateCellValue(cellValue);
+            if (reRenderAllEditableCells) {
+                reRenderAllEditableCells(inputRefId);
+            }
         }
     }
 
     validateCellValue(cellValue) {
         const {editValidation, inputRefId} = this.props;
-        if (editValidation(parseInt(cellValue), inputRefId)) {
+        if (editValidation(parseInt(cellValue, 10), inputRefId)) {
             this.setState({
                 cellValueState: "success"
             })
@@ -70,31 +53,25 @@ class EditableTableCell extends React.Component {
         const {classes, cellValue} = this.props;
         const tableCellClasses = classes.tableCell;
 
-        const {edit, cellValueState} = this.state;
+        const {cellValueState} = this.state;
 
         return (
             <TableCell colSpan="1" className={tableCellClasses}>
-                {
-                    edit ? (
-                        <CustomInput
-                            success={cellValueState === "success"}
-                            error={cellValueState === "error"}
-                            labelText={
-                                <span>
+                <CustomInput
+                    success={cellValueState === "success"}
+                    error={cellValueState === "error"}
+                    labelText={
+                        <span>
                                     Brownie Points
                                 </span>
-                            }
-                            inputProps={{
-                                onBlur: this.disableEdit.bind(this),
-                                style: {width: 100},
-                                value: (isNaN(cellValue)) ? 0 : cellValue,
-                                onChange: event => this.onChangeCellValue(event)
-                            }}
-                            inputType="number"
-                            inputFocus={true}
-                        />
-                    ) : cellValue
-                }
+                    }
+                    inputProps={{
+                        style: {width: 100},
+                        value: cellValue,
+                        onChange: event => this.onChangeCellValue(event)
+                    }}
+                    inputType="number"
+                />
             </TableCell>
         )
     }
