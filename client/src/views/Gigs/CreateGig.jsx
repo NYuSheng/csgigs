@@ -25,7 +25,7 @@ class CreateGig extends React.Component {
             body: JSON.stringify({
                 name :step.name,
                 points_budget : step.budget,
-                status : "NOT STARTED",
+                status : "Draft",
                 user_admins: step.selectedAdmins.map(admin => admin.id)
             })
         }).then(data => {
