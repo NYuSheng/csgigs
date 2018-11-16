@@ -54,7 +54,7 @@ class ManageGigs extends React.Component {
                     {gig.name}
                 </TableCell>
                 <TableCell colSpan="1" className={tableCellClasses}>
-                    {gig.admins.map(function(admin){
+                    {gig.user_admins.map(function(admin){
                         return admin.name;
                     }).join(", ")}
                 </TableCell>
@@ -98,20 +98,20 @@ class ManageGigs extends React.Component {
                         </GridItem>
                         <GridItem xs={4} sm={4} md={2} lg={2} style={{textAlign: 'right'}}>
                             {/*<GridContainer  style={{textAlign: 'right'}}>*/}
-                                {/*<GridItem xs={6} sm={6} md={6} lg={6}>*/}
-                                    {/*<Filter filterName="filter"*/}
-                                            {/*filterFunction={this.filterGigsResults.bind(this)}*/}
-                                            {/*buttonIcon={FilterIcon}*/}
-                                    {/*/>*/}
-                                {/*</GridItem>*/}
-                                {/*<GridItem xs={6} sm={6} md={6} lg={6}>*/}
-                                    <Button color="warning"
-                                            onClick={this.handleCreateGigPage.bind(this)}
-                                            style={{width: '100%'}}>
-                                        <Create className={classes.buttonIcon}/>
-                                        Create Gig
-                                    </Button>
-                                {/*</GridItem>*/}
+                            {/*<GridItem xs={6} sm={6} md={6} lg={6}>*/}
+                            {/*<Filter filterName="filter"*/}
+                            {/*filterFunction={this.filterGigsResults.bind(this)}*/}
+                            {/*buttonIcon={FilterIcon}*/}
+                            {/*/>*/}
+                            {/*</GridItem>*/}
+                            {/*<GridItem xs={6} sm={6} md={6} lg={6}>*/}
+                            <Button color="warning"
+                                    onClick={this.handleCreateGigPage.bind(this)}
+                                    style={{width: '100%'}}>
+                                <Create className={classes.buttonIcon}/>
+                                Create Gig
+                            </Button>
+                            {/*</GridItem>*/}
                             {/*</GridContainer>*/}
                         </GridItem>
                     </GridContainer>
@@ -136,13 +136,13 @@ class ManageGigs extends React.Component {
         // Fake data for gigs
         let gigs = [];
         gigs.push({
-            id: 10000,
+            _id: 10000,
             name: "Hackathon 2018",
             status: "Active",
             // Could potentially be a user object
-            admins: [{ id: 123, name: "Yu Sheng"}, { id: 234, name: "Ernest"}],
-            channel: "gigs chat",
-            points: 400,
+            user_admins: [{ id: 123, name: "Brandon"}, { id: 234, name: "Ernest"}],
+            rc_channel_id: "gigs chat",
+            points_budget: 400,
             tasks: [
                 {
                     id: 1,
@@ -173,6 +173,22 @@ class ManageGigs extends React.Component {
                     status: "Unassigned",
                     points: 100,
                     assignees: []
+                }
+            ],
+            user_participants: [
+                {
+                    id: "team_id1",
+                    name: "Hackers@Work",
+                    members: [
+                        {
+                            id: 123,
+                            name: "Brandon"
+                        },
+                        {
+                            id: 234,
+                            name: "Ernest"
+                        }
+                    ]
                 }
             ]
         });

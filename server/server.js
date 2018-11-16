@@ -24,12 +24,12 @@ db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 
-app.use('/products', product);
-app.use('/gigs', gig);
-app.use('/tasks', task)
 
 app.use('/admin-ui', express.static(path.join(__dirname, './public')));
 app.use('/admin-ui/users', user);
+app.use('/admin-ui/products', product);
+app.use('/admin-ui/gigs', gig);
+app.use('/admin-ui/tasks', task);
 app.get('/admin-ui/*', function (req, res) {
    res.sendFile(path.join(__dirname, 'public', 'index.html'));
  });
@@ -37,5 +37,5 @@ app.get('/admin-ui/*', function (req, res) {
 var port = 5000;
 
 app.listen(port, () => {
-    console.log('Server is up and running on port numner ' + port);
+    console.log('Server is up and running on port number ' + port);
 });
