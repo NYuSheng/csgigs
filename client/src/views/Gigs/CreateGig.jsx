@@ -1,61 +1,82 @@
 import React from "react";
 
-// @material-ui/core components
+// core components
 import Wizard from "components/Gigs/Wizard/Wizard";
 import GridContainer from "components/Grid/GridContainer";
 import GridItem from "components/Grid/GridItem";
+import CreateAGig from "components/Gigs/PopupModals/SweetAlert/CreateAGig";
 import {CreateGigSteps} from "components/Gigs/Wizard/CreateGigSteps/CompiledGigSteps";
-import {NotificationManager, NotificationContainer} from "react-notifications";
+import {NotificationManager} from "react-notifications";
 
 class CreateGig extends React.Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            createGigSuccess: null,
+        };
+    }
+
     finishButtonClick(step) {
         const {history} = this.props;
-        console.log(step);
-        fetch('/gigs/create', {
+        fetch('/admin-ui/gigs/create', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
                 name :step.name,
                 points_budget : step.budget,
-                status : "NOT STARTED",
-                user_admins: step.selectedAdmins.map(admin => admin.id)
+                status : "Draft",
+                user_admins: step.selectedAdmins.map(admin => admin.username)
             })
         }).then(data => {
             if (data.status !== 200) {
                 data.json().then(json =>{
                     NotificationManager.error(json.error.errmsg);
                 });
-                
             } else {
-                //If success
-                //Redirect to gigs individual dashboard
-                
-                // data.json().then(json =>{
-                //     history.push({
-                //         headername: `${json.gig.name}`,
-                //         pathname: `/gigs/${json.gig.name}`,
-                //         state: {
-                //             gig: json.gig
-                //         }
-                //     });
-                // });
+                data.json().then(json =>{
+                    this.createGigSuccess(json.gig);
+                });
             }
         });
     }
 
+    createGigSuccess(gig) {
+        this.setState({
+            createGigSuccess: (
+                <CreateAGig {...this.props}
+                            hidePopup={this.hidePopup.bind(this)}
+                            gig={gig}
+                />
+            )
+        })
+    }
+
+    hidePopup() {
+        this.setState({
+            createGigSuccess: null
+        });
+        window.location.reload();
+    }
+
     render() {
+        const {createGigSuccess, wizard} = this.state;
+
         return (
-            <GridContainer justify="center">
-                <GridItem xs={12} sm={8}>
-                    <Wizard
-                        validate
-                        steps={CreateGigSteps}
-                        title="Create a Gig"
-                        subtitle="Please fill in the below information to create a gig."
-                        finishButtonClick={this.finishButtonClick.bind(this)}
-                    />
-                </GridItem>
-            </GridContainer>
+            <div>
+                {createGigSuccess}
+                <GridContainer justify="center">
+                    <GridItem xs={12} sm={8}>
+                        <Wizard
+                            validate
+                            steps={CreateGigSteps}
+                            title="Create a Gig"
+                            subtitle="Please fill in the below information to create a gig."
+                            finishButtonClick={this.finishButtonClick.bind(this)}
+                        />
+                    </GridItem>
+                </GridContainer>
+            </div>
         );
     }
 }

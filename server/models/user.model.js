@@ -12,7 +12,8 @@ let Task = new Schema({
 });
 
 let UserSchema = new Schema({
-    user_name:{type:String, required:true},
+    username:{type:String, required:true},
+    name:{type:String, require:true},
     user_id:{type:String, required:true, unique:true},
     createdAt:{type:Date, default: Date.now},
     role:{type:String, required:true},

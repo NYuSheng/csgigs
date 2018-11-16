@@ -58,7 +58,7 @@ class GigsTable extends React.Component {
                 onClick={() => {
                     (handleTableRowOnClick) ? handleTableRowOnClick(prop) : null
                 }}
-                style={{'cursor': 'pointer'}}
+                style={{'cursor': (handleTableRowOnClick) ? 'pointer' : 'auto'}}
             >
                 {setupTableCells(prop)}
             </TableRow>
@@ -111,7 +111,7 @@ class GigsTable extends React.Component {
                         </TableHead>
                     ) : null}
                     <TableBody>
-                        {tableData.length ?
+                        {tableData && tableData.length ?
                             (
                                 tableFooter === "true" ? (
                                     tableData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((prop, key) => {

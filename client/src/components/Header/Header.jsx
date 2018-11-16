@@ -89,9 +89,9 @@ function Header({...props}) {
                         {makeBrand()}
                     </CardHeader>
                 </div>
-                <Hidden smDown implementation="css">
-                    <HeaderLinks rtlActive={rtlActive}/>
-                </Hidden>
+                {/*<Hidden smDown implementation="css">*/}
+                    {/*<HeaderLinks rtlActive={rtlActive}/>*/}
+                {/*</Hidden>*/}
                 <Hidden mdUp implementation="css">
                     <Button
                         className={classes.appResponsive}

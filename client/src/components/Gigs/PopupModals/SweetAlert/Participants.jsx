@@ -5,84 +5,58 @@ import SweetAlert from "react-bootstrap-sweetalert";
 import withStyles from "@material-ui/core/styles/withStyles";
 import TableCell from "@material-ui/core/TableCell";
 
-// @material-ui/icons
-import Cancel from "@material-ui/icons/Cancel";
-
 // core components
 import Card from "components/Card/Card";
-import CardHeader from "components/Card/CardHeader";
 import CardBody from "components/Card/CardBody";
 import Table from "components/Gigs/Table/Table";
-import AutoComplete from 'components/Gigs/AutoComplete/AutoComplete';
 
 // dependencies
 import Loader from 'react-loader-spinner';
-import {NotificationManager} from "react-notifications";
 
 // style sheets
-import sweetAlertStyle from "assets/jss/material-dashboard-pro-react/views/sweetAlertStyle.jsx"
+import sweetAlertStyle from "assets/jss/material-dashboard-pro-react/views/sweetAlertStyle.jsx";
 
-class AssignUsers extends React.Component {
+class Participants extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            selectedUsers: [],
+            members: [],
             status: "",
         };
     }
 
     componentDidMount() {
-        const {task} = this.props;
+        const {participants} = this.props;
         this.setState({
-            selectedUsers: task.assignees,
+            members: participants.members,
             status: "working"
         })
     }
 
-    setupTableCells(user) {
+    setupTableCells(participant) {
         const {classes} = this.props;
         const tableCellClasses = classes.tableCell;
         return (
             <React.Fragment>
                 <TableCell colSpan="1" className={tableCellClasses}>
-                    {user.name}
+                    {participant.name}
                 </TableCell>
-                <TableCell colSpan="1" className={tableCellClasses} style={{textAlign: 'right'}}>
-                    <Cancel className={classes.icon}/>
-                </TableCell>
+                {/*<TableCell colSpan="1" className={tableCellClasses} style={{textAlign: 'right'}}>*/}
+                    {/*<Cancel className={classes.icon}/>*/}
+                {/*</TableCell>*/}
             </React.Fragment>
         );
     }
 
-    selectUsers(user) {
-        const selectedUsers = this.state.selectedUsers;
-        const existingUsers = selectedUsers.filter(selectedUser => selectedUser.id === user.id)
-        if (existingUsers.length >= 1) {
-            NotificationManager.error("User " + user.name + " has been selected");
-        } else {
-            this.setState({
-                selectedUsers: [user].concat(selectedUsers)
-            });
-        }
-    }
-
-    deselectUser(user) {
-        const selectedUsers = this.state.selectedUsers;
-        const usersAfterRemoval = selectedUsers.filter(selectedUser => selectedUser.id !== user.id);
-        this.setState({
-            selectedUsers: usersAfterRemoval
-        });
-    }
-
-    confirmUserAssign() {
-        const {hideTask} = this.props;
+    confirmParticipantsEdit() {
+        const {hidePopup} = this.props;
         const {status} = this.state;
         if (status !== "success") {
             this.setState({
                 status: "loading"
             });
 
-            // API call here to post the updated assigned users
+            // API call here to post the edited task
             // Build your payload using buildPayLoad() method below
 
             // dummy function to simulate api call
@@ -92,13 +66,13 @@ class AssignUsers extends React.Component {
                 });
             }, 1000);
         } else {
-            hideTask("assignUsers");
+            hidePopup("editGigParticipants");
         }
     }
 
     render() {
-        const {classes, hideTask, task} = this.props;
-        const {selectedUsers, status} = this.state;
+        const {classes, hidePopup} = this.props;
+        const {members, status} = this.state;
 
         return (
             <SweetAlert
@@ -107,11 +81,11 @@ class AssignUsers extends React.Component {
                     display: "block",
                     overflow: "visible"
                 }}
-                title={(status === "working") ? "Assign Users" : (status === "success") ? "Users Assigned" : false}
-                onConfirm={() => this.confirmUserAssign()}
+                title={(status === "working") ? "Edit Participants" : (status === "success") ? "Participants Edited" : false}
+                onConfirm={() => this.confirmParticipantsEdit()}
                 onCancel={() => {
                     if (status !== "loading") {
-                        hideTask("assignUsers")
+                        hidePopup("editGigParticipants")
                     }
                 }}
                 confirmBtnCssClass={
@@ -139,19 +113,16 @@ class AssignUsers extends React.Component {
                     status === "working" ?
                         (
                             <Card>
-                                <CardHeader>
-                                    <AutoComplete selectInput={this.selectUsers.bind(this)}/>
-                                </CardHeader>
                                 <CardBody>
                                     <Table
                                         tableHeight="100px"
-                                        hover
+                                        // hover
                                         tableHeaderColor="primary"
-                                        tableData={selectedUsers}
+                                        tableData={members}
                                         tableFooter="false"
-                                        notFoundMessage="No users selected"
+                                        notFoundMessage="No Participants in this group"
                                         setupTableCells={this.setupTableCells.bind(this)}
-                                        handleTableRowOnClick={this.deselectUser.bind(this)}
+                                        // handleTableRowOnClick={this.deselectUser.bind(this)}
                                     />
                                 </CardBody>
                             </Card>
@@ -166,4 +137,4 @@ class AssignUsers extends React.Component {
     }
 }
 
-export default withStyles(sweetAlertStyle)(AssignUsers);
+export default withStyles(sweetAlertStyle)(Participants);

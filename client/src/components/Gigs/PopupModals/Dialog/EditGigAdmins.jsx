@@ -1,5 +1,4 @@
 import React from "react";
-import SweetAlert from "react-bootstrap-sweetalert";
 
 // @material-ui/core components
 import withStyles from "@material-ui/core/styles/withStyles";
@@ -13,6 +12,7 @@ import DialogActions from "@material-ui/core/DialogActions";
 // @material-ui/icons
 import Cancel from "@material-ui/icons/Cancel";
 import Close from "@material-ui/icons/Close";
+import Success from "@material-ui/icons/CheckCircle";
 
 // core components
 import Card from "components/Card/Card";
@@ -137,13 +137,12 @@ class EditGigAdmins extends React.Component {
                     disableTypography
                 >
                     <GridContainer className={classes.modalHeader}>
-                        <GridItem xs={6} sm={6} md={6} lg={6}>
-                            <h4 className={classes.modalTitle}>
+                        <GridItem xs={6} sm={6} md={6} lg={6} style={{textAlign: "left"}}>
+                            <h4 className={classes.modalTitle} style={{fontWeight: "bold"}}>
                                 {
                                     (status === "working") ?
                                         "Edit Admins"
-                                        : (status === "success") ?
-                                        "Admins Edited" : null
+                                        : null
                                 }
                             </h4>
                         </GridItem>
@@ -168,7 +167,7 @@ class EditGigAdmins extends React.Component {
                 <DialogContent
                     id="classic-modal-slide-description"
                     className={classes.modalBody}
-                    style={{paddingBottom: 35, paddingTop: 0, width: 450}}
+                    style={{paddingBottom: 35, paddingTop: 0, width: 500}}
                 >
                     {
                         status === "loading" ?
@@ -207,71 +206,31 @@ class EditGigAdmins extends React.Component {
                                 </Card>
                             ) : null
                     }
-                </DialogContent>
-                <DialogActions className={classes.modalFooter} style={{paddingTop: 15}}>
                     {
-                        status === "working" ? (
+                        status === "success" ? (
+                            <React.Fragment>
+                                <Success className={classes.icon} style={{height: 100, width: 100, fill: "green"}}/>
+                                <h4 className={classes.modalTitle} style={{fontWeight: "bold"}}>Admins Edited</h4>
+                            </React.Fragment>
+                        ) : null
+                    }
+                </DialogContent>
+                {
+                    status === "working" ? (
+                        <DialogActions className={classes.modalFooter} style={{paddingTop: 15}}>
                             <Button onClick={() => this.confirmAdminAssign()}
                                     className={classes.button + " " + classes.success}
                                     color="success">
-                                Edit
-                            </Button>) : null
-                    }
-
-                    {
-                        status !== "loading" ? (
+                                Save
+                            </Button>
                             <Button onClick={() => this.closeModal()}
                                     className={classes.button + " " + classes.danger}
                                     color="danger">
-                                {
-                                    status === "working" ? "Cancel" : "Close"
-                                }
-                            </Button>) : null
-                    }
-
-                </DialogActions>
+                                Cancel
+                            </Button>
+                        </DialogActions>) : null
+                }
             </Dialog>
-            // <SweetAlert
-            //     success={(status === "success")}
-            //     style={{
-            //         display: "block",
-            //         overflow: "visible"
-            //     }}
-            //     title={(status === "working") ? "Edit Admins" : (status === "success") ? "Admins Edited" : false}
-            //     onConfirm={() => this.confirmAdminAssign()}
-            //     onCancel={() => {
-            //         if (status !== "loading") {
-            //             hidePopup("editGigAdmins")
-            //         }
-            //     }}
-            //     confirmBtnCssClass={
-            //         classes.button + " " + classes.success
-            //     }
-            //     cancelBtnCssClass={
-            //         classes.button + " " + classes.danger
-            //     }
-            //     cancelBtnText="Cancel"
-            //     showCancel={(!status.match("loading|success"))}
-            //     showConfirm={(status !== "loading")}
-            // >
-            //     {
-            //         status === "loading" ?
-            //             (
-            //                 <Loader
-            //                     type="ThreeDots"
-            //                     color="black"
-            //                     height="100"
-            //                     width="100"
-            //                 />
-            //             ) : null
-            //     }
-            //     {
-            //         status === "working" ?
-            //             (
-            //
-            //             ) : null
-            //     }
-            // </SweetAlert>
         );
     }
 

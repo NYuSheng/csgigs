@@ -13,6 +13,7 @@ import DialogActions from "@material-ui/core/DialogActions";
 
 // @material-ui/icons
 import Close from "@material-ui/icons/Close";
+import Success from "@material-ui/icons/CheckCircle";
 
 // core components
 import GridContainer from "components/Grid/GridContainer";
@@ -148,13 +149,12 @@ class AddTask extends React.Component {
                     disableTypography
                 >
                     <GridContainer className={classes.modalHeader}>
-                        <GridItem xs={6} sm={6} md={6} lg={6}>
-                            <h4 className={classes.modalTitle}>
+                        <GridItem xs={6} sm={6} md={6} lg={6} style={{textAlign: "left"}}>
+                            <h4 className={classes.modalTitle} style={{fontWeight: "bold"}}>
                                 {
                                     (status === "working") ?
                                         "Add New Task"
-                                        : (status === "success") ?
-                                        "Task Added" : null
+                                        : null
                                 }
                             </h4>
                         </GridItem>
@@ -179,7 +179,7 @@ class AddTask extends React.Component {
                 <DialogContent
                     id="classic-modal-slide-description"
                     className={classes.modalBody}
-                    style={{paddingBottom: 35, paddingTop: 0}}
+                    style={{paddingBottom: 35, paddingTop: 0, width: 500}}
                 >
                     {
                         status === "loading" ?
@@ -269,29 +269,30 @@ class AddTask extends React.Component {
                                 </GridContainer>
                             ) : null
                     }
-                </DialogContent>
-                <DialogActions className={classes.modalFooter} style={{paddingTop: 15}}>
                     {
-                        status === "working" ? (
+                        status === "success" ? (
+                            <React.Fragment>
+                                <Success className={classes.icon} style={{height: 100, width: 100, fill: "green"}}/>
+                                <h4 className={classes.modalTitle} style={{fontWeight: "bold"}}>Task Added</h4>
+                            </React.Fragment>
+                        ) : null
+                    }
+                </DialogContent>
+                {
+                    status === "working" ? (
+                        <DialogActions className={classes.modalFooter} style={{paddingTop: 15}}>
                             <Button onClick={() => this.confirmTaskEdit()}
                                     className={classes.button + " " + classes.success}
                                     color="success">
                                 Add
-                            </Button>) : null
-                    }
-
-                    {
-                        status !== "loading" ? (
-                        <Button onClick={() => this.closeModal()}
-                                className={classes.button + " " + classes.danger}
-                                color="danger">
-                            {
-                                status === "working" ? "Cancel" : "Close"
-                            }
-                        </Button>) : null
-                    }
-
-                </DialogActions>
+                            </Button>
+                            <Button onClick={() => this.closeModal()}
+                                    className={classes.button + " " + classes.danger}
+                                    color="danger">
+                                Cancel
+                            </Button>
+                        </DialogActions>) : null
+                }
             </Dialog>
         );
     }

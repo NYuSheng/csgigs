@@ -26,7 +26,7 @@ exports.user_create = function (req, res, next) {
 
 exports.user_login = function (req, res, next) {
     var userName = req.body.username;
-    User.findOne({user_name: userName}, function (err, users) {
+    User.findOne({username: userName}, function (err, users) {
         if (err) return next(err);
 
         var role = users.role;
@@ -41,7 +41,7 @@ exports.user_login = function (req, res, next) {
 };
 
 exports.user_login2 = function (req, res, next) {
-    return User.findOne({user_name:req.body.username}).exec().then((user_retrieved) => {
+    return User.findOne({username:req.body.username}).exec().then((user_retrieved) => {
         if(user_retrieved === null){
             return res.status(400).send({
                 error: 'Cannot Find User ' + req.body.name
@@ -59,5 +59,4 @@ exports.user_login2 = function (req, res, next) {
     }).catch(err=>{
         res.status(400).send({error: err});
     })
-
-}
+};

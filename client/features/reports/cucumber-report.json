@@ -1,0 +1,135 @@
+[
+  {
+    "description": "  As a valid user\n  In order to access the Admin UI tool\n  I need to login with valid credentials",
+    "elements": [
+      {
+        "id": "login-to-admin-ui-tool;access-admin-ui-tool-via-login-page-with-the-right-credentials",
+        "keyword": "Scenario",
+        "line": 6,
+        "name": "Access Admin UI tool via login page with the right credentials",
+        "steps": [
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "name": "I access Psyduck UI",
+            "result": {
+              "status": "passed",
+              "duration": 573580
+            },
+            "line": 7,
+            "match": {
+              "location": "C:\\Users\\NYuSheng\\Desktop\\Work\\csgigs-admin\\client\\features\\step_definitions\\ui\\login\\login-steps.js:2"
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "name": "I enter \"logintest\" as the username",
+            "result": {
+              "status": "passed",
+              "duration": 6950018791
+            },
+            "line": 8,
+            "match": {
+              "location": "C:\\Users\\NYuSheng\\Desktop\\Work\\csgigs-admin\\client\\features\\step_definitions\\ui\\login\\login-steps.js:6"
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "name": "I should be redirected to the dashboard page",
+            "result": {
+              "status": "passed",
+              "duration": 1209120279
+            },
+            "line": 9,
+            "match": {
+              "location": "C:\\Users\\NYuSheng\\Desktop\\Work\\csgigs-admin\\client\\features\\step_definitions\\ui\\login\\login-steps.js:10"
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "After ",
+            "result": {
+              "status": "passed",
+              "duration": 2226534929
+            },
+            "hidden": true,
+            "match": {
+              "location": "C:\\Users\\NYuSheng\\Desktop\\Work\\csgigs-admin\\client\\node_modules\\selenium-cucumber-js\\runtime\\world.js:250"
+            }
+          }
+        ],
+        "tags": [],
+        "type": "scenario"
+      },
+      {
+        "id": "login-to-admin-ui-tool;access-admin-ui-tool-via-login-page-with-the-wrong-credentials",
+        "keyword": "Scenario",
+        "line": 11,
+        "name": "Access Admin UI tool via login page with the wrong credentials",
+        "steps": [
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "name": "I access Psyduck UI",
+            "result": {
+              "status": "passed",
+              "duration": 205273
+            },
+            "line": 12,
+            "match": {
+              "location": "C:\\Users\\NYuSheng\\Desktop\\Work\\csgigs-admin\\client\\features\\step_definitions\\ui\\login\\login-steps.js:2"
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "name": "I enter \"wronglogin\" as the username",
+            "result": {
+              "status": "passed",
+              "duration": 6601447885
+            },
+            "line": 13,
+            "match": {
+              "location": "C:\\Users\\NYuSheng\\Desktop\\Work\\csgigs-admin\\client\\features\\step_definitions\\ui\\login\\login-steps.js:6"
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "name": "I should not be able to login",
+            "result": {
+              "status": "passed",
+              "duration": 939232090
+            },
+            "line": 14,
+            "match": {
+              "location": "C:\\Users\\NYuSheng\\Desktop\\Work\\csgigs-admin\\client\\features\\step_definitions\\ui\\login\\login-steps.js:18"
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "After ",
+            "result": {
+              "status": "passed",
+              "duration": 2400275619
+            },
+            "hidden": true,
+            "match": {
+              "location": "C:\\Users\\NYuSheng\\Desktop\\Work\\csgigs-admin\\client\\node_modules\\selenium-cucumber-js\\runtime\\world.js:250"
+            }
+          }
+        ],
+        "tags": [],
+        "type": "scenario"
+      }
+    ],
+    "id": "login-to-admin-ui-tool",
+    "keyword": "Feature",
+    "line": 1,
+    "name": "Login to Admin UI tool",
+    "tags": [],
+    "uri": "C:/Users/NYuSheng/Desktop/Work/csgigs-admin/client/features/psyduck/ui/login/login.feature"
+  }
+]

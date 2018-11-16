@@ -8,7 +8,8 @@ import withStyles from "@material-ui/core/styles/withStyles";
 
 // material-ui icons
 import image from "assets/img/sidebar-2.jpg";
-import logo from "assets/img/logo-white.svg";
+// import logo from "assets/img/logo-white.svg";
+import logo from "assets/img/Credit_Suisse_Logo.svg";
 
 // routes
 import dashboardRoutes from "routes/dashboard.jsx";
@@ -111,7 +112,7 @@ class Dashboard extends React.Component {
             <div className={classes.wrapper}>
                 <Sidebar
                     routes={dashboardRoutes}
-                    logoText={"Creative Tim"}
+                    logoText={"Credit Suisse"}
                     logo={logo}
                     image={image}
                     handleDrawerToggle={this.handleDrawerToggle}

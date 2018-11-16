@@ -10,15 +10,23 @@ import MenuItem from '@material-ui/core/MenuItem';
 const suggestions = [
     {
         id: "123",
-        name: "Brandon"
+        name: "Brandon",
+        username: "Brandon"
     },
     {
         id: "128",
-        name: "Kevin"
+        name: "Kevin",
+        username: "Kevin"
     },
     {
         id: "154",
-        name: "Ernest"
+        name: "Ernest",
+        username: "Ernest"
+    },
+    {
+        id: "169",
+        name: "superadmin",
+        username: "logintest"
     }
 ];
 

@@ -3,15 +3,8 @@ import SweetAlert from "react-bootstrap-sweetalert";
 
 // @material-ui/core components
 import withStyles from "@material-ui/core/styles/withStyles";
-import FormControl from "@material-ui/core/FormControl";
-import InputLabel from "@material-ui/core/InputLabel";
-import Select from "@material-ui/core/Select";
 
 // core components
-import GridContainer from "components/Grid/GridContainer";
-import GridItem from "components/Grid/GridItem";
-import CustomInput from "components/Gigs/CustomInput/CustomInput";
-import {renderTaskCategories} from "components/Gigs/Data/TaskCategories";
 
 // dependencies
 import Loader from 'react-loader-spinner';
@@ -74,16 +67,12 @@ class RemoveTask extends React.Component {
                         hideTask("removeTask")
                     }
                 }}
-                confirmBtnCssClass={
-                    this.props.classes.button + " " + this.props.classes.success
-                }
-                cancelBtnCssClass={
-                    this.props.classes.button + " " + this.props.classes.danger
-                }
-                confirmBtnText="Remove"
+                confirmBtnCssClass={classes.button + " " + classes.success}
+                cancelBtnCssClass={classes.button + " " + classes.danger}
+                confirmBtnText="Ok"
                 cancelBtnText="Cancel"
-                showCancel={status === "working" ? true : false}
-                showConfirm={status === "working" ? true : false}
+                showCancel={status === "working"}
+                showConfirm={status !== "loading"}
             >
                 {
                     status === "loading" ?

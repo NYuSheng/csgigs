@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+    <testsuite name="login-to-admin-ui-tool;access-admin-ui-tool-via-login-page-with-the-right-credentials" tests="3" failures="0" skipped="0">
+        <properties>
+            <property name="URI" value="C:/Users/NYuSheng/Desktop/Work/csgigs-admin/client/features/psyduck/ui/login/login.feature">
+            </property>
+        </properties>
+        <testcase name="When I access Psyduck UI" classname="login-to-admin-ui-tool;access-admin-ui-tool-via-login-page-with-the-right-credentials" time="0.00057358">
+        </testcase>
+        <testcase name="Given I enter &quot;logintest&quot; as the username" classname="login-to-admin-ui-tool;access-admin-ui-tool-via-login-page-with-the-right-credentials" time="6.950018791">
+        </testcase>
+        <testcase name="Then I should be redirected to the dashboard page" classname="login-to-admin-ui-tool;access-admin-ui-tool-via-login-page-with-the-right-credentials" time="1.209120279">
+        </testcase>
+    </testsuite>
+    <testsuite name="login-to-admin-ui-tool;access-admin-ui-tool-via-login-page-with-the-wrong-credentials" tests="3" failures="0" skipped="0">
+        <properties>
+            <property name="URI" value="C:/Users/NYuSheng/Desktop/Work/csgigs-admin/client/features/psyduck/ui/login/login.feature">
+            </property>
+        </properties>
+        <testcase name="When I access Psyduck UI" classname="login-to-admin-ui-tool;access-admin-ui-tool-via-login-page-with-the-wrong-credentials" time="0.000205273">
+        </testcase>
+        <testcase name="Given I enter &quot;wronglogin&quot; as the username" classname="login-to-admin-ui-tool;access-admin-ui-tool-via-login-page-with-the-wrong-credentials" time="6.601447885">
+        </testcase>
+        <testcase name="Then I should not be able to login" classname="login-to-admin-ui-tool;access-admin-ui-tool-via-login-page-with-the-wrong-credentials" time="0.93923209">
+        </testcase>
+    </testsuite>
+</testsuites>

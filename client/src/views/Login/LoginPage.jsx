@@ -142,26 +142,26 @@ class LoginPage extends React.Component {
                                                     }}
                                                     value={this.state.username}
                                                 />
-                                                <CustomInput
-                                                    labelText="Password"
-                                                    id="password"
-                                                    formControlProps={{
-                                                        fullWidth: true
-                                                    }}
-                                                    inputProps={{
-                                                        onChange: event => this.handlePasswordChange(event),
-                                                        endAdornment: (
-                                                            <InputAdornment position="end">
-                                                                <Icon className={classes.inputAdornmentIcon}>
-                                                                    lock_outline
-                                                                </Icon>
-                                                            </InputAdornment>
-                                                        )
-                                                    }}
-                                                />
+                                                {/*<CustomInput*/}
+                                                    {/*labelText="Password"*/}
+                                                    {/*id="password"*/}
+                                                    {/*formControlProps={{*/}
+                                                        {/*fullWidth: true*/}
+                                                    {/*}}*/}
+                                                    {/*inputProps={{*/}
+                                                        {/*onChange: event => this.handlePasswordChange(event),*/}
+                                                        {/*endAdornment: (*/}
+                                                            {/*<InputAdornment position="end">*/}
+                                                                {/*<Icon className={classes.inputAdornmentIcon}>*/}
+                                                                    {/*lock_outline*/}
+                                                                {/*</Icon>*/}
+                                                            {/*</InputAdornment>*/}
+                                                        {/*)*/}
+                                                    {/*}}*/}
+                                                {/*/>*/}
                                             </CardBody>
                                             <CardFooter className={classes.justifyContentCenter}>
-                                                <Button type="submit" color="info" simple size="lg" block>
+                                                <Button id="login" type="submit" color="info" simple size="lg" block>
                                                     Login
                                                 </Button>
                                             </CardFooter>

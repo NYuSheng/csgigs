@@ -35,3 +35,22 @@ exports.get_tasks_gigs = function (req, res, next) {
         res.status(400).send({error: err});
     })
 }
+
+//input ID
+exports.update_task = function (req, res, next) {
+    Task.findByIdAndUpdate(req.params.taskid, {$set: req.body}, function (err, task) {
+        if (err) return next(err);
+        res.send('Task udpated.');
+    });
+};
+exports.remove_task = function (req, res, next) {
+    Task.findByIdAndRemove(req.params.taskid, (err, task) => {
+        if (err) return res.status(500).send(err);
+        const response = {
+            message: "Task successfully deleted",
+            id: task._id
+        };
+        return res.status(200).send(response);
+    });
+};
+

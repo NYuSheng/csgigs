@@ -10,7 +10,7 @@ exports.gig_create = asyncMiddleware(async (req, res, next) => {
         {
             name :req.body.name,
             points_budget : req.body.points_budget,
-            status : "NOT STARTED",
+            status : "Draft",
             user_admins : req.body.user_admins,
 
             //Possible required fields in creation
@@ -20,14 +20,106 @@ exports.gig_create = asyncMiddleware(async (req, res, next) => {
     );
 
     return gig.save().then(gigCreated => {
-        res.status(200).send({
-            "gig" : gigCreated
+
+        return Gig
+            .aggregate([
+            {$match: {name: req.body.name}},
+            {
+                $lookup: {
+                    from: 'tasks',
+                    localField: 'name',
+                    foreignField: 'gig_name',
+                    as: 'tasks'
+                }
+            }
+        ])
+            // .populate('user_participants')
+            .exec().then((gigs_retrieved) => {
+                if(gigs_retrieved.length === 0){
+                    return res.status(400).send({
+                        error: 'Cannot find any GIGs: ' + req.body.name
+                    });
+                }
+                res.status(200).send({
+                    gig: gigs_retrieved[0]
+                });
+            }).catch(err=>{
+            res.status(400).send({error: err});
         });
     }).catch(err => {
         console.log(err);
         res.status(400).send({error : err});
     });
 });
+
+exports.gig_create_temp = asyncMiddleware(async (req, res, next) => {
+    let gig = new Gig(
+        {
+            name :req.body.name,
+            points_budget : req.body.points_budget,
+            status : "Draft",
+            user_admins : req.body.user_admins,
+
+            //Possible required fields in creation
+            user_participants: ["erny_che"],
+            user_attendees: []
+        }
+    );
+
+    return gig.save().then(gigCreated => {
+        console.log(aggregation_with_tasks_and_users(req.body.name));
+        return Gig
+            .aggregate(aggregation_with_tasks_and_users(req.body.name))
+            .exec().then((gigs_retrieved) => {
+                if(gigs_retrieved.length === 0){
+                    return res.status(400).send({
+                        error: 'Cannot find any GIGs: ' + req.body.name
+                    });
+                }
+                res.status(200).send({
+                    gig: gigs_retrieved[0]
+                });
+            }).catch(err=>{
+            res.status(400).send({error: err});
+        });
+    }).catch(err => {
+        console.log(err);
+        res.status(400).send({error : err});
+    });
+});
+
+function aggregation_with_tasks_and_users(gig_name){
+    return [
+        {'$match': {'name': gig_name}},
+        {'$lookup': {
+            'from': 'tasks',
+            'localField': 'name',
+            'foreignField': 'gig_name',
+            'as': 'tasks'
+        }},
+        { "$unwind": "$user_admins" },
+        { "$lookup": {
+            "from": "users",
+            "localField": "user_admins",
+            "foreignField": "username",
+            "as": "userObjects"
+        }},
+        { "$unwind": "$userObjects" },
+        { "$group": {
+        "_id": "$_id",
+        "rc_channel_id": {"$first": "$rc_channel_id"},  
+        "user_participants": {"$first": "$user_participants"},
+        "user_admins": { "$push": "$userObjects" },
+        "user_attendees": {"$first": "$user_attendees"},
+        "name": {"$first": "$name"},
+        "points_budget": {"$first": "$points_budget"},
+        "status": {"$first": "$status"},
+        "createdAt": {"$first": "$createdAt"},
+        "__v": {"$first": "$__v"},
+        "tasks": {"$first": "$tasks"}
+        }}
+    ]
+}
 
 exports.gigs_details = asyncMiddleware(async (req, res, next) => {
 
@@ -42,7 +134,9 @@ exports.gigs_details = asyncMiddleware(async (req, res, next) => {
 });
 
 exports.gig_details = asyncMiddleware(async (req, res, next) => {
-    return Gig.findOne({name: req.params.name}).exec().then((gig_retrieved) => {
+    return Gig.findOne({name: req.params.name})
+        // .populate('user_participants')
+        .exec().then((gig_retrieved) => {
         if(gig_retrieved === null){
             return res.status(400).send({
                 error: 'Cannot find gig of name ' + req.params.name
@@ -58,7 +152,6 @@ exports.gig_details = asyncMiddleware(async (req, res, next) => {
     });
 });
 
-//input ID
 exports.gig_update = function (req, res, next) {
     Gig.findByIdAndUpdate(req.params.name, {$set: req.body}, function (err, gig) {
         if (err) return next(err);

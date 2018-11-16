@@ -12,25 +12,26 @@ class EditableTableCell extends React.Component {
         super(props);
         this.state = {
             cellValueState: "",
-            edit: "",
-            onFocus: ""
+            edit: ""
         };
 
         this.enableEdit = this.enableEdit.bind(this);
     }
 
     componentDidMount() {
+        this.clearState();
+    }
+
+    clearState() {
         this.setState({
             cellValueState: "success",
-            edit: false,
-            onFocus: false
+            edit: false
         })
     }
 
     enableEdit() {
         this.setState({
-            edit: true,
-            onFocus: true
+            edit: true
         })
     }
 
@@ -41,9 +42,6 @@ class EditableTableCell extends React.Component {
                 edit: false
             })
         }
-        this.setState({
-            onFocus: false
-        })
     }
 
     onChangeCellValue(event) {
@@ -57,7 +55,6 @@ class EditableTableCell extends React.Component {
 
     validateCellValue(cellValue) {
         const {editValidation, inputRefId} = this.props;
-        const {onFocus} = this.state;
         if (editValidation(parseInt(cellValue), inputRefId)) {
             this.setState({
                 cellValueState: "success"
@@ -90,10 +87,11 @@ class EditableTableCell extends React.Component {
                             inputProps={{
                                 onBlur: this.disableEdit.bind(this),
                                 style: {width: 100},
-                                defaultValue: cellValue,
+                                value: (isNaN(cellValue)) ? 0 : cellValue,
                                 onChange: event => this.onChangeCellValue(event)
                             }}
                             inputType="number"
+                            inputFocus={true}
                         />
                     ) : cellValue
                 }

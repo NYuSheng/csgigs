@@ -10,4 +10,5 @@ router.get('/test', user_controller.test);
 router.post('/create', user_controller.user_create);
 router.post('/login', user_controller.user_login);
 router.post('/login2', user_controller.user_login2);
+// router.post('/searchByPrefix', user_controller.searchByPrefix)
 module.exports = router;
