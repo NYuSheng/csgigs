@@ -1,5 +1,8 @@
 const mongoose = require('mongoose');
+const userSchema = require('../models/user.model');
 const Schema = mongoose.Schema;
+
+var User = mongoose.model('users', userSchema.UserSchema);
 
 let GigsSchema = new Schema({
     name:{type: String, required: true, index: true, unique: true},
@@ -8,6 +11,7 @@ let GigsSchema = new Schema({
     points_budget:{type: Number, required: true},
     status:{type: String, required: true},
     user_admins:[{type: String}],
+    // user_participants:[{type: Schema.Types.ObjectId, ref: 'users'}],
     user_participants:[{type: String}],
     user_attendees:[{type: String}]
     //rocket_chat:{type: String, required: true},
@@ -17,3 +21,4 @@ let GigsSchema = new Schema({
 
 // Export the model
 module.exports = mongoose.model('gigs', GigsSchema);
+
