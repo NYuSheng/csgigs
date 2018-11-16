@@ -43,12 +43,16 @@ class BrownieAllocation extends React.Component {
 
     componentWillReceiveProps() {
         const {gig} = this.props;
+        this.setState({
+            status: "working"
+        })
+
         if (gig.tasks) {
             this.setState({
                 tasks: JSON.parse(JSON.stringify(gig.tasks)),
-                status: "working"
             })
         }
+
         this.cells = {}
     }
 
@@ -225,7 +229,7 @@ class BrownieAllocation extends React.Component {
                                     tableHead={["Task Name", "Points Allocation"]}
                                     tableData={tasks}
                                     tableFooter="false"
-                                    notFoundMessage="No tasks found"
+                                    notFoundMessage="No tasks created"
                                     setupTableCells={this.setupTableCells.bind(this)}
                                     handleTableRowOnClick={this.editTaskAllocation.bind(this)}
                                 />
