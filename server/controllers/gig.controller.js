@@ -101,7 +101,7 @@ function aggregation_with_tasks_and_users(gig_name){
         { "$lookup": {
             "from": "users",
             "localField": "user_admins",
-            "foreignField": "user_name",
+            "foreignField": "username",
             "as": "userObjects"
         }},
         { "$unwind": "$userObjects" },
@@ -109,8 +109,7 @@ function aggregation_with_tasks_and_users(gig_name){
         "_id": "$_id",
         "rc_channel_id": {"$first": "$rc_channel_id"},  
         "user_participants": {"$first": "$user_participants"},
-        "user_admins": { "$push": "$user_admins" },
-        "userObjects": { "$push": "$userObjects" },
+        "user_admins": { "$push": "$userObjects" },
         "user_attendees": {"$first": "$user_attendees"},
         "name": {"$first": "$name"},
         "points_budget": {"$first": "$points_budget"},
