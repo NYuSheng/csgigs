@@ -18,7 +18,6 @@ class CreateGig extends React.Component {
     }
 
     finishButtonClick(step) {
-        const {history} = this.props;
         fetch('/admin-ui/gigs/create', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
@@ -60,7 +59,7 @@ class CreateGig extends React.Component {
     }
 
     render() {
-        const {createGigSuccess, wizard} = this.state;
+        const {createGigSuccess} = this.state;
 
         return (
             <div>

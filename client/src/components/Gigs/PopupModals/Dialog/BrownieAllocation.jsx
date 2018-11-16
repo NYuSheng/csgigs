@@ -71,16 +71,12 @@ class BrownieAllocation extends React.Component {
             tasks: tasks
         })
 
-        if (points > 0) {
-            const {gig} = this.props;
-            tasks.filter(task => task.id !== inputRefId).forEach(function (task) {
-                points += task.points;
-            });
-            if (points <= gig.points) {
-                return true;
-            }
-        }
-        return false;
+        const {gig} = this.props;
+        tasks.filter(task => task.id !== inputRefId).forEach(function (task) {
+            points += task.points;
+        });
+
+        return points <= gig.points_budget
     }
 
     reRenderAllEditableCells = (inputRefId) => {
@@ -88,7 +84,7 @@ class BrownieAllocation extends React.Component {
         tasks.filter(task => task.id !== inputRefId).forEach((task) => {
             const editableTableCell = this.cells[`task${task.id}`];
             editableTableCell.validateCellValue(task.points);
-            editableTableCell.disableEdit();
+            // editableTableCell.disableEdit();
         });
     }
 
@@ -151,6 +147,7 @@ class BrownieAllocation extends React.Component {
         const {tasks, status} = this.state;
 
         return (
+
             <Dialog
                 classes={{
                     root: classes.center + " " + classes.modalRoot,
@@ -231,7 +228,7 @@ class BrownieAllocation extends React.Component {
                                     tableFooter="false"
                                     notFoundMessage="No tasks created"
                                     setupTableCells={this.setupTableCells.bind(this)}
-                                    handleTableRowOnClick={this.editTaskAllocation.bind(this)}
+                                    // handleTableRowOnClick={this.editTaskAllocation.bind(this)}
                                 />
                             ) : null
                     }
@@ -251,7 +248,7 @@ class BrownieAllocation extends React.Component {
                                 <GridItem xs={6} sm={6} md={6} lg={6} style={{textAlign: "left"}}>
                                     {
                                         status === "working" ? (
-                                            <h4 style={{fontWeight: "bold"}}>Budget: {gig.points} Points</h4>
+                                            <h4 style={{fontWeight: "bold"}}>Budget: {gig.points_budget} Points</h4>
                                         ) : null
                                     }
                                 </GridItem>

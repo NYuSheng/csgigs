@@ -7,7 +7,6 @@ import withStyles from "@material-ui/core/styles/withStyles";
 // core components
 
 // dependencies
-import Loader from 'react-loader-spinner';
 
 // style sheets
 import sweetAlertStyle from "assets/jss/material-dashboard-pro-react/views/sweetAlertStyle.jsx";
