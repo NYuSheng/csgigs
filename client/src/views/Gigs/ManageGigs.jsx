@@ -98,20 +98,20 @@ class ManageGigs extends React.Component {
                         </GridItem>
                         <GridItem xs={4} sm={4} md={2} lg={2} style={{textAlign: 'right'}}>
                             {/*<GridContainer  style={{textAlign: 'right'}}>*/}
-                                {/*<GridItem xs={6} sm={6} md={6} lg={6}>*/}
-                                    {/*<Filter filterName="filter"*/}
-                                            {/*filterFunction={this.filterGigsResults.bind(this)}*/}
-                                            {/*buttonIcon={FilterIcon}*/}
-                                    {/*/>*/}
-                                {/*</GridItem>*/}
-                                {/*<GridItem xs={6} sm={6} md={6} lg={6}>*/}
-                                    <Button color="warning"
-                                            onClick={this.handleCreateGigPage.bind(this)}
-                                            style={{width: '100%'}}>
-                                        <Create className={classes.buttonIcon}/>
-                                        Create Gig
-                                    </Button>
-                                {/*</GridItem>*/}
+                            {/*<GridItem xs={6} sm={6} md={6} lg={6}>*/}
+                            {/*<Filter filterName="filter"*/}
+                            {/*filterFunction={this.filterGigsResults.bind(this)}*/}
+                            {/*buttonIcon={FilterIcon}*/}
+                            {/*/>*/}
+                            {/*</GridItem>*/}
+                            {/*<GridItem xs={6} sm={6} md={6} lg={6}>*/}
+                            <Button color="warning"
+                                    onClick={this.handleCreateGigPage.bind(this)}
+                                    style={{width: '100%'}}>
+                                <Create className={classes.buttonIcon}/>
+                                Create Gig
+                            </Button>
+                            {/*</GridItem>*/}
                             {/*</GridContainer>*/}
                         </GridItem>
                     </GridContainer>
