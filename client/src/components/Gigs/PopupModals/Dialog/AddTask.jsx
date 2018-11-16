@@ -19,7 +19,7 @@ import Success from "@material-ui/icons/CheckCircle";
 import GridContainer from "components/Grid/GridContainer";
 import GridItem from "components/Grid/GridItem";
 import CustomInput from "components/Gigs/CustomInput/CustomInput";
-import {renderTaskCategories} from "components/Gigs/Data/TaskCategories";
+import {renderTaskCategories, fetchTaskCategories} from "components/Gigs/Data/TaskCategories";
 import Button from "components/CustomButtons/Button";
 
 // dependencies
@@ -45,6 +45,7 @@ class AddTask extends React.Component {
     }
 
     componentDidMount() {
+        fetchTaskCategories();
         this.setState({
             taskName: "",
             taskDescription: "",
