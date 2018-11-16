@@ -16,6 +16,7 @@ var app = express();
 // Set up mongoose connection
 var mongoose = require('mongoose');
 var dev_db_url = 'mongodb://test1:test123@ds031895.mlab.com:31895/projectgigstest';
+var production_db_url = 'mongodb://localhost:27017/csgigs-admin';
 var mongoDB = process.env.MONGODB_URI || dev_db_url;
 mongoose.connect(mongoDB);
 mongoose.Promise = global.Promise;
