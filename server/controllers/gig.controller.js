@@ -77,7 +77,7 @@ exports.gig_create_temp = asyncMiddleware(async (req, res, next) => {
                     });
                 }
                 res.status(200).send({
-                    gigs: gigs_retrieved[0]
+                    gig: gigs_retrieved[0]
                 });
             }).catch(err=>{
             res.status(400).send({error: err});
