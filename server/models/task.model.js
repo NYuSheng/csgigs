@@ -6,6 +6,7 @@ let TaskSchema = new Schema({
     task_name:{type:String, required:true},
     points:{type:Number, required:true},
     task_category:{type:String, required:true},
+    task_description:{type:String},
     appliedAt:{type:Date, default: Date.now},
     completeAt:{type:Date}
 });

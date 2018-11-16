@@ -24,6 +24,7 @@ import Button from "components/CustomButtons/Button";
 
 // dependencies
 import Loader from 'react-loader-spinner';
+import {NotificationManager} from "react-notifications";
 
 // style sheets
 import notificationsStyle from "assets/jss/material-dashboard-pro-react/views/notificationsStyle.jsx";
@@ -98,6 +99,7 @@ class AddTask extends React.Component {
     }
 
     confirmTaskAdd() {
+        const {gig} = this.props;
         const {status} = this.state;
         if (status !== "success") {
             if (this.isValidated()) {
@@ -105,15 +107,27 @@ class AddTask extends React.Component {
                     status: "loading"
                 });
 
-                // API call here to post the edited task
-                // Build your payload using buildPayLoad() method below
-
-                // dummy function to simulate api call
-                setTimeout(() => {
-                    this.setState({
-                        status: "success"
-                    });
-                }, 1000);
+                fetch('/admin-ui/tasks/addTask', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(this.buildPayLoad())
+                }).then(data => {
+                    if (data.status !== 200) {
+                        data.json().then(json =>{
+                            NotificationManager.error(json.error.errmsg);
+                        });
+                        this.setState({
+                            status: "working"
+                        });
+                    } else {
+                        data.json().then(json =>{
+                            gig.tasks.push(json.task);
+                        });
+                        this.setState({
+                            status: "success"
+                        });
+                    }
+                });
             }
         }
     }
@@ -309,7 +323,14 @@ class AddTask extends React.Component {
     }
 
     buildPayLoad() {
+        const {gig} = this.props;
         // Construct your payload using state fields
+        var payload = {};
+        payload["gig_name"] = gig.name;
+        payload["task_name"] = this.state.taskName;
+        payload["task_category"] = this.state.taskCategory;
+        payload["task_description"] = this.state.taskDescription;
+        return payload;
     }
 }
 

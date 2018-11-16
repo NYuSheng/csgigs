@@ -27,7 +27,7 @@ class Tasks extends React.Component {
                     {tasksIndexes.map(value => (
                         <TableRow key={value} className={classes.tableRow}>
                             <TableCell className={classes.tableCell} style={{width: "60%"}}>
-                                {tasks[value].taskname}
+                                {tasks[value].task_name}
                             </TableCell>
                             <TableCell className={classes.tableCell} style={{width: "20%"}}>
                                 {tasks[value].status}

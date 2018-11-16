@@ -84,7 +84,6 @@ class BrownieAllocation extends React.Component {
         tasks.filter(task => task.id !== inputRefId).forEach((task) => {
             const editableTableCell = this.cells[`task${task.id}`];
             editableTableCell.validateCellValue(task.points);
-            // editableTableCell.disableEdit();
         });
     }
 
@@ -94,7 +93,7 @@ class BrownieAllocation extends React.Component {
         return (
             <React.Fragment>
                 <TableCell colSpan="1" className={tableCellClasses}>
-                    {task.taskname}
+                    {task.task_name}
                 </TableCell>
                 <EditableTableCell ref={(cell) => this.cells[`task${task.id}`] = cell}
                                    inputRefId={task.id}
@@ -105,11 +104,6 @@ class BrownieAllocation extends React.Component {
                 />
             </React.Fragment>
         );
-    }
-
-    editTaskAllocation(task) {
-        const editableTableCell = this.cells[`task${task.id}`];
-        editableTableCell.enableEdit();
     }
 
     confirmAdminAssign() {
@@ -228,7 +222,6 @@ class BrownieAllocation extends React.Component {
                                     tableFooter="false"
                                     notFoundMessage="No tasks created"
                                     setupTableCells={this.setupTableCells.bind(this)}
-                                    // handleTableRowOnClick={this.editTaskAllocation.bind(this)}
                                 />
                             ) : null
                     }

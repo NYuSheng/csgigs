@@ -6,7 +6,8 @@ exports.create_tasks = function (req, res, next) {
         {
             gig_name: req.body.gig_name,
             task_name:req.body.task_name,
-            points: req.body.points,
+            task_description:req.body.task_description,
+            points: 0,
             task_category: req.body.task_category,
             completeAt: null
         }

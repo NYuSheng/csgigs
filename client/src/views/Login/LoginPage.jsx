@@ -4,11 +4,11 @@ import PropTypes from "prop-types";
 // @material-ui/core components
 import withStyles from "@material-ui/core/styles/withStyles";
 import InputAdornment from "@material-ui/core/InputAdornment";
-import Icon from "@material-ui/core/Icon";
+// import Icon from "@material-ui/core/Icon";
 
 // @material-ui/icons
 import Face from "@material-ui/icons/Face";
-import Email from "@material-ui/icons/Email";
+// import Email from "@material-ui/icons/Email";
 // import LockOutline from "@material-ui/icons/LockOutline";
 
 // core components
@@ -22,7 +22,7 @@ import CardHeader from "components/Card/CardHeader.jsx";
 import CardFooter from "components/Card/CardFooter.jsx";
 
 import loginPageStyle from "assets/jss/material-dashboard-pro-react/views/loginPageStyle.jsx";
-import pagesStyle from "assets/jss/material-dashboard-pro-react/layouts/pagesStyle.jsx";
+// import pagesStyle from "assets/jss/material-dashboard-pro-react/layouts/pagesStyle.jsx";
 import PagesHeader from "../../components/Header/PagesHeader";
 import bgImage from "assets/img/register.jpeg";
 

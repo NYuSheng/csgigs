@@ -196,7 +196,7 @@ class GigDashboard extends React.Component {
 
         if (tasks) {
             tasks.forEach(function (task) {
-                var category = task.category;
+                var category = task.task_category;
                 if (organizedContent.hasOwnProperty(category)) {
                     organizedContent[category].push(task)
                 } else {
@@ -266,7 +266,7 @@ class GigDashboard extends React.Component {
                 {removeTask}
                 {editTask}
                 {editGigParticipants}
-                <AddTask modalOpen={addTask} hideTask={this.hidePopup.bind(this)}/>
+                <AddTask modalOpen={addTask} hideTask={this.hidePopup.bind(this)} gig={gig}/>
                 <EditGigAdmins modalOpen={editGigAdmins} hidePopup={this.hidePopup.bind(this)} admins={gig.user_admins}/>
                 <BrownieAllocation modalOpen={brownieAllocation} hidePopup={this.hidePopup.bind(this)} gig={gig}/>
                 <GridContainer justify="center">

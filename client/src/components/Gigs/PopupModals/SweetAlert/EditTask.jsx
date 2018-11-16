@@ -35,11 +35,11 @@ class EditTask extends React.Component {
     componentDidMount() {
         const {task} = this.props;
         this.setState({
-            taskId: task.id,
-            taskName: task.taskname,
+            taskId: task._id,
+            taskName: task.task_name,
             taskNameState: "success",
-            taskDescription: task.description,
-            taskCategory: task.category,
+            taskDescription: task.task_description,
+            taskCategory: task.task_category,
             status: "working"
         })
     }
@@ -160,7 +160,7 @@ class EditTask extends React.Component {
                                             fullWidth: true
                                         }}
                                         inputProps={{
-                                            defaultValue: task.taskname,
+                                            defaultValue: task.task_name,
                                             onChange: event => this.onChangeTaskName(event)
                                         }}
                                         inputType="text"
@@ -178,7 +178,7 @@ class EditTask extends React.Component {
                                             fullWidth: true
                                         }}
                                         inputProps={{
-                                            defaultValue: task.description,
+                                            defaultValue: task.task_description,
                                             multiline: true,
                                             onChange: event => this.onChangeTaskDescription(event)
                                         }}
@@ -206,7 +206,7 @@ class EditTask extends React.Component {
                                             }}
                                             onChange={this.onChangeTaskCategory}
                                             inputProps={{
-                                                defaultValue: task.category,
+                                                defaultValue: task.task_category,
                                                 name: "taskcategory",
                                                 id: "taskcategory"
                                             }}
