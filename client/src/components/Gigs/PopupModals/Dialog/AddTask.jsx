@@ -40,6 +40,7 @@ class AddTask extends React.Component {
             taskDescription: "",
             taskNameState: "",
             taskCategory: "",
+            taskCategoryState: "",
             status: "",
         };
     }
@@ -47,24 +48,29 @@ class AddTask extends React.Component {
     componentDidMount() {
         fetchTaskCategories();
         this.setState({
-            taskName: "",
-            taskDescription: "",
-            taskNameState: "",
-            taskCategory: "",
             status: "working"
         })
     }
 
     onChangeTaskCategory = event => {
+        const category = event.target.value;
         this.setState({
-            taskCategory: event.target.value
+            taskCategory: category
         });
+        this.validateTaskCategory(category)
     };
 
     onChangeTaskDescription(event) {
         this.setState({
             taskDescription: event.target.value
         })
+    }
+
+    validateTaskCategory(category) {
+        category ?
+            this.setState({taskCategoryState: "success"})
+            :
+            this.setState({taskCategoryState: "error"})
     }
 
     validateTaskName(event) {
@@ -77,18 +83,21 @@ class AddTask extends React.Component {
     }
 
     isValidated() {
-        const {taskNameState} = this.state;
-        if (taskNameState === "success") {
+        const {taskNameState, taskCategoryState} = this.state;
+        if (taskNameState === "success" && taskCategoryState === "success") {
             return true;
         } else {
             if (taskNameState !== "success") {
                 this.setState({taskNameState: "error"});
             }
+            if (taskCategoryState !== "success") {
+                this.setState({taskCategoryState: "error"});
+            }
         }
         return false;
     }
 
-    confirmTaskEdit() {
+    confirmTaskAdd() {
         const {status} = this.state;
         if (status !== "success") {
             if (this.isValidated()) {
@@ -126,7 +135,7 @@ class AddTask extends React.Component {
 
     render() {
         const {classes, modalOpen} = this.props;
-        const {taskNameState, status} = this.state;
+        const {taskNameState, taskCategoryState, status} = this.state;
 
         return (
             <Dialog
@@ -242,6 +251,7 @@ class AddTask extends React.Component {
                                         <FormControl
                                             fullWidth
                                             className={classes.selectFormControl}
+                                            error={taskCategoryState === "error"}
                                         >
                                             <InputLabel
                                                 htmlFor="taskcategory"
@@ -282,7 +292,7 @@ class AddTask extends React.Component {
                 {
                     status === "working" ? (
                         <DialogActions className={classes.modalFooter} style={{paddingTop: 15}}>
-                            <Button onClick={() => this.confirmTaskEdit()}
+                            <Button onClick={() => this.confirmTaskAdd()}
                                     className={classes.button + " " + classes.success}
                                     color="success">
                                 Add

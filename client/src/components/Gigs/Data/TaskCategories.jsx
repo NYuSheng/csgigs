@@ -26,6 +26,7 @@ export const fetchTaskCategories = function () {
 export const renderTaskCategories = function () {
     return (
         <React.Fragment>
+            <option value=""> </option>
             {
                 categories.map((prop, key) => {
                     return (
