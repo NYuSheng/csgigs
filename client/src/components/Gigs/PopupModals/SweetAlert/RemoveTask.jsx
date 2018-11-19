@@ -8,6 +8,7 @@ import withStyles from "@material-ui/core/styles/withStyles";
 
 // dependencies
 import Loader from 'react-loader-spinner';
+import {NotificationManager} from "react-notifications";
 
 // style sheets
 import sweetAlertStyle from "assets/jss/material-dashboard-pro-react/views/sweetAlertStyle.jsx";
@@ -24,28 +25,50 @@ class RemoveTask extends React.Component {
     componentDidMount() {
         const {task} = this.props;
         this.setState({
-            taskId: task,
+            taskId: task._id,
             status: "working"
         })
     }
 
+    taskRemoveAction() {
+        const {gig} = this.props;
+        const {taskId} = this.state;
+        const tasks = gig.tasks;
+        for (var i = tasks.length - 1; i >= 0; --i) {
+            if (tasks[i]._id === taskId) {
+                tasks.splice(i,1);
+            }
+        }
+    }
+
     confirmTaskRemove() {
         const { hideTask } = this.props;
-        const { status } = this.state;
+        const { taskId, status } = this.state;
         if (status !== "success") {
             this.setState({
                 status: "loading"
             });
 
-            // API call here to remove the selected task
-            // Build your payload using buildPayLoad() method below
-
-            // dummy function to simulate api call
-            setTimeout(() => {
-                this.setState({
-                    status: "success"
-                });
-            }, 1000);
+            fetch(`/admin-ui/tasks/removeTask/${taskId}`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'}
+            }).then(data => {
+                if (data.status !== 200) {
+                    data.json().then(json =>{
+                        NotificationManager.error(json.error.errmsg);
+                    });
+                    this.setState({
+                        status: "working"
+                    });
+                } else {
+                    data.json().then(json =>{
+                        this.taskRemoveAction();
+                    });
+                    this.setState({
+                        status: "success"
+                    });
+                }
+            });
         } else {
             hideTask("removeTask");
         }

@@ -77,6 +77,7 @@ class GigDashboard extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            gig: null,
             removeTask: null,
             assignUsers: null,
             editGigParticipants: null,
@@ -89,6 +90,13 @@ class GigDashboard extends React.Component {
             Completed: "success",
             Cancelled: "danger"
         };
+    }
+
+    componentWillMount() {
+        const gig = this.props.location.state.gig;
+        this.setState({
+            gig: gig
+        })
     }
 
     setupAdminTableCells(admin) {
@@ -143,10 +151,12 @@ class GigDashboard extends React.Component {
     }
 
     removeTask(task) {
+        const {gig} = this.state;
         this.setState({
             removeTask: (
                 <RemoveTask hideTask={this.hidePopup.bind(this)}
                             task={task}
+                            gig={gig}
                 />
             )
         });
@@ -250,6 +260,7 @@ class GigDashboard extends React.Component {
     render() {
         const {classes} = this.props;
         const {
+            gig,
             assignUsers,
             removeTask,
             editTask,
@@ -258,7 +269,6 @@ class GigDashboard extends React.Component {
             addTask,
             brownieAllocation
         } = this.state;
-        const gig = this.props.location.state.gig;
 
         return (
             <div>
