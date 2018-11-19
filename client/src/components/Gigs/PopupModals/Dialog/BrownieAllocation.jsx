@@ -22,7 +22,7 @@ import GridItem from "components/Grid/GridItem";
 
 // dependencies
 import Loader from 'react-loader-spinner';
-// import {NotificationManager} from "react-notifications";
+import {NotificationManager} from "react-notifications";
 
 // style sheets
 import notificationsStyle from "assets/jss/material-dashboard-pro-react/views/notificationsStyle.jsx";
@@ -36,7 +36,7 @@ class BrownieAllocation extends React.Component {
         super(props);
         this.state = {
             tasks: [],
-            status: "",
+            status: ""
         };
         this.cells = React.createRef();
     }
@@ -64,7 +64,7 @@ class BrownieAllocation extends React.Component {
         }
 
         var result = tasks.find(task => {
-            return task.id === inputRefId
+            return task._id === inputRefId
         })
         result.points = points;
         this.setState({
@@ -72,7 +72,7 @@ class BrownieAllocation extends React.Component {
         })
 
         const {gig} = this.props;
-        tasks.filter(task => task.id !== inputRefId).forEach(function (task) {
+        tasks.filter(task => task._id !== inputRefId).forEach(function (task) {
             points += task.points;
         });
 
@@ -81,8 +81,8 @@ class BrownieAllocation extends React.Component {
 
     reRenderAllEditableCells = (inputRefId) => {
         const {tasks} = this.state;
-        tasks.filter(task => task.id !== inputRefId).forEach((task) => {
-            const editableTableCell = this.cells[`task${task.id}`];
+        tasks.filter(task => task._id !== inputRefId).forEach((task) => {
+            const editableTableCell = this.cells[`task${task._id}`];
             editableTableCell.validateCellValue(task.points);
         });
     }
@@ -95,8 +95,8 @@ class BrownieAllocation extends React.Component {
                 <TableCell colSpan="1" className={tableCellClasses}>
                     {task.task_name}
                 </TableCell>
-                <EditableTableCell ref={(cell) => this.cells[`task${task.id}`] = cell}
-                                   inputRefId={task.id}
+                <EditableTableCell ref={(cell) => this.cells[`task${task._id}`] = cell}
+                                   inputRefId={task._id}
                                    classes={classes}
                                    cellValue={task.points}
                                    editValidation={this.validatePointAllocation}
@@ -106,22 +106,59 @@ class BrownieAllocation extends React.Component {
         );
     }
 
-    confirmAdminAssign() {
+    isValidated() {
+        const {tasks} = this.state;
+        var BreakException = {};
+
+        try {
+            tasks.forEach((task) => {
+                const editableTableCell = this.cells[`task${task._id}`];
+                if (editableTableCell.state.cellValueState !== "success") {
+                    throw BreakException;
+                }
+            });
+        } catch (exception) {
+            return false;
+        }
+
+        return true;
+    }
+
+    allocationEditAction() {
+        const {gig} = this.props;
+        const {tasks} = this.state;
+
+        gig.tasks = tasks;
+    }
+
+    confirmAllocationEdit() {
         const {status} = this.state;
         if (status !== "success") {
-            this.setState({
-                status: "loading"
-            });
-
-            // API call here to post the updated assigned users
-            // Build your payload using buildPayLoad() method below
-
-            // dummy function to simulate api call
-            setTimeout(() => {
+            if (this.isValidated()) {
                 this.setState({
-                    status: "success"
+                    status: "loading"
                 });
-            }, 1000);
+
+                fetch("/admin-ui/tasks/updateTasksPoints", {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(this.buildPayLoad())
+                }).then(data => {
+                    if (data.status !== 200) {
+                        data.json().then(json =>{
+                            NotificationManager.error(json.error.errmsg);
+                        });
+                        this.setState({
+                            status: "working"
+                        });
+                    } else {
+                        this.allocationEditAction();
+                        this.setState({
+                            status: "success"
+                        });
+                    }
+                });
+            }
         }
     }
 
@@ -129,7 +166,7 @@ class BrownieAllocation extends React.Component {
         const {hidePopup} = this.props;
         const {tasks} = this.state;
         tasks.forEach((task) => {
-            const editableTableCell = this.cells[`task${task.id}`];
+            const editableTableCell = this.cells[`task${task._id}`];
             if (editableTableCell) editableTableCell.clearState();
         });
 
@@ -247,7 +284,7 @@ class BrownieAllocation extends React.Component {
                                 </GridItem>
                                 <GridItem xs={6} sm={6} md={6} lg={6} style={{textAlign: "right"}}>
 
-                                    <Button onClick={() => this.confirmAdminAssign()}
+                                    <Button onClick={() => this.confirmAllocationEdit()}
                                             className={classes.button + " " + classes.success}
                                             color="success">
                                         Save
@@ -266,7 +303,12 @@ class BrownieAllocation extends React.Component {
     }
 
     buildPayLoad() {
-        // Construct your payload using state fields
+        const {tasks} = this.state;
+
+        var payload = {};
+        payload["tasks"] = tasks;
+
+        return payload;
     }
 }
 

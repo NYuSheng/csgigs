@@ -45,6 +45,17 @@ exports.update_task = function (req, res, next) {
         res.send('Task udpated.');
     });
 };
+
+exports.update_points_allocation = function (req, res, next) {
+    var tasks = req.body.tasks;
+    tasks.forEach(function (task) {
+        Task.findByIdAndUpdate(task._id, {$set: task}, function (err, task) {
+            if (err) return next(err);
+        });
+    });
+    res.status(200).send('Points udpated.');
+};
+
 exports.remove_task = function (req, res, next) {
     Task.findByIdAndRemove(req.params.taskid, (err, task) => {
         if (err) return res.status(500).send(err);
