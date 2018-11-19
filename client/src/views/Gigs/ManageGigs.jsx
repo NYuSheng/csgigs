@@ -20,6 +20,9 @@ import Event from "@material-ui/icons/Event";
 import Create from "@material-ui/icons/NoteAdd";
 // import FilterIcon from "@material-ui/icons/Filter";
 
+// dependencies
+import {NotificationManager} from "react-notifications";
+
 // style sheets
 import {cardTitle} from "assets/jss/material-dashboard-pro-react.jsx";
 
@@ -37,12 +40,33 @@ class ManageGigs extends React.Component {
         this.state = {
             gigs: [],
             // filtered: []
+            isLoading: false
         };
     }
 
     componentDidMount() {
-        // insert api call to retrieve all gigs
-        this.setupRawData();
+        this.setState({
+            isLoading: true
+        });
+        fetch('/admin-ui/gigs/', {
+            method: 'GET',
+            headers: {'Content-Type': 'application/json'}
+        }).then(data => {
+            if (data.status !== 200) {
+                data.json().then(json =>{
+                    NotificationManager.error(json.error.errmsg);
+                });
+            } else {
+                data.json().then(json =>{
+                    this.setState({
+                        gigs: json.gigs
+                    })
+                });
+            }
+            this.setState({
+                isLoading: false
+            })
+        });
     }
 
     setupTableCells(gig) {
@@ -85,6 +109,7 @@ class ManageGigs extends React.Component {
 
     render() {
         const {classes} = this.props;
+        const {isLoading} = this.state;
 
         return (
             <Card>
@@ -119,6 +144,7 @@ class ManageGigs extends React.Component {
                 <CardBody>
                     <Table
                         hover
+                        isLoading={isLoading}
                         tableHeaderColor="primary"
                         tableHead={["Gig Name", "Gig Admin(s)", "Gig Status"]}
                         tableData={this.state.gigs}
@@ -130,72 +156,6 @@ class ManageGigs extends React.Component {
                 </CardBody>
             </Card>
         );
-    }
-
-    setupRawData() {
-        // Fake data for gigs
-        let gigs = [];
-        gigs.push({
-            _id: 10000,
-            name: "Hackathon 2018",
-            status: "Active",
-            // Could potentially be a user object
-            user_admins: [{ id: 123, name: "Brandon"}, { id: 234, name: "Ernest"}],
-            rc_channel_id: "gigs chat",
-            points_budget: 400,
-            tasks: [
-                {
-                    id: 1,
-                    category: "Logistics",
-                    taskname: "Prepare food",
-                    description: "Meet at Woodlands at 10am to collect food and set up food area by 3pm",
-                    status: "Unassigned",
-                    points: 100,
-                    assignees: [{
-                        id: "123",
-                        name: "Brandon"
-                    }]
-                },
-                {
-                    id: 2,
-                    category: "Admin",
-                    taskname: "Get sign ups",
-                    description: "",
-                    status: "Unassigned",
-                    points: 100,
-                    assignees: []
-                },
-                {
-                    id: 3,
-                    category: "Operation",
-                    taskname: "Man the area during event",
-                    description: "",
-                    status: "Unassigned",
-                    points: 100,
-                    assignees: []
-                }
-            ],
-            user_participants: [
-                {
-                    id: "team_id1",
-                    name: "Hackers@Work",
-                    members: [
-                        {
-                            id: 123,
-                            name: "Brandon"
-                        },
-                        {
-                            id: 234,
-                            name: "Ernest"
-                        }
-                    ]
-                }
-            ]
-        });
-        this.setState({
-            gigs: gigs,
-            // filtered: gigs
-        });
     }
 }
 

@@ -17,6 +17,9 @@ import Pagination from "./Pagination.jsx";
 
 import tableStyle from "assets/jss/material-dashboard-pro-react/components/tableStyle";
 
+// dependencies
+import Loader from 'react-loader-spinner';
+
 class GigsTable extends React.Component {
     constructor(props) {
         super(props);
@@ -67,6 +70,7 @@ class GigsTable extends React.Component {
 
     render() {
         const {
+            isLoading,
             classes,
             tableHead,
             tableData,
@@ -83,7 +87,7 @@ class GigsTable extends React.Component {
 
         return (
             <div className={classes.tableResponsive} style={{height: tableHeight}}>
-                <Table className={classes.table} style={{borderBottom: error? '1px solid red': ''}}>
+                <Table className={classes.table} style={{borderBottom: error ? '1px solid red' : ''}}>
                     {tableHead !== undefined ? (
                         <TableHead className={classes[tableHeaderColor]}>
                             <TableRow className={classes.tableRow}>
@@ -111,25 +115,38 @@ class GigsTable extends React.Component {
                         </TableHead>
                     ) : null}
                     <TableBody>
-                        {tableData && tableData.length ?
-                            (
-                                tableFooter === "true" ? (
-                                    tableData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((prop, key) => {
-                                        return this.setupTableRow(prop, key);
-                                    })
-                                ) : (
-                                    tableData.map((prop, key) => {
-                                        return this.setupTableRow(prop, key);
-                                    })
-                                )
-                            ) :
+                        {isLoading ?
                             (
                                 <TableRow>
-                                    <TableCell colSpan="3" className={classes.tableCell}>
-                                        {notFoundMessage}
+                                    <TableCell colSpan={tableHead.length} className={classes.tableCell} style={{textAlign: "center"}}>
+                                        <Loader
+                                            type="ThreeDots"
+                                            color="black"
+                                            height="100"
+                                            width="100"
+                                        />
                                     </TableCell>
                                 </TableRow>
-                            )}
+                            ) : (tableData && tableData.length) ?
+                                (
+                                    tableFooter === "true" ? (
+                                        tableData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((prop, key) => {
+                                            return this.setupTableRow(prop, key);
+                                        })
+                                    ) : (
+                                        tableData.map((prop, key) => {
+                                            return this.setupTableRow(prop, key);
+                                        })
+                                    )
+                                ) :
+                                (
+                                    <TableRow>
+                                        <TableCell colSpan="3" className={classes.tableCell}>
+                                            {notFoundMessage}
+                                        </TableCell>
+                                    </TableRow>
+                                )
+                        }
                     </TableBody>
                     {
                         tableFooter === "true" ? (
