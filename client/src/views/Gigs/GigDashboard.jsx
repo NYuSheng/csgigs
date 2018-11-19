@@ -139,9 +139,21 @@ class GigDashboard extends React.Component {
             editTask: (
                 <EditTask hideTask={this.hidePopup.bind(this)}
                           task={task}
+                          editTaskAction={this.editTaskAction.bind(this)}
                 />
             )
         });
+    }
+
+    editTaskAction(payload){
+        const {gig} = this.state;
+        const tasks = gig.tasks;
+        var taskToEdit = tasks.find(task => {
+            return task._id === payload.id
+        });
+        taskToEdit.task_name = payload.taskName;
+        taskToEdit.task_description = payload.taskDescription;
+        taskToEdit.task_category = payload.taskCategory;
     }
 
     addTask() {

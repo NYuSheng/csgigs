@@ -11,10 +11,11 @@ import Select from "@material-ui/core/Select";
 import GridContainer from "components/Grid/GridContainer";
 import GridItem from "components/Grid/GridItem";
 import CustomInput from "components/Gigs/CustomInput/CustomInput";
-import {renderTaskCategories} from "components/Gigs/Data/TaskCategories";
+import {renderTaskCategories, fetchTaskCategories} from "components/Gigs/Data/TaskCategories";
 
 // dependencies
 import Loader from 'react-loader-spinner';
+import {NotificationManager} from "react-notifications";
 
 // style sheets
 import sweetAlertStyle from "assets/jss/material-dashboard-pro-react/views/sweetAlertStyle.jsx";
@@ -23,37 +24,47 @@ class EditTask extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            taskId: "",
             taskName: "",
             taskDescription: "",
             taskNameState: "",
             taskCategory: "",
+            taskCategoryState: "",
             status: "",
         };
     }
 
     componentDidMount() {
+        fetchTaskCategories();
         const {task} = this.props;
         this.setState({
-            taskId: task._id,
             taskName: task.task_name,
             taskNameState: "success",
             taskDescription: task.task_description,
             taskCategory: task.task_category,
+            taskCategoryState: "success",
             status: "working"
         })
     }
 
     onChangeTaskCategory = event => {
+        const category = event.target.value;
         this.setState({
-            taskCategory: event.target.value
+            taskCategory: category
         });
+        this.validateTaskCategory(category)
     };
 
     onChangeTaskDescription(event) {
         this.setState({
             taskDescription: event.target.value
         })
+    }
+
+    validateTaskCategory(category) {
+        category ?
+            this.setState({taskCategoryState: "success"})
+            :
+            this.setState({taskCategoryState: "error"})
     }
 
     onChangeTaskName(event) {
@@ -70,17 +81,34 @@ class EditTask extends React.Component {
     }
 
     isValidated() {
-        const {taskNameState} = this.state;
-        if (taskNameState === "success") {
+        const {taskNameState, taskCategoryState} = this.state;
+        if (taskNameState === "success" && taskCategoryState === "success") {
             return true;
         } else {
-            this.setState({taskNameState: "error"});
+            if (taskNameState !== "success") {
+                this.setState({taskNameState: "error"});
+            }
+            if (taskCategoryState !== "success") {
+                this.setState({taskCategoryState: "error"});
+            }
         }
         return false;
     }
 
+    taskEditAction() {
+        const {editTaskAction, task} = this.props;
+        const {taskName, taskDescription, taskCategory} = this.state;
+
+        var payload = {};
+        payload["id"] = task._id;
+        payload["taskName"] = taskName;
+        payload["taskDescription"] = taskDescription;
+        payload["taskCategory"] = taskCategory;
+        editTaskAction(payload);
+    }
+
     confirmTaskEdit() {
-        const {hideTask} = this.props;
+        const {hideTask, task} = this.props;
         const {status} = this.state;
         if (status !== "success") {
             if (this.isValidated()) {
@@ -88,15 +116,25 @@ class EditTask extends React.Component {
                     status: "loading"
                 });
 
-                // API call here to post the edited task
-                // Build your payload using buildPayLoad() method below
-
-                // dummy function to simulate api call
-                setTimeout(() => {
-                    this.setState({
-                        status: "success"
-                    });
-                }, 1000);
+                fetch(`/admin-ui/tasks/updateTask/${task._id}`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(this.buildPayLoad())
+                }).then(data => {
+                    if (data.status !== 200) {
+                        data.json().then(json =>{
+                            NotificationManager.error(json.error.errmsg);
+                        });
+                        this.setState({
+                            status: "working"
+                        });
+                    } else {
+                        this.taskEditAction();
+                        this.setState({
+                            status: "success"
+                        });
+                    }
+                });
             }
         } else {
             hideTask("editTask");
@@ -105,7 +143,7 @@ class EditTask extends React.Component {
 
     render() {
         const {classes, hideTask, task} = this.props;
-        const {taskNameState, status} = this.state;
+        const {taskNameState, taskCategoryState, status} = this.state;
 
         return (
             <SweetAlert
@@ -189,6 +227,7 @@ class EditTask extends React.Component {
                                     <FormControl
                                         fullWidth
                                         className={classes.selectFormControl}
+                                        error={taskCategoryState === "error"}
                                     >
                                         <InputLabel
                                             htmlFor="taskcategory"
@@ -223,7 +262,13 @@ class EditTask extends React.Component {
     }
 
     buildPayLoad() {
-        // Construct your payload using state fields
+        const {taskName, taskDescription, taskCategory} = this.state;
+
+        var payload = {};
+        payload["task_name"] = taskName;
+        payload["task_description"] = taskDescription;
+        payload["task_category"] = taskCategory;
+        return payload;
     }
 }
 

@@ -117,10 +117,6 @@ class RemoveTask extends React.Component {
             </SweetAlert>
         );
     }
-
-    buildPayLoad() {
-        // Construct your payload using state fields
-    }
 }
 
 export default withStyles(sweetAlertStyle)(RemoveTask);
