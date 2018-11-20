@@ -15,10 +15,15 @@ var app = express();
 
 // Set up mongoose connection
 var mongoose = require('mongoose');
-var dev_db_url = 'mongodb://test1:test123@ds031895.mlab.com:31895/projectgigstest';
-var production_db_url = 'mongodb://localhost:27017/csgigs-admin';
-var mongoDB = process.env.MONGODB_URI || dev_db_url;
-mongoose.connect(mongoDB);
+const config = require('./config');
+const { db: { host, port, name } } = config;
+const connectionString = `mongodb://${host}:${port}/${name}`;
+mongoose.connect(connectionString);
+// var dev_db_url = 'mongodb://test1:test123@ds031895.mlab.com:31895/projectgigstest';
+// var dev_db_url = 'mongodb://localhost/db';
+// var production_db_url = 'mongodb://localhost:27017/csgigs-admin';
+// var mongoDB = process.env.MONGODB_URI || dev_db_url;
+// mongoose.connect(mongoDB);
 mongoose.Promise = global.Promise;
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
@@ -40,8 +45,8 @@ app.get('/admin-ui/*', function (req, res) {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-var port = 5000;
+var appPort = 5000;
 
-app.listen(port, () => {
-    console.log('Server is up and running on port numner ' + port);
+app.listen(appPort, () => {
+    console.log('Server is up and running on port numner ' + appPort);
 });
