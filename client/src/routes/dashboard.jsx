@@ -36,7 +36,7 @@ import WidgetsIcon from "@material-ui/icons/Widgets";
 import Timeline from "@material-ui/icons/Timeline";
 import DateRange from "@material-ui/icons/DateRange";
 import Event from "@material-ui/icons/Event";
-import Fingerprint from "@material-ui/icons/Fingerprint";
+// import Fingerprint from "@material-ui/icons/Fingerprint";
 
 
 var pages = [

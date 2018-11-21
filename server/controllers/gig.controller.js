@@ -128,7 +128,6 @@ function aggregation_with_tasks_and_users(gig_name) {
 }
 
 exports.gigs_details = asyncMiddleware(async (req, res, next) => {
-
     return Gig.aggregate([
         {
             "$lookup": {
@@ -174,8 +173,46 @@ exports.gigs_details = asyncMiddleware(async (req, res, next) => {
 });
 
 exports.gig_details = asyncMiddleware(async (req, res, next) => {
-    return Gig.findOne({name: req.params.name})
-    // .populate('user_participants')
+    return Gig.aggregate([
+        {"$match":
+                {
+                    "name": req.params.name
+                }
+        },
+        {
+            "$lookup": {
+                "from": 'tasks',
+                "localField": 'name',
+                "foreignField": 'gig_name',
+                "as": 'tasks'
+            }
+        },
+        {"$unwind": "$user_admins"},
+        {
+            "$lookup": {
+                "from": "users",
+                "localField": "user_admins",
+                "foreignField": "username",
+                "as": "userObjects"
+            }
+        },
+        {"$unwind": "$userObjects"},
+        {
+            "$group": {
+                "_id": "$_id",
+                "rc_channel_id": {"$first": "$rc_channel_id"},
+                "user_participants": {"$first": "$user_participants"},
+                "user_admins": {"$push": "$userObjects"},
+                "user_attendees": {"$first": "$user_attendees"},
+                "name": {"$first": "$name"},
+                "points_budget": {"$first": "$points_budget"},
+                "status": {"$first": "$status"},
+                "createdAt": {"$first": "$createdAt"},
+                "__v": {"$first": "$__v"},
+                "tasks": {"$first": "$tasks"}
+            }
+        }
+    ])
         .exec().then((gig_retrieved) => {
             if (gig_retrieved === null) {
                 return res.status(400).send({
@@ -184,7 +221,7 @@ exports.gig_details = asyncMiddleware(async (req, res, next) => {
             }
 
             res.status(200).send({
-                gig: gig_retrieved
+                gig: gig_retrieved[0]
             });
 
         }).catch(err => {

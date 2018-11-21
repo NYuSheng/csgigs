@@ -32,10 +32,7 @@ class CreateAGig extends React.Component {
 
         history.push({
             headername: `${gig.name}`,
-            pathname: `/gigs/${gig.name}`,
-            state: {
-                gig: gig
-            }
+            pathname: `/gigs/${gig.name}`
         });
     }
 

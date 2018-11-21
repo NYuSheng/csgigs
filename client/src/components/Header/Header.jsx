@@ -8,7 +8,6 @@ import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Hidden from "@material-ui/core/Hidden";
 
-
 // material-ui icons
 import Menu from "@material-ui/icons/Menu";
 import MoreVert from "@material-ui/icons/MoreVert";
@@ -19,27 +18,42 @@ import ViewList from "@material-ui/icons/ViewList";
 import Button from "components/CustomButtons/Button.jsx";
 import CardHeader from "components/Card/CardHeader.jsx";
 
+// dependencies
+import { matchPath } from 'react-router';
+
+// style sheets
 import headerStyle from "assets/jss/material-dashboard-pro-react/components/headerStyle.jsx";
 
 function Header({...props}) {
     function makeBrand() {
         var name;
+
         props.routes.map((prop, key) => {
             if (prop.collapse) {
                 prop.views.map((prop, key) => {
                     if (prop.path === props.location.pathname) {
                         name = prop.name;
+                    } else {
+                        const match = matchPath(props.history.location.pathname, {
+                            path: prop.path,
+                            exact: true,
+                            strict: false
+                        });
+                        if (match) {
+                            name = match.params.gigId;
+                        }
                     }
                     return null;
                 });
             }
 
             if (!name) {
-                name = (prop.path === props.location.pathname) ? prop.name : props.location.headername;
+                name = (prop.path === props.location.pathname) ? prop.name : props.match.params.gigId;
             }
 
             return null;
         });
+
         if (name) {
             return name;
         } else {

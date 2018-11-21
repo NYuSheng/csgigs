@@ -4,12 +4,12 @@ import PropTypes from "prop-types";
 // @material-ui/core components
 import withStyles from "@material-ui/core/styles/withStyles";
 import InputAdornment from "@material-ui/core/InputAdornment";
-// import Icon from "@material-ui/core/Icon";
 
 // @material-ui/icons
 import Face from "@material-ui/icons/Face";
 // import Email from "@material-ui/icons/Email";
 // import LockOutline from "@material-ui/icons/LockOutline";
+// import Icon from "@material-ui/core/Icon";
 
 // core components
 import GridContainer from "components/Grid/GridContainer.jsx";
@@ -20,12 +20,14 @@ import Card from "components/Card/Card.jsx";
 import CardBody from "components/Card/CardBody.jsx";
 import CardHeader from "components/Card/CardHeader.jsx";
 import CardFooter from "components/Card/CardFooter.jsx";
+import UserProfile from "components/Gigs/Authentication/UserProfile";
 
 import loginPageStyle from "assets/jss/material-dashboard-pro-react/views/loginPageStyle.jsx";
 // import pagesStyle from "assets/jss/material-dashboard-pro-react/layouts/pagesStyle.jsx";
 import PagesHeader from "../../components/Header/PagesHeader";
 import bgImage from "assets/img/register.jpeg";
 
+// dependencies
 import {NotificationManager, NotificationContainer} from "react-notifications";
 
 class LoginPage extends React.Component {
@@ -87,6 +89,7 @@ class LoginPage extends React.Component {
             .then(data => {
                 if (data.adminuser === undefined) NotificationManager.error("Login failed");
                 else {
+                    UserProfile.login(data.adminuser);
                     const {history} = this.props;
                     history.push({
                         pathname: "/dashboard"

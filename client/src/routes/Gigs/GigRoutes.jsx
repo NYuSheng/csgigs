@@ -21,7 +21,7 @@ const gigsRoutes = [
         component: CreateGig
 
     },
-    {hide: true, path: "/gigs/:gigId", name: "Gig", mini: "", component: GigDashboard}
+    {hide: true, path: "/gigs/:gigId", name: "Gig", component: GigDashboard}
 ];
 
 export default gigsRoutes;

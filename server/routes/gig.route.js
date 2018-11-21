@@ -9,7 +9,7 @@ const gig_controller = require('../controllers/gig.controller');
 router.get('/', gig_controller.gigs_details);
 // router.post('/create', gig_controller.gig_create);
 router.post('/create', gig_controller.gig_create_temp);
-router.post('/getGigs/:name', gig_controller.gig_details);
+router.get('/getGigs/:name', gig_controller.gig_details);
 
 //update routes
 router.put('/update/:name', gig_controller.gig_update);

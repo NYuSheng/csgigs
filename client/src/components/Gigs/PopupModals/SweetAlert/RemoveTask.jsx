@@ -75,7 +75,7 @@ class RemoveTask extends React.Component {
     }
 
     render() {
-        const {classes, hideTask, task} = this.props;
+        const {classes, hideTask} = this.props;
         const {status} = this.state;
 
         return (

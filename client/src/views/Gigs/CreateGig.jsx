@@ -6,6 +6,9 @@ import GridContainer from "components/Grid/GridContainer";
 import GridItem from "components/Grid/GridItem";
 import CreateAGig from "components/Gigs/PopupModals/SweetAlert/CreateAGig";
 import {CreateGigSteps} from "components/Gigs/Wizard/CreateGigSteps/CompiledGigSteps";
+import UserProfile from "components/Gigs/Authentication/UserProfile";
+
+// dependencies
 import {NotificationManager} from "react-notifications";
 
 class CreateGig extends React.Component {
@@ -15,6 +18,16 @@ class CreateGig extends React.Component {
         this.state = {
             createGigSuccess: null,
         };
+    }
+
+    componentDidMount() {
+        var authenticated = UserProfile.authenticate();
+        if (!authenticated) {
+            const {history} = this.props;
+            history.push({
+                pathname: "/login"
+            });
+        }
     }
 
     finishButtonClick(step) {

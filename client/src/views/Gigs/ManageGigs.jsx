@@ -2,6 +2,7 @@ import React from "react";
 
 // @material-ui/core components
 import withStyles from "@material-ui/core/styles/withStyles";
+import TableCell from "@material-ui/core/TableCell";
 
 // core components
 // import Filter from "components/Gigs/Filter/Filter";
@@ -13,7 +14,7 @@ import CardBody from "components/Card/CardBody";
 import GridContainer from "components/Grid/GridContainer";
 import GridItem from "components/Grid/GridItem";
 import Button from "components/CustomButtons/Button";
-import TableCell from "@material-ui/core/TableCell";
+import UserProfile from "components/Gigs/Authentication/UserProfile";
 
 // material-ui icons
 import Event from "@material-ui/icons/Event";
@@ -45,6 +46,18 @@ class ManageGigs extends React.Component {
     }
 
     componentDidMount() {
+        var authenticated = UserProfile.authenticate();
+        if (!authenticated) {
+            const {history} = this.props;
+            history.push({
+                pathname: "/login"
+            });
+        } else {
+            this.setupData();
+        }
+    }
+
+    setupData() {
         this.setState({
             isLoading: true
         });
@@ -93,10 +106,7 @@ class ManageGigs extends React.Component {
         const {history} = this.props;
         history.push({
             headername: `${gig.name}`,
-            pathname: `/gigs/${gig.name}`,
-            state: {
-                gig: gig
-            }
+            pathname: `/gigs/${gig.name}`
         });
     }
 
