@@ -19,7 +19,7 @@ import Button from "components/CustomButtons/Button.jsx";
 import CardHeader from "components/Card/CardHeader.jsx";
 
 // dependencies
-import { matchPath } from 'react-router';
+import {matchPath} from 'react-router';
 
 // style sheets
 import headerStyle from "assets/jss/material-dashboard-pro-react/components/headerStyle.jsx";
@@ -27,15 +27,24 @@ import headerStyle from "assets/jss/material-dashboard-pro-react/components/head
 function Header({...props}) {
     function makeBrand() {
         var name;
+        for (var i = 0; i < props.routes.length; i++) {
+            if (name) {
+                break;
+            }
 
-        props.routes.map((prop, key) => {
+            var prop = props.routes[i];
             if (prop.collapse) {
-                prop.views.map((prop, key) => {
-                    if (prop.path === props.location.pathname) {
-                        name = prop.name;
+                for (var j = 0; j < prop.views.length; j++) {
+                    var propp = prop.views[j];
+
+                    if (name) {
+                        break;
+                    }
+                    if (propp.path === props.location.pathname) {
+                        name = propp.name;
                     } else {
                         const match = matchPath(props.history.location.pathname, {
-                            path: prop.path,
+                            path: propp.path,
                             exact: true,
                             strict: false
                         });
@@ -43,16 +52,13 @@ function Header({...props}) {
                             name = match.params.gigId;
                         }
                     }
-                    return null;
-                });
+                }
             }
 
-            if (!name) {
-                name = (prop.path === props.location.pathname) ? prop.name : props.match.params.gigId;
+            if (!name && prop.path === props.location.pathname) {
+                name = prop.name;
             }
-
-            return null;
-        });
+        }
 
         if (name) {
             return name;
@@ -104,7 +110,7 @@ function Header({...props}) {
                     </CardHeader>
                 </div>
                 {/*<Hidden smDown implementation="css">*/}
-                    {/*<HeaderLinks rtlActive={rtlActive}/>*/}
+                {/*<HeaderLinks rtlActive={rtlActive}/>*/}
                 {/*</Hidden>*/}
                 <Hidden mdUp implementation="css">
                     <Button
