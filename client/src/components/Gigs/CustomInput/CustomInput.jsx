@@ -14,12 +14,6 @@ import customInputStyle from "assets/jss/material-dashboard-pro-react/components
 
 class CustomInput extends React.Component {
 
-    focusInputField(input) {
-        if (input) {
-            input.focus();
-        }
-    };
-
     render() {
         const {
             classes,
@@ -33,8 +27,7 @@ class CustomInput extends React.Component {
             inputRootCustomClasses,
             success,
             helpText,
-            inputType,
-            inputFocus
+            inputType
         } = this.props;
 
         const labelClasses = classNames({
@@ -85,7 +78,6 @@ class CustomInput extends React.Component {
                         disabled: classes.disabled,
                         underline: underlineClasses
                     }}
-                    inputRef={inputFocus ? this.focusInputField : null}
                     id={id}
                     type={inputType}
                     {...inputProps}

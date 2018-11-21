@@ -75,14 +75,14 @@ class RemoveTask extends React.Component {
     }
 
     render() {
-        const {classes, hideTask} = this.props;
+        const {classes, hideTask, task} = this.props;
         const {status} = this.state;
 
         return (
             <SweetAlert
                 success={(status === "success")}
                 warning={(status === "working")}
-                style={{display: "block", marginTop: "-100px"}}
+                style={{display: "block"}}
                 title={(status === "working") ? "Are you sure?" : (status === "success") ? "Task Removed" : false}
                 onConfirm={() => this.confirmTaskRemove()}
                 onCancel={() => {
@@ -110,7 +110,11 @@ class RemoveTask extends React.Component {
                 }
                 {
                     (status === "working") ?
-                        "You will not be able to recover this task"
+                        (<React.Fragment>
+                                <h4>Task Name: {task.task_name}</h4>
+                                <p>You will not be able to recover this task</p>
+
+                            </React.Fragment>)
                         : null
                 }
 
