@@ -3,6 +3,7 @@ import React from "react";
 // @material-ui/core components
 import withStyles from "@material-ui/core/styles/withStyles";
 import TableCell from "@material-ui/core/TableCell";
+import MUIButton from "@material-ui/core/Button";
 
 // material-ui icons
 import KeyboardArrowLeft from "@material-ui/icons/KeyboardArrowLeft";
@@ -11,6 +12,7 @@ import Status from "@material-ui/icons/Timeline";
 import Chat from "@material-ui/icons/Chat";
 import People from "@material-ui/icons/People";
 import Participants from "@material-ui/icons/PeopleOutline";
+import Edit from "@material-ui/icons/Edit";
 
 // core components
 import Card from "components/Card/Card";
@@ -73,6 +75,16 @@ const style = {
     iconRose: {
         color: roseColor
     },
+    "@media screen and (max-width:480px)": {
+        muiButtonText: {
+            display: "none"
+        }
+    },
+    "@media screen and (min-width:480px)": {
+        muiButtonIcon: {
+            display: "none"
+        }
+    }
 };
 
 class GigDashboard extends React.Component {
@@ -154,7 +166,7 @@ class GigDashboard extends React.Component {
     }
 
     completeGig() {
-        // TO-DO: Complete the gig
+        // TODO: Complete the gig
         const {history} = this.props;
         history.push({
             pathname: '/gigs/manage'
@@ -452,10 +464,17 @@ class GigDashboard extends React.Component {
                                                     </CardIcon>
                                                     <h4 className={classes.cardCategory}>Gig Admin(s)</h4>
                                                 </GridItem>
-                                                <GridItem xs={3} sm={3} md={3} lg={3} style={{textAlign: 'right', paddingLeft: 0}}>
+                                                <GridItem xs={3} sm={3} md={3} lg={3} style={{textAlign: 'right', padding: 10}}>
                                                     {/*TODO: Edit admins (only super admin)*/}
-                                                    <Button style={{width: 100, maxWidth: "100%"}}
-                                                            onClick={this.editGigAdmins.bind(this)}>Edit</Button>
+                                                    <MUIButton color="default"
+                                                               onClick={this.editGigAdmins.bind(this)}
+                                                               variant="contained"
+                                                               size="small"
+                                                               style={{height: "100%"}}
+                                                    >
+                                                        <div className={classes.muiButtonText}>Edit</div>
+                                                        <Edit className={classes.muiButtonIcon} style={{margin: 0}}/>
+                                                    </MUIButton>
                                                 </GridItem>
                                             </GridContainer>
                                         </CardHeader>

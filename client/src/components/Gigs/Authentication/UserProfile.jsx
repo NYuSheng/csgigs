@@ -1,5 +1,3 @@
-import React from 'react';
-
 var UserProfile = (function() {
 
     var login = function(user) {

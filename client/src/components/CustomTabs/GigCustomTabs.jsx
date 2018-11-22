@@ -1,13 +1,15 @@
 import React from "react";
-// nodejs library that concatenates classes
 import classNames from "classnames";
-// nodejs library to set properties for components
 import PropTypes from "prop-types";
 
 // material-ui components
 import withStyles from "@material-ui/core/styles/withStyles";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
+import Button from "@material-ui/core/Button";
+
+// @material-ui icons
+import Add from "@material-ui/icons/Add";
 
 // core components
 import Card from "components/Card/Card.jsx";
@@ -15,9 +17,22 @@ import CardBody from "components/Card/CardBody.jsx";
 import CardHeader from "components/Card/CardHeader.jsx";
 import GridContainer from "components/Grid/GridContainer";
 import GridItem from "components/Grid/GridItem";
-import Button from "components/CustomButtons/Button";
 
 import customTabsStyle from "assets/jss/material-dashboard-pro-react/components/customTabsStyle.jsx";
+
+const style = {
+    ...customTabsStyle,
+    "@media screen and (max-width:480px)": {
+        muiButtonText: {
+            display: "none"
+        }
+    },
+    "@media screen and (min-width:480px)": {
+        muiButtonIcon: {
+            display: "none"
+        }
+    }
+};
 
 class GigCustomTabs extends React.Component {
     state = {
@@ -86,10 +101,14 @@ class GigCustomTabs extends React.Component {
                             </Tabs>
                         </GridItem>
                         <GridItem xs={3} sm={3} md={3} lg={3} style={{textAlign: 'right', paddingLeft: 0}}>
-                            <Button style={{width: 100, maxWidth: "100%"}}
+                            <Button color="default"
                                     onClick={addContent}
+                                    variant="contained"
+                                    size="small"
+                                    style={{height: "100%"}}
                             >
-                                Add
+                                <div className={classes.muiButtonText}>Add</div>
+                                <Add className={classes.muiButtonIcon}/>
                             </Button>
                         </GridItem>
                     </GridContainer>
@@ -130,4 +149,4 @@ GigCustomTabs.propTypes = {
     plainTabs: PropTypes.bool
 };
 
-export default withStyles(customTabsStyle)(GigCustomTabs);
+export default withStyles(style)(GigCustomTabs);

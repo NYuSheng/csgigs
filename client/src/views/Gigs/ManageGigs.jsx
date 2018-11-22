@@ -3,6 +3,7 @@ import React from "react";
 // @material-ui/core components
 import withStyles from "@material-ui/core/styles/withStyles";
 import TableCell from "@material-ui/core/TableCell";
+import Button from '@material-ui/core/Button';
 
 // core components
 // import Filter from "components/Gigs/Filter/Filter";
@@ -13,7 +14,7 @@ import CardIcon from "components/Card/CardIcon";
 import CardBody from "components/Card/CardBody";
 import GridContainer from "components/Grid/GridContainer";
 import GridItem from "components/Grid/GridItem";
-import Button from "components/CustomButtons/Button";
+// import Button from "components/CustomButtons/Button";
 import UserProfile from "components/Gigs/Authentication/UserProfile";
 
 // material-ui icons
@@ -27,13 +28,21 @@ import {NotificationManager} from "react-notifications";
 // style sheets
 import {cardTitle} from "assets/jss/material-dashboard-pro-react.jsx";
 
-const style = {
+const style = theme => ({
     cardIconTitle: {
         ...cardTitle,
         marginTop: "15px",
         marginBottom: "0px"
+    },
+    rightIcon: {
+        marginLeft: theme.spacing.unit,
+    },
+    "@media screen and (max-width:480px)": {
+        buttonText: {
+            display: "none"
+        }
     }
-};
+});
 
 class ManageGigs extends React.Component {
     constructor(props) {
@@ -132,7 +141,7 @@ class ManageGigs extends React.Component {
                             </CardIcon>
                             <h4 className={classes.cardIconTitle}>Gigs</h4>
                         </GridItem>
-                        <GridItem xs={4} sm={4} md={2} lg={2} style={{textAlign: 'right'}}>
+                        <GridItem xs={4} sm={4} md={2} lg={2} style={{textAlign: 'right', padding: 10}}>
                             {/*<GridContainer  style={{textAlign: 'right'}}>*/}
                             {/*<GridItem xs={6} sm={6} md={6} lg={6}>*/}
                             {/*<Filter filterName="filter"*/}
@@ -141,11 +150,15 @@ class ManageGigs extends React.Component {
                             {/*/>*/}
                             {/*</GridItem>*/}
                             {/*<GridItem xs={6} sm={6} md={6} lg={6}>*/}
-                            <Button color="warning"
+                            <Button color="default"
                                     onClick={this.handleCreateGigPage.bind(this)}
-                                    style={{width: '100%'}}>
-                                <Create className={classes.buttonIcon}/>
-                                Create Gig
+                                    className={classes.button}
+                                    variant="contained"
+                                    size="small"
+                                    style={{height: "100%"}}
+                            >
+                                <div className={classes.buttonText}>Create Gig</div>
+                                <Create className={classes.rightIcon} style={{margin: 0}}/>
                             </Button>
                             {/*</GridItem>*/}
                             {/*</GridContainer>*/}
