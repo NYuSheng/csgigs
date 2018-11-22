@@ -3,21 +3,31 @@ import React from 'react';
 var UserProfile = (function() {
 
     var login = function(user) {
-        sessionStorage.setItem('user', user)
+        sessionStorage.setItem('user', JSON.stringify(user))
     }
 
     var authenticate = function() {
-        const user = sessionStorage.getItem('user');
-        if (user) {
-            return true;
-        } else {
+        try{
+            const user = JSON.parse(sessionStorage.getItem('user'));
+            if (user) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (exception) {
             return false;
         }
     }
 
+    var getUser = function() {
+        const user = JSON.parse(sessionStorage.getItem('user'));
+        return user;
+    }
+
     return {
         login: login,
-        authenticate: authenticate
+        authenticate: authenticate,
+        getUser: getUser
     }
 
 })();

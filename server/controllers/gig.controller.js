@@ -128,7 +128,13 @@ function aggregation_with_tasks_and_users(gig_name) {
 }
 
 exports.gigs_details = asyncMiddleware(async (req, res, next) => {
+    console.log(req.params.username)
     return Gig.aggregate([
+        {"$match":
+                {
+                    "user_admins": { "$in" : [req.params.username]}
+                }
+        },
         {
             "$lookup": {
                 "from": 'tasks',
