@@ -8,6 +8,7 @@ import ViewList from "@material-ui/icons/ViewList";
 import Create from "@material-ui/icons/Create";
 
 const gigsRoutes = [
+    {hide: true, path: "/gigs/manage/:gigId", name: "Gig", component: GigDashboard},
     {
         path: "/gigs/manage",
         name: "Manage Gigs",
@@ -19,9 +20,7 @@ const gigsRoutes = [
         name: "Create Gig",
         icon: Create,
         component: CreateGig
-
-    },
-    {hide: true, path: "/gigs/:gigId", name: "Gig", component: GigDashboard}
+    }
 ];
 
 export default gigsRoutes;

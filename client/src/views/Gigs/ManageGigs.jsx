@@ -62,7 +62,7 @@ class ManageGigs extends React.Component {
         this.setState({
             isLoading: true
         });
-        fetch(`/admin-ui/gigs/${user.username}`, {
+        fetch(`/admin-ui/gigs/${user.me.username}`, {
             method: 'GET',
             headers: {'Content-Type': 'application/json'}
         }).then(data => {
@@ -107,7 +107,7 @@ class ManageGigs extends React.Component {
         const {history} = this.props;
         history.push({
             headername: `${gig.name}`,
-            pathname: `/gigs/${gig.name}`
+            pathname: `/gigs/manage/${gig.name}`
         });
     }
 
