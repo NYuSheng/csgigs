@@ -446,13 +446,13 @@ class GigDashboard extends React.Component {
                                     <Card>
                                         <CardHeader color="rose" icon>
                                             <GridContainer style={{width: "100%", margin: 0}}>
-                                                <GridItem xs={9} sm={9} md={9} lg={9}>
+                                                <GridItem xs={9} sm={9} md={9} lg={9} style={{paddingLeft: 0}}>
                                                     <CardIcon color="rose">
                                                         <People/>
                                                     </CardIcon>
                                                     <h4 className={classes.cardCategory}>Gig Admin(s)</h4>
                                                 </GridItem>
-                                                <GridItem xs={3} sm={3} md={3} lg={3} style={{textAlign: 'right'}}>
+                                                <GridItem xs={3} sm={3} md={3} lg={3} style={{textAlign: 'right', paddingLeft: 0}}>
                                                     {/*TODO: Edit admins (only super admin)*/}
                                                     <Button style={{width: 100, maxWidth: "100%"}}
                                                             onClick={this.editGigAdmins.bind(this)}>Edit</Button>

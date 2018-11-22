@@ -6,7 +6,6 @@ import PropTypes from "prop-types";
 
 // material-ui components
 import withStyles from "@material-ui/core/styles/withStyles";
-import AppBar from '@material-ui/core/AppBar';
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 
@@ -48,7 +47,7 @@ class GigCustomTabs extends React.Component {
             <Card plain={plainTabs}>
                 <CardHeader color={headerColor} plain={plainTabs}>
                     <GridContainer style={{width: "100%", margin: 0}}>
-                        <GridItem xs={9} sm={9} md={9} lg={9}>
+                        <GridItem xs={9} sm={9} md={9} lg={9} style={{paddingLeft: 0}}>
                             <div className={cardTitle}>
                                 {title}
                             </div>
@@ -86,7 +85,7 @@ class GigCustomTabs extends React.Component {
                                 })}
                             </Tabs>
                         </GridItem>
-                        <GridItem xs={3} sm={3} md={3} lg={3} style={{textAlign: 'right'}}>
+                        <GridItem xs={3} sm={3} md={3} lg={3} style={{textAlign: 'right', paddingLeft: 0}}>
                             <Button style={{width: 100, maxWidth: "100%"}}
                                     onClick={addContent}
                             >
