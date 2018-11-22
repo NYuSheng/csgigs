@@ -6,6 +6,9 @@ import PropTypes from "prop-types";
 
 // material-ui components
 import withStyles from "@material-ui/core/styles/withStyles";
+import AppBar from '@material-ui/core/AppBar';
+import Tabs from "@material-ui/core/Tabs";
+import Tab from "@material-ui/core/Tab";
 
 // core components
 import Card from "components/Card/Card.jsx";
@@ -14,9 +17,6 @@ import CardHeader from "components/Card/CardHeader.jsx";
 import GridContainer from "components/Grid/GridContainer";
 import GridItem from "components/Grid/GridItem";
 import Button from "components/CustomButtons/Button";
-
-import Tabs from "@material-ui/core/Tabs";
-import Tab from "@material-ui/core/Tab";
 
 import customTabsStyle from "assets/jss/material-dashboard-pro-react/components/customTabsStyle.jsx";
 
@@ -52,39 +52,39 @@ class GigCustomTabs extends React.Component {
                             <div className={cardTitle}>
                                 {title}
                             </div>
-                            <div style={{overflowX: "auto", position: "relative"}}>
-                                <Tabs
-                                    value={this.state.value}
-                                    onChange={this.handleChange}
-                                    classes={{
-                                        root: classes.tabsRoot,
-                                        indicator: classes.displayNone
-                                    }}
-                                >
-                                    {tabs.map((prop, key) => {
-                                        var icon = {};
-                                        if (prop.tabIcon) {
-                                            icon = {
-                                                icon: <prop.tabIcon/>
-                                            };
-                                        }
-                                        return (
-                                            <Tab
-                                                classes={{
-                                                    root: classes.tabRootButton,
-                                                    labelContainer: classes.tabLabelContainer,
-                                                    label: classes.tabLabel,
-                                                    selected: classes.tabSelected,
-                                                    wrapper: classes.tabWrapper
-                                                }}
-                                                key={key}
-                                                label={prop.tabName}
-                                                {...icon}
-                                            />
-                                        );
-                                    })}
-                                </Tabs>
-                            </div>
+                            <Tabs
+                                scrollable
+                                scrollButtons="off"
+                                value={this.state.value}
+                                onChange={this.handleChange}
+                                classes={{
+                                    root: classes.tabsRoot,
+                                    indicator: classes.displayNone
+                                }}
+                            >
+                                {tabs.map((prop, key) => {
+                                    var icon = {};
+                                    if (prop.tabIcon) {
+                                        icon = {
+                                            icon: <prop.tabIcon/>
+                                        };
+                                    }
+                                    return (
+                                        <Tab
+                                            classes={{
+                                                root: classes.tabRootButton,
+                                                labelContainer: classes.tabLabelContainer,
+                                                label: classes.tabLabel,
+                                                selected: classes.tabSelected,
+                                                wrapper: classes.tabWrapper
+                                            }}
+                                            key={key}
+                                            label={prop.tabName}
+                                            {...icon}
+                                        />
+                                    );
+                                })}
+                            </Tabs>
                         </GridItem>
                         <GridItem xs={3} sm={3} md={3} lg={3} style={{textAlign: 'right'}}>
                             <Button style={{width: 100, maxWidth: "100%"}}
