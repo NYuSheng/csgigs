@@ -102,7 +102,7 @@ class GigDashboard extends React.Component {
                 pathname: "/login"
             });
         } else {
-            const { match: { params } } = this.props;
+            const {match: {params}} = this.props;
             this.setupData(params.gigId);
         }
     }
@@ -113,11 +113,11 @@ class GigDashboard extends React.Component {
             headers: {'Content-Type': 'application/json'}
         }).then(data => {
             if (data.status !== 200) {
-                data.json().then(json =>{
+                data.json().then(json => {
                     NotificationManager.error(json.error.errmsg);
                 });
             } else {
-                data.json().then(json =>{
+                data.json().then(json => {
                     this.setState({
                         gig: json.gig
                     })
@@ -161,6 +161,64 @@ class GigDashboard extends React.Component {
         });
     }
 
+    publishGig() {
+        const authSet = UserProfile.getAuthSet();
+
+        fetch('https://csgigs.com/api/v1/channels.create', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Auth-Token': authSet.token,
+                'X-User-Id': authSet.userId
+            },
+            body: JSON.stringify(this.buildPayLoad())
+        }).then(data => {
+            if (data.status !== 200) {
+                data.json().then(json => {
+                    var errorMsg = json.error || json.message;
+                    NotificationManager.error(errorMsg);
+                });
+            } else {
+                data.json().then(json => {
+                    console.log(json);
+                    this.updateGigChannel(json);
+                });
+            }
+        });
+    }
+
+    updateGigChannel(payload) {
+        const {gig} = this.state;
+        const update = {
+            rc_channel_id: payload.channel.name
+        }
+        fetch(`/admin-ui/gigs/update/${gig._id}`, {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(update)
+        }).then(data => {
+            if (data.status !== 200) {
+                data.json().then(json => {
+                    NotificationManager.error(json.error.errmsg);
+                });
+            } else {
+                gig.rc_channel_id = update.rc_channel_id;
+                this.setState({
+                    gig: gig
+                })
+                NotificationManager.success("Gig Published!");
+            }
+        });
+    }
+
+    buildPayLoad() {
+        const {gig} = this.state;
+        var payload = {};
+        payload["name"] = gig.name.replace(/ /g, '');
+        ;
+        return payload;
+    }
+
     editTask(task) {
         this.setState({
             editTask: (
@@ -172,7 +230,7 @@ class GigDashboard extends React.Component {
         });
     }
 
-    editTaskAction(payload){
+    editTaskAction(payload) {
         const {gig} = this.state;
         const tasks = gig.tasks;
         var taskToEdit = tasks.find(task => {
@@ -217,7 +275,7 @@ class GigDashboard extends React.Component {
         })
     }
 
-    editGigParticipants(group){
+    editGigParticipants(group) {
         this.setState({
             editGigParticipants: (
                 <EditGigParticipants hidePopup={this.hidePopup.bind(this)}
@@ -317,7 +375,8 @@ class GigDashboard extends React.Component {
                     {editTask}
                     {editGigParticipants}
                     <AddTask modalOpen={addTask} hideTask={this.hidePopup.bind(this)} gig={gig}/>
-                    <EditGigAdmins modalOpen={editGigAdmins} hidePopup={this.hidePopup.bind(this)} admins={gig.user_admins}/>
+                    <EditGigAdmins modalOpen={editGigAdmins} hidePopup={this.hidePopup.bind(this)}
+                                   admins={gig.user_admins}/>
                     <BrownieAllocation modalOpen={brownieAllocation} hidePopup={this.hidePopup.bind(this)} gig={gig}/>
                     <GridContainer justify="center">
                         <GridItem xs={6}>
@@ -326,12 +385,16 @@ class GigDashboard extends React.Component {
                             </Button>
                         </GridItem>
                         <GridItem xs={6} style={{textAlign: "right"}}>
-                            <Button className={classes.marginRight}
-                                // onClick={this.completeGig.bind(this)}
-                                    color="warning"
-                            >
-                                Publish
-                            </Button>
+                            {
+                                !gig.rc_channel_id ? (
+                                    <Button className={classes.marginRight}
+                                            onClick={this.publishGig.bind(this)}
+                                            color="warning"
+                                    >
+                                        Publish
+                                    </Button>
+                                ) : null
+                            }
                             <Button className={classes.marginRight}
                                     onClick={this.completeGig.bind(this)}
                                     color="success"
@@ -363,10 +426,17 @@ class GigDashboard extends React.Component {
                                             </CardIcon>
                                             <p className={classes.cardCategory}>Gigs Channel</p>
                                             <h3 className={classes.cardTitle}>
-                                                {/*link to rocketchat*/}
-                                                <a href="https://csgigs.com/group/csgigs-dev" target="_blank">
-                                                    {gig.rc_channel_id}
-                                                </a>
+                                                {
+                                                    gig.rc_channel_id ? (
+
+                                                        <a href={'https://csgigs.com/channel/' + gig.rc_channel_id}
+                                                           target="_blank">
+                                                            {gig.rc_channel_id}
+                                                        </a>
+                                                    ) : (
+                                                        "Not Published"
+                                                    )
+                                                }
                                             </h3>
                                         </CardHeader>
                                         <CardFooter/>
@@ -375,7 +445,7 @@ class GigDashboard extends React.Component {
                                 <GridItem xs={12} sm={12} md={12} lg={12}>
                                     <Card>
                                         <CardHeader color="rose" icon>
-                                            <GridContainer>
+                                            <GridContainer style={{width: "100%", margin: 0}}>
                                                 <GridItem xs={9} sm={9} md={9} lg={9}>
                                                     <CardIcon color="rose">
                                                         <People/>
@@ -383,8 +453,9 @@ class GigDashboard extends React.Component {
                                                     <h4 className={classes.cardCategory}>Gig Admin(s)</h4>
                                                 </GridItem>
                                                 <GridItem xs={3} sm={3} md={3} lg={3} style={{textAlign: 'right'}}>
-                                                    {/*Edit admins (only super admin)*/}
-                                                    <Button onClick={this.editGigAdmins.bind(this)}>Edit</Button>
+                                                    {/*TODO: Edit admins (only super admin)*/}
+                                                    <Button style={{width: 100, maxWidth: "100%"}}
+                                                            onClick={this.editGigAdmins.bind(this)}>Edit</Button>
                                                 </GridItem>
                                             </GridContainer>
                                         </CardHeader>
@@ -440,7 +511,8 @@ class GigDashboard extends React.Component {
                                     <CardIcon color="brown">
                                         <Participants/>
                                     </CardIcon>
-                                    <p className={classes.cardCategory} style={{fontSize: 20, marginTop: 15}}>Gig Participants</p>
+                                    <p className={classes.cardCategory} style={{fontSize: 20, marginTop: 15}}>Gig
+                                        Participants</p>
                                 </CardHeader>
                                 <CardBody pricing>
                                     <Table

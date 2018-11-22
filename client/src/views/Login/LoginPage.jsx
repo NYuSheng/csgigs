@@ -8,7 +8,7 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 // @material-ui/icons
 import Face from "@material-ui/icons/Face";
 // import Email from "@material-ui/icons/Email";
-// import LockOutline from "@material-ui/icons/LockOutline";
+import LockOutline from "@material-ui/icons/LockOutlined";
 // import Icon from "@material-ui/core/Icon";
 
 // core components
@@ -76,26 +76,39 @@ class LoginPage extends React.Component {
 
     login() {
         const loginDetails = {
-            username: this.state.username,
+            user: this.state.username,
             password: this.state.password
         }
 
-        fetch('/admin-ui/users/login2', {
+        // fetch('/admin-ui/users/login2', {
+        //     method: 'POST',
+        //     headers: {'Content-Type': 'application/json'},
+        //     body: JSON.stringify(loginDetails)
+        // }).then(loginoutput => loginoutput.json()).then(data => {
+        //     if (data.adminuser === undefined) NotificationManager.error("Login failed");
+        //     else {
+        //         UserProfile.login(data.adminuser);
+        //         const {history} = this.props;
+        //         history.push({
+        //             pathname: "/dashboard"
+        //         });
+        //     }
+        // })
+
+        fetch('https://csgigs.com/api/v1/login', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(loginDetails)
+        }).then(loginoutput => loginoutput.json()).then(data => {
+            if (data.status !== "success") NotificationManager.error("Unauthorized Login!");
+            else {
+                UserProfile.login(data.data);
+                const {history} = this.props;
+                history.push({
+                    pathname: "/dashboard"
+                });
+            }
         })
-            .then(loginoutput => loginoutput.json())
-            .then(data => {
-                if (data.adminuser === undefined) NotificationManager.error("Login failed");
-                else {
-                    UserProfile.login(data.adminuser);
-                    const {history} = this.props;
-                    history.push({
-                        pathname: "/dashboard"
-                    });
-                }
-            })
     }
 
     handleSubmit(e) {
@@ -134,7 +147,6 @@ class LoginPage extends React.Component {
                                                     formControlProps={{
                                                         fullWidth: true
                                                     }}
-
                                                     inputProps={{
                                                         onChange: event => this.handleUsernameChange(event),
                                                         endAdornment: (
@@ -145,23 +157,22 @@ class LoginPage extends React.Component {
                                                     }}
                                                     value={this.state.username}
                                                 />
-                                                {/*<CustomInput*/}
-                                                    {/*labelText="Password"*/}
-                                                    {/*id="password"*/}
-                                                    {/*formControlProps={{*/}
-                                                        {/*fullWidth: true*/}
-                                                    {/*}}*/}
-                                                    {/*inputProps={{*/}
-                                                        {/*onChange: event => this.handlePasswordChange(event),*/}
-                                                        {/*endAdornment: (*/}
-                                                            {/*<InputAdornment position="end">*/}
-                                                                {/*<Icon className={classes.inputAdornmentIcon}>*/}
-                                                                    {/*lock_outline*/}
-                                                                {/*</Icon>*/}
-                                                            {/*</InputAdornment>*/}
-                                                        {/*)*/}
-                                                    {/*}}*/}
-                                                {/*/>*/}
+                                                <CustomInput
+                                                    labelText="Password"
+                                                    id="password"
+                                                    formControlProps={{
+                                                        fullWidth: true
+                                                    }}
+                                                    inputProps={{
+                                                        onChange: event => this.handlePasswordChange(event),
+                                                        endAdornment: (
+                                                            <InputAdornment position="end">
+                                                                <LockOutline className={classes.inputAdornmentIcon}/>
+                                                            </InputAdornment>
+                                                        )
+                                                    }}
+                                                    inputType="password"
+                                                />
                                             </CardBody>
                                             <CardFooter className={classes.justifyContentCenter}>
                                                 <Button id="login" type="submit" color="info" simple size="lg" block>

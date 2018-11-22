@@ -47,45 +47,51 @@ class GigCustomTabs extends React.Component {
         return (
             <Card plain={plainTabs}>
                 <CardHeader color={headerColor} plain={plainTabs}>
-                    <GridContainer>
+                    <GridContainer style={{width: "100%", margin: 0}}>
                         <GridItem xs={9} sm={9} md={9} lg={9}>
                             <div className={cardTitle}>
                                 {title}
                             </div>
-                            <Tabs
-                                value={this.state.value}
-                                onChange={this.handleChange}
-                                classes={{
-                                    root: classes.tabsRoot,
-                                    indicator: classes.displayNone
-                                }}
-                            >
-                                {tabs.map((prop, key) => {
-                                    var icon = {};
-                                    if (prop.tabIcon) {
-                                        icon = {
-                                            icon: <prop.tabIcon/>
-                                        };
-                                    }
-                                    return (
-                                        <Tab
-                                            classes={{
-                                                root: classes.tabRootButton,
-                                                labelContainer: classes.tabLabelContainer,
-                                                label: classes.tabLabel,
-                                                selected: classes.tabSelected,
-                                                wrapper: classes.tabWrapper
-                                            }}
-                                            key={key}
-                                            label={prop.tabName}
-                                            {...icon}
-                                        />
-                                    );
-                                })}
-                            </Tabs>
+                            <div style={{overflowX: "auto", position: "relative"}}>
+                                <Tabs
+                                    value={this.state.value}
+                                    onChange={this.handleChange}
+                                    classes={{
+                                        root: classes.tabsRoot,
+                                        indicator: classes.displayNone
+                                    }}
+                                >
+                                    {tabs.map((prop, key) => {
+                                        var icon = {};
+                                        if (prop.tabIcon) {
+                                            icon = {
+                                                icon: <prop.tabIcon/>
+                                            };
+                                        }
+                                        return (
+                                            <Tab
+                                                classes={{
+                                                    root: classes.tabRootButton,
+                                                    labelContainer: classes.tabLabelContainer,
+                                                    label: classes.tabLabel,
+                                                    selected: classes.tabSelected,
+                                                    wrapper: classes.tabWrapper
+                                                }}
+                                                key={key}
+                                                label={prop.tabName}
+                                                {...icon}
+                                            />
+                                        );
+                                    })}
+                                </Tabs>
+                            </div>
                         </GridItem>
                         <GridItem xs={3} sm={3} md={3} lg={3} style={{textAlign: 'right'}}>
-                            <Button onClick={addContent}>Add</Button>
+                            <Button style={{width: 100, maxWidth: "100%"}}
+                                    onClick={addContent}
+                            >
+                                Add
+                            </Button>
                         </GridItem>
                     </GridContainer>
                 </CardHeader>
