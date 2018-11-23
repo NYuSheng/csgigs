@@ -253,7 +253,7 @@ class Wizard extends React.Component {
                             {steps[this.state.currentStep].stepName}
                         </div>
                     </div>
-                    <div className={classes.content}>
+                    <div className={classes.content} style={{paddingBottom: 0}}>
                         {steps.map((prop, key) => {
                             const stepContentClasses = cx({
                                 [classes.stepContentActive]: this.state.currentStep === key,
@@ -269,7 +269,7 @@ class Wizard extends React.Component {
                             );
                         })}
                     </div>
-                    <div className={classes.footer}>
+                    <div className={classes.footer} style={{paddingBottom: 10}}>
                         <div className={classes.left}>
                             {this.state.previousButton ? (
                                 <Button

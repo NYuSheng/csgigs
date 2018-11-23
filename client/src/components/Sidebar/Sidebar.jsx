@@ -16,9 +16,7 @@ import Hidden from "@material-ui/core/Hidden";
 import Collapse from "@material-ui/core/Collapse";
 import Icon from "@material-ui/core/Icon";
 
-// core components
-import HeaderLinks from "components/Header/HeaderLinks.jsx";
-
+// style sheets
 import sidebarStyle from "assets/jss/material-dashboard-pro-react/components/sidebarStyle.jsx";
 
 // import avatar from "assets/img/faces/avatar.jpg";
@@ -42,11 +40,10 @@ class SidebarWrapper extends React.Component {
     }
 
     render() {
-        const {className, user, headerLinks, links} = this.props;
+        const {className, user, links} = this.props;
         return (
             <div className={className} ref="sidebarWrapper">
-                {user}
-                {headerLinks}
+                {/*{user}*/}
                 {links}
             </div>
         );
@@ -400,7 +397,6 @@ class Sidebar extends React.Component {
                         <SidebarWrapper
                             className={sidebarWrapper}
                             // user={user}
-                            headerLinks={<HeaderLinks rtlActive={rtlActive}/>}
                             links={links}
                         />
                         {image !== undefined ? (
