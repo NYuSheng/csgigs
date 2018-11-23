@@ -101,11 +101,6 @@ class ManageGigs extends React.Component {
                     {gig.name}
                 </TableCell>
                 <TableCell colSpan="1" className={tableCellClasses}>
-                    {gig.user_admins.map(function(admin){
-                        return admin.name;
-                    }).join(", ")}
-                </TableCell>
-                <TableCell colSpan="1" className={tableCellClasses}>
                     {gig.status}
                 </TableCell>
             </React.Fragment>
@@ -170,7 +165,7 @@ class ManageGigs extends React.Component {
                         hover
                         isLoading={isLoading}
                         tableHeaderColor="primary"
-                        tableHead={["Gig Name", "Gig Admin(s)", "Gig Status"]}
+                        tableHead={["Name", "Status"]}
                         tableData={this.state.gigs}
                         tableFooter="true"
                         notFoundMessage="No gigs found"

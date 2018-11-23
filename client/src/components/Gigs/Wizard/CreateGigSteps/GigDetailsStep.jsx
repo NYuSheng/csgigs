@@ -142,7 +142,7 @@ class GigDetailsStep extends React.Component {
 
         return (
             <GridContainer justify="center">
-                <GridItem xs={12} sm={12} md={12} lg={8} align="center">
+                <GridItem xs={10} sm={10} md={10} lg={8} align="left">
                     <h4>Name of Gig</h4>
                     <CustomInput
                         success={nameState === "success"}
@@ -170,7 +170,7 @@ class GigDetailsStep extends React.Component {
                         inputType="text"
                     />
                 </GridItem>
-                <GridItem xs={12} sm={12} md={12} lg={8} align="center">
+                <GridItem xs={10} sm={10} md={10} lg={8} align="left">
                     <h4>Budget for Brownie Points</h4>
                     <CustomInput
                         success={budgetState === "success"}
@@ -198,8 +198,10 @@ class GigDetailsStep extends React.Component {
                         inputType="number"
                     />
                 </GridItem>
-                <GridItem xs={12} sm={12} md={12} lg={10} align="center">
+                <GridItem xs={10} sm={10} md={10} lg={8} align="left">
                     <h4>Assign Gigs Admins</h4>
+                </GridItem>
+                <GridItem xs={11} sm={11} md={11} lg={8} align="center">
                     <Card>
                         <CardHeader>
                             <AutoComplete selectInput={this.selectAdmin.bind(this)}/>
