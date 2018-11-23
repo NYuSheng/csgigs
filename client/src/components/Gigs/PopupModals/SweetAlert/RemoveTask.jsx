@@ -49,7 +49,7 @@ class RemoveTask extends React.Component {
                 status: "loading"
             });
 
-            fetch(`/admin-ui/tasks/removeTask/${taskId}`, {
+            fetch(`/admin-ui/api/tasks/removeTask/${taskId}`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'}
             }).then(data => {

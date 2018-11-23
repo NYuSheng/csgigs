@@ -120,7 +120,7 @@ class GigDashboard extends React.Component {
     }
 
     setupData(gigId) {
-        fetch(`/admin-ui/gigs/getGigs/${gigId}`, {
+        fetch(`/admin-ui/api/gigs/getGigs/${gigId}`, {
             method: 'GET',
             headers: {'Content-Type': 'application/json'}
         }).then(data => {
@@ -204,7 +204,7 @@ class GigDashboard extends React.Component {
         const update = {
             rc_channel_id: payload.channel.name
         }
-        fetch(`/admin-ui/gigs/update/${gig._id}`, {
+        fetch(`/admin-ui/api/gigs/update/${gig._id}`, {
             method: 'PUT',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(update)
@@ -470,7 +470,7 @@ class GigDashboard extends React.Component {
                                                                onClick={this.editGigAdmins.bind(this)}
                                                                variant="contained"
                                                                size="small"
-                                                               style={{height: "100%"}}
+                                                               style={{height: "100%", padding: 0}}
                                                     >
                                                         <div className={classes.muiButtonText}>Edit</div>
                                                         <Edit className={classes.muiButtonIcon} style={{margin: 0}}/>

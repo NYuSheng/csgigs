@@ -71,7 +71,7 @@ class ManageGigs extends React.Component {
         this.setState({
             isLoading: true
         });
-        fetch(`/admin-ui/gigs/${user.me.username}`, {
+        fetch(`/admin-ui/api/gigs/${user.me.username}`, {
             method: 'GET',
             headers: {'Content-Type': 'application/json'}
         }).then(data => {

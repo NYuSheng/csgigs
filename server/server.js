@@ -19,11 +19,6 @@ const config = require('./config');
 const { db: { host, port, name } } = config;
 const connectionString = `mongodb://${host}:${port}/${name}`;
 mongoose.connect(connectionString);
-// var dev_db_url = 'mongodb://test1:test123@ds031895.mlab.com:31895/projectgigstest';
-// var dev_db_url = 'mongodb://localhost/db';
-// var production_db_url = 'mongodb://localhost:27017/csgigs-admin';
-// var mongoDB = process.env.MONGODB_URI || dev_db_url;
-// mongoose.connect(mongoDB);
 mongoose.Promise = global.Promise;
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
@@ -33,14 +28,11 @@ app.use(bodyParser.urlencoded({extended: false}));
 
 app.use('/products', product);
 
-
-app.use('/admin-ui/tasks', task);
-
 app.use('/admin-ui', express.static(path.join(__dirname, './public')));
-app.use('/admin-ui/users', user);
-app.use('/admin-ui/gigs', gig);
-app.use('/admin-ui/tasks', task)
-app.use('/admin-ui/task-categories', taskcategories);
+app.use('/admin-ui/api/users', user);
+app.use('/admin-ui/api/gigs', gig);
+app.use('/admin-ui/api/tasks', task)
+app.use('/admin-ui/api/task-categories', taskcategories);
 app.get('/admin-ui/*', function (req, res) {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });

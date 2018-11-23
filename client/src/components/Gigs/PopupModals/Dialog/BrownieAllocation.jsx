@@ -139,7 +139,7 @@ class BrownieAllocation extends React.Component {
                     status: "loading"
                 });
 
-                fetch("/admin-ui/tasks/updateTasksPoints", {
+                fetch("/admin-ui/api/tasks/updateTasksPoints", {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify(this.buildPayLoad())

@@ -7,7 +7,7 @@ var categories = []
 
 export const fetchTaskCategories = function () {
     // API call to retrieve categories before mapping them
-    fetch('/admin-ui/task-categories', {
+    fetch('/admin-ui/api/task-categories', {
         method: 'GET',
         headers: {'Content-Type': 'application/json'}
     }).then(data => {

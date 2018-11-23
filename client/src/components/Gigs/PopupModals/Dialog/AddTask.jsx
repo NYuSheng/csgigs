@@ -107,7 +107,7 @@ class AddTask extends React.Component {
                     status: "loading"
                 });
 
-                fetch('/admin-ui/tasks/addTask', {
+                fetch('/admin-ui/api/tasks/addTask', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify(this.buildPayLoad())

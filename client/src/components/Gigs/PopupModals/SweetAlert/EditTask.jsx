@@ -116,7 +116,7 @@ class EditTask extends React.Component {
                     status: "loading"
                 });
 
-                fetch(`/admin-ui/tasks/updateTask/${task._id}`, {
+                fetch(`/admin-ui/api/tasks/updateTask/${task._id}`, {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify(this.buildPayLoad())
