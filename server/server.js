@@ -4,7 +4,6 @@ var express = require('express');
 var path = require('path');
 var bodyParser = require('body-parser');
 
-var product = require('./routes/product');
 var user = require('./routes/user.route');
 var gig = require('./routes/gig.route');
 var task = require('./routes/task.route');
