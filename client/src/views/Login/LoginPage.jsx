@@ -36,8 +36,10 @@ class LoginPage extends React.Component {
         // we use this to make the card to appear after the page has been rendered
         this.state = {
             cardAnimaton: "cardHidden",
-            username: 0,
-            password: ''
+            username: '',
+            password: '',
+            usernameState: '',
+            passwordState: ''
         };
 
         this.handleUsernameChange = this.handleUsernameChange.bind(this);
@@ -47,17 +49,45 @@ class LoginPage extends React.Component {
 
     handleUsernameChange(e) {
         //this.setState({[e.target.name]: e.target.value});
+        const username = e.target.value;
         this.setState({
-            username: e.target.value
+            username: username
         });
+        username ?
+            this.setState({usernameState: "success"})
+            :
+            this.setState({usernameState: "error"})
+
+
     }
 
     handlePasswordChange(e) {
+        const password = e.target.value;
         this.setState({
             password: e.target.value
         });
+        password ?
+            this.setState({passwordState: "success"})
+            :
+            this.setState({passwordState: "error"})
     }
 
+    isValidated() {
+        if (
+            this.state.usernameState === "success" &&
+            this.state.passwordState === "success"
+        ) {
+            return true;
+        } else {
+            if (this.state.usernameState !== "success") {
+                this.setState({usernameState: "error"});
+            }
+            if (this.state.passwordState !== "success") {
+                this.setState({passwordState: "error"});
+            }
+        }
+        return false;
+    }
 
     componentDidMount() {
         // we add a hidden class to the card and after 700 ms we delete it and the transition appears
@@ -113,12 +143,15 @@ class LoginPage extends React.Component {
 
     handleSubmit(e) {
         e.preventDefault();
-        this.login();
+        if(this.isValidated()){
+            this.login();
+        }
+
     }
 
     render() {
         const {classes, ...rest} = this.props;
-
+        const {usernameState, passwordState} = this.state;
         return (
             <div>
                 <PagesHeader {...rest} />
@@ -142,6 +175,8 @@ class LoginPage extends React.Component {
                                             </CardHeader>
                                             <CardBody>
                                                 <CustomInput
+                                                    success={usernameState === "success"}
+                                                    error={usernameState === "error"}
                                                     labelText="Username"
                                                     id="username"
                                                     formControlProps={{
@@ -158,6 +193,8 @@ class LoginPage extends React.Component {
                                                     value={this.state.username}
                                                 />
                                                 <CustomInput
+                                                    success={passwordState === "success"}
+                                                    error={passwordState === "error"}
                                                     labelText="Password"
                                                     id="password"
                                                     formControlProps={{
@@ -175,9 +212,16 @@ class LoginPage extends React.Component {
                                                 />
                                             </CardBody>
                                             <CardFooter className={classes.justifyContentCenter}>
-                                                <Button id="login" type="submit" color="info" simple size="lg" block>
-                                                    Login
-                                                </Button>
+                                                <GridContainer>
+                                                    <GridItem xs={12} sm={12} md={12} lg={12}>
+                                                        <Button id="login" type="submit" color="info" simple size="lg" block style={{paddingBottom: 0}}>
+                                                            Login
+                                                        </Button>
+                                                    </GridItem>
+                                                    <GridItem xs={12} sm={12} md={12} lg={12} style={{textAlign:"center", paddingTop:0}}>
+                                                    <a href='https://csgigs.com/home/' target="_blank">Forget password</a>
+                                                    </GridItem>
+                                                </GridContainer>
                                             </CardFooter>
                                         </Card>
                                     </form>
