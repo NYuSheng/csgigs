@@ -18,6 +18,7 @@ class CreateGig extends React.Component {
         this.state = {
             createGigSuccess: null,
         };
+
     }
 
     componentDidMount() {
@@ -31,6 +32,8 @@ class CreateGig extends React.Component {
     }
 
     finishButtonClick(step) {
+        const gigCreatorUsername = UserProfile.getUser();
+        step.selectedAdmins.push(gigCreatorUsername.me);
         fetch('/admin-ui/api/gigs/create', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
@@ -73,7 +76,6 @@ class CreateGig extends React.Component {
 
     render() {
         const {createGigSuccess} = this.state;
-
         return (
             <div>
                 {createGigSuccess}
