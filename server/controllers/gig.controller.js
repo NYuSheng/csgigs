@@ -241,10 +241,30 @@ exports.gig_update = function (req, res, next) {
     });
 };
 
+exports.gig_add_user_admin = function (req, res, next) {
+    return Gig.findOneAndUpdate(
+        {name: req.params.name},
+        {$addToSet: {"user_admins": req.params.admin_name}}, //addToSet ensures no duplicate names in array
+        {'new': true},
+        function (err, gig) {
+            if (err || gig == null) {
+                console.log(err);
+                return res.status(400).send({
+                    error: 'Cannot find gig of name ' + req.params.name
+                });
+            } else {
+                res.status(200).send({
+                    gig: gig
+                });
+
+            }
+        });
+};
+
 exports.gig_add_user_participant = function (req, res, next) {
     return Gig.findOneAndUpdate(
         {name: req.params.name},
-        {$push: {"user_participants": req.params.participant_name}}, //add participant to array
+        {$addToSet: {"user_participants": req.params.participant_name}}, //addToSet ensures no duplicate names in array
         {'new': true},
         function (err, gig) {
             if (err || gig == null) {
@@ -262,7 +282,7 @@ exports.gig_add_user_participant = function (req, res, next) {
 exports.gig_add_user_attendee = function (req, res, next) {
     return Gig.findOneAndUpdate(
         {name: req.params.name},
-        {$push: {"user_attendees": req.params.attendee_name}}, //add participant to array
+        {$addToSet: {"user_attendees": req.params.attendee_name}}, //addToSet ensures no duplicate names in array
         {'new': true},
         function (err, gig) {
             if (err || gig == null) {
