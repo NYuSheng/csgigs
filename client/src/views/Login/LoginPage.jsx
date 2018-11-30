@@ -177,7 +177,11 @@ class LoginPage extends React.Component {
                                                 <CustomInput
                                                     success={usernameState === "success"}
                                                     error={usernameState === "error"}
-                                                    labelText="Username"
+                                                    labelText={
+                                                        usernameState === "error" ?
+                                                            "Username (required)" :
+                                                            "Username"
+                                                    }
                                                     id="username"
                                                     formControlProps={{
                                                         fullWidth: true
@@ -195,7 +199,11 @@ class LoginPage extends React.Component {
                                                 <CustomInput
                                                     success={passwordState === "success"}
                                                     error={passwordState === "error"}
-                                                    labelText="Password"
+                                                    labelText={
+                                                        passwordState === "error" ?
+                                                            "Password (required)" :
+                                                            "Password"
+                                                    }
                                                     id="password"
                                                     formControlProps={{
                                                         fullWidth: true
@@ -219,7 +227,7 @@ class LoginPage extends React.Component {
                                                         </Button>
                                                     </GridItem>
                                                     <GridItem xs={12} sm={12} md={12} lg={12} style={{textAlign:"center", paddingTop:0}}>
-                                                    <a href='https://csgigs.com/home/' target="_blank">Forget password</a>
+                                                        <a href='https://csgigs.com/home/' target="_blank">Forget password</a>
                                                     </GridItem>
                                                 </GridContainer>
                                             </CardFooter>
