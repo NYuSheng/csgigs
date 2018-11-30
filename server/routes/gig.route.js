@@ -13,6 +13,7 @@ router.get('/getGigs/:name', gig_controller.gig_details);
 
 //update routes
 router.put('/update/:id', gig_controller.gig_update);
+router.put('/addAdmin/:name/:admin_name', gig_controller.gig_add_user_admin);
 router.put('/addParticipant/:name/:participant_name', gig_controller.gig_add_user_participant);
 router.put('/addAttendee/:name/:attendee_name', gig_controller.gig_add_user_attendee);
 
