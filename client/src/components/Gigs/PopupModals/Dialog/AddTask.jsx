@@ -167,6 +167,7 @@ class AddTask extends React.Component {
                 <DialogTitle
                     id="classic-modal-slide-title"
                     disableTypography
+                    style={{paddingBottom: 0}}
                 >
                     <GridContainer className={classes.modalHeader}>
                         <GridItem xs={6} sm={6} md={6} lg={6} style={{textAlign: "left"}}>

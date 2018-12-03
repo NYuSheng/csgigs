@@ -10,6 +10,7 @@ import DialogActions from "@material-ui/core/DialogActions";
 
 // @material-ui/icons
 import Close from "@material-ui/icons/Close";
+import Danger from "@material-ui/icons/Warning";
 
 // core components
 import GridContainer from "components/Grid/GridContainer";
@@ -165,8 +166,8 @@ class GigActions extends React.Component {
                     {
                         (modalState === "working") ? (
                             <GridContainer justify="center">
-                                <GridItem xs={10} sm={10} md={10} lg={10}>
-                                    <Card>
+                                <GridItem xs={10} sm={10} md={10} lg={10} style={{paddingTop: 10}}>
+                                    <Card style={{marginTop: 0, marginBottom: 10}}>
                                         <CardBody>
                                             <Button className={classes.marginRight}
                                                     onClick={() => {Actions.publish(gig, channelUpdate)}}
@@ -178,7 +179,12 @@ class GigActions extends React.Component {
                                             </Button>
                                         </CardBody>
                                     </Card>
-                                    <Card>
+                                    <p style={{textAlign: "justify", paddingBottom: 9, borderBottom: "1px solid grey", fontSize: 13}}>
+                                        Publishing the gig allows you to create a channel in Rocket Chat
+                                    </p>
+                                </GridItem>
+                                <GridItem xs={10} sm={10} md={10} lg={10}>
+                                    <Card style={{marginTop: 0, marginBottom: 10}}>
                                         <CardBody>
                                             <Button className={classes.marginRight}
                                                 // onClick={this.completeGig.bind(this)}
@@ -189,9 +195,16 @@ class GigActions extends React.Component {
                                             </Button>
                                         </CardBody>
                                     </Card>
+                                    <p style={{textAlign: "justify", paddingBottom: 9, borderBottom: "1px solid grey", fontSize: 13}}>
+                                        Completing the gig wraps up the gig and distributes the Brownie points as allocated
+                                    </p>
+                                </GridItem>
+                                <GridItem xs={10} sm={10} md={10} lg={10}>
                                     <Card style={{
                                         border: "1px solid",
-                                        borderColor: "red"}}
+                                        borderColor: "red",
+                                        marginTop: 0,
+                                        marginBottom: 10}}
                                     >
                                         <CardBody>
                                             <Button className={classes.marginRight}
@@ -204,6 +217,12 @@ class GigActions extends React.Component {
                                             </Button>
                                         </CardBody>
                                     </Card>
+                                    <div style={{overflow: "auto", display: "block"}}>
+                                        <Danger color="error" style={{float: "left", position: "relative", clear: "both", marginRight: 5}} fontSize="small"/>
+                                        <p style={{textAlign: "justify", fontSize: 13}}>
+                                            Cancelling the gig disables the gig. This action cannot be undone.
+                                        </p>
+                                    </div>
                                 </GridItem>
                             </GridContainer>
                         ) : null

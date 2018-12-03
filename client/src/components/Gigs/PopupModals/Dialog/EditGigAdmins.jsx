@@ -135,11 +135,7 @@ class EditGigAdmins extends React.Component {
                     <GridContainer className={classes.modalHeader}>
                         <GridItem xs={6} sm={6} md={6} lg={6} style={{textAlign: "left"}}>
                             <h4 className={classes.modalTitle} style={{fontWeight: "bold"}}>
-                                {
-                                    (status === "working") ?
-                                        "Edit Admins"
-                                        : null
-                                }
+                                Edit Admins
                             </h4>
                         </GridItem>
                         <GridItem xs={6} sm={6} md={6} lg={6} style={{paddingRight: 5}}>
@@ -165,51 +161,67 @@ class EditGigAdmins extends React.Component {
                     className={classes.modalBody}
                     style={{paddingBottom: 35, paddingTop: 0}}
                 >
-                    {
-                        status === "loading" ?
-                            (
-                                <GridContainer justify="center">
-                                    <GridItem xs={10} sm={10} md={10} lg={10}>
-                                        <Loader
-                                            type="ThreeDots"
-                                            color="black"
-                                            height="100"
-                                            width="100"
-                                        />
-                                    </GridItem>
-                                </GridContainer>
-                            ) : null
-                    }
-                    {
-                        status === "working" ?
-                            (
-                                <Card>
-                                    <CardHeader>
-                                        <AutoComplete selectInput={this.selectAdmin.bind(this)}/>
-                                    </CardHeader>
-                                    <CardBody>
-                                        <Table
-                                            tableHeight="100px"
-                                            hover
-                                            tableHeaderColor="primary"
-                                            tableData={selectedAdmins}
-                                            tableFooter="false"
-                                            notFoundMessage="No admins selected"
-                                            setupTableCells={this.setupTableCells.bind(this)}
-                                            handleTableRowOnClick={this.deselectAdmin.bind(this)}
-                                        />
-                                    </CardBody>
-                                </Card>
-                            ) : null
-                    }
-                    {
-                        status === "success" ? (
-                            <React.Fragment>
-                                <Success className={classes.icon} style={{height: 100, width: 100, fill: "green"}}/>
-                                <h4 className={classes.modalTitle} style={{fontWeight: "bold"}}>Admins Edited</h4>
-                            </React.Fragment>
-                        ) : null
-                    }
+                    <GridContainer justify="center">
+                        <GridItem xs={10} sm={10} md={10} lg={10}>
+                            <p style={{
+                                textAlign: "justify",
+                                paddingBottom: 9,
+                                borderBottom: "1px solid grey",
+                                fontSize: 13
+                            }}>
+                                Manage your event admins here
+                            </p>
+                        </GridItem>
+                        <GridItem xs={10} sm={10} md={10} lg={10} style={{textAlign: "center"}}>
+                            {
+                                status === "loading" ?
+                                    (
+                                        <div style={{paddingTop: 25}}>
+                                            <Loader
+                                                type="ThreeDots"
+                                                color="black"
+                                                height="100"
+                                                width="100"
+                                            />
+                                        </div>
+                                    ) : null
+                            }
+                            {
+                                status === "working" ?
+                                    (
+                                        <GridContainer>
+                                            <GridItem xs={12} sm={12} md={12} lg={12} style={{padding: 0}}>
+                                                <Card>
+                                                    <CardHeader>
+                                                        <AutoComplete selectInput={this.selectAdmin.bind(this)}/>
+                                                    </CardHeader>
+                                                    <CardBody>
+                                                        <Table
+                                                            tableHeight="150px"
+                                                            hover
+                                                            tableHeaderColor="primary"
+                                                            tableData={selectedAdmins}
+                                                            tableFooter="false"
+                                                            notFoundMessage="No admins selected"
+                                                            setupTableCells={this.setupTableCells.bind(this)}
+                                                            handleTableRowOnClick={this.deselectAdmin.bind(this)}
+                                                        />
+                                                    </CardBody>
+                                                </Card>
+                                            </GridItem>
+                                        </GridContainer>
+                                    ) : null
+                            }
+                            {
+                                status === "success" ? (
+                                    <div style={{paddingTop: 25}}>
+                                        <Success className={classes.icon} style={{height: 100, width: 100, fill: "green"}}/>
+                                        <h4 className={classes.modalTitle} style={{fontWeight: "bold"}}>Admins Edited</h4>
+                                    </div>
+                                ) : null
+                            }
+                        </GridItem>
+                    </GridContainer>
                 </DialogContent>
                 {
                     status === "working" ? (
