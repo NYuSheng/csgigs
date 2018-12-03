@@ -6,7 +6,7 @@ import Slide from "@material-ui/core/Slide";
 import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
-import DialogActions from "@material-ui/core/DialogActions";
+import withMobileDialog from '@material-ui/core/withMobileDialog';
 
 // @material-ui/icons
 import Close from "@material-ui/icons/Close";
@@ -89,12 +89,13 @@ class GigActions extends React.Component {
     }
 
     render() {
-        const {classes, modalOpen, gig, channelUpdate, cancelGig} = this.props;
+        const {classes, modalOpen, gig, channelUpdate, cancelGig, fullScreen} = this.props;
         const {modalState, publishState, cancelState} = this.state;
 
         return (
             <Dialog
                 open={modalOpen}
+                fullScreen={fullScreen}
                 TransitionComponent={Transition}
                 keepMounted
                 onClose={() => {
@@ -234,4 +235,4 @@ class GigActions extends React.Component {
     }
 }
 
-export default withStyles(notificationsStyle)(GigActions);
+export default withMobileDialog()(withStyles(notificationsStyle)(GigActions));

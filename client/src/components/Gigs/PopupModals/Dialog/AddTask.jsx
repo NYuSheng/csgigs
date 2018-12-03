@@ -10,6 +10,7 @@ import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogActions from "@material-ui/core/DialogActions";
+import withMobileDialog from '@material-ui/core/withMobileDialog';
 
 // @material-ui/icons
 import Close from "@material-ui/icons/Close";
@@ -148,12 +149,13 @@ class AddTask extends React.Component {
     }
 
     render() {
-        const {classes, modalOpen} = this.props;
+        const {classes, modalOpen, fullScreen} = this.props;
         const {taskNameState, taskCategoryState, status} = this.state;
 
         return (
             <Dialog
                 open={modalOpen}
+                fullScreen={fullScreen}
                 TransitionComponent={Transition}
                 keepMounted
                 onClose={() => {
@@ -331,4 +333,4 @@ class AddTask extends React.Component {
     }
 }
 
-export default withStyles(notificationsStyle)(AddTask);
+export default withMobileDialog()(withStyles(notificationsStyle)(AddTask));

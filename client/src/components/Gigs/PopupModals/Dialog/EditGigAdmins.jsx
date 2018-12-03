@@ -8,6 +8,7 @@ import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogActions from "@material-ui/core/DialogActions";
+import withMobileDialog from '@material-ui/core/withMobileDialog';
 
 // @material-ui/icons
 import Cancel from "@material-ui/icons/Cancel";
@@ -112,12 +113,13 @@ class EditGigAdmins extends React.Component {
     }
 
     render() {
-        const {classes, modalOpen} = this.props;
+        const {classes, modalOpen, fullScreen} = this.props;
         const {selectedAdmins, status} = this.state;
 
         return (
             <Dialog
                 open={modalOpen}
+                fullScreen={fullScreen}
                 TransitionComponent={Transition}
                 keepMounted
                 onClose={() => {
@@ -247,4 +249,4 @@ class EditGigAdmins extends React.Component {
     }
 }
 
-export default withStyles(notificationsStyle)(EditGigAdmins);
+export default withMobileDialog()(withStyles(notificationsStyle)(EditGigAdmins));
