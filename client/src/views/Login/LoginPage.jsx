@@ -149,6 +149,10 @@ class LoginPage extends React.Component {
 
     }
 
+    forgetPassword() {
+        window.location.href = "https://csgigs.com/home/"
+    }
+
     render() {
         const {classes, ...rest} = this.props;
         const {usernameState, passwordState} = this.state;
@@ -226,8 +230,10 @@ class LoginPage extends React.Component {
                                                             Login
                                                         </Button>
                                                     </GridItem>
-                                                    <GridItem xs={12} sm={12} md={12} lg={12} style={{textAlign:"center", paddingTop:0}}>
-                                                        <a href='https://csgigs.com/home/' target="_blank">Forget password</a>
+                                                    <GridItem xs={12} sm={12} md={12} lg={12}>
+                                                        <Button id="forget_password" onClick={this.forgetPassword} color="info" simple size="lg" block style={{paddingTop: 0, paddingBottom: 0}}>
+                                                            Forget Password
+                                                        </Button>
                                                     </GridItem>
                                                 </GridContainer>
                                             </CardFooter>
