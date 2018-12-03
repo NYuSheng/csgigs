@@ -59,7 +59,9 @@ class GigsTable extends React.Component {
                 hover={hover}
                 className={classes.tableRow + " " + tableRowClasses}
                 onClick={() => {
-                    (handleTableRowOnClick) ? handleTableRowOnClick(prop) : null
+                    if (handleTableRowOnClick) {
+                        handleTableRowOnClick(prop)
+                    }
                 }}
                 style={{'cursor': (handleTableRowOnClick) ? 'pointer' : 'auto'}}
             >
