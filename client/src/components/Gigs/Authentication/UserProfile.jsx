@@ -1,8 +1,18 @@
 var UserProfile = (function() {
 
     var login = function(user) {
-        user.me.username = "logintest";
-        sessionStorage.setItem('user', JSON.stringify(user))
+        fetch(`https://csgigs.com/api/v1/users.getAvatar?username=${user.me.username}`, {
+            method: 'GET',
+            headers: {'Content-Type': 'application/json'}
+        }).then(output => {
+            if (output.status === 200) {
+                user.me.avatar = output.url;
+            } else {
+                console.log("Error - User avatar not found");
+            }
+            user.me.username = "logintest";
+            sessionStorage.setItem('user', JSON.stringify(user))
+        })
     }
 
     var authenticate = function() {

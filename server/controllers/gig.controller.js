@@ -128,10 +128,12 @@ function aggregation_with_tasks_and_users(gig_name) {
 }
 
 exports.gigs_details = asyncMiddleware(async (req, res, next) => {
+    let status = (req.query.status).split(",");
     return Gig.aggregate([
         {"$match":
                 {
-                    "user_admins": { "$in" : [req.params.username]}
+                    "user_admins": { "$in" : [req.params.username]},
+                    "status": { "$in" : status}
                 }
         },
         {
@@ -240,6 +242,13 @@ exports.gig_update = function (req, res, next) {
         res.send('Gig updated.');
     });
 };
+
+exports.gig_cancel = function (req, res, next) {
+    Gig.findByIdAndUpdate(req.params.name, {"status": "Cancelled"}, function (err, gig) {
+        if (err) return next(err);
+        res.send('Gig cancelled.');
+    });
+}
 
 exports.gig_add_user_admin = function (req, res, next) {
     return Gig.findOneAndUpdate(

@@ -100,15 +100,14 @@ class GigCustomTabs extends React.Component {
                                 })}
                             </Tabs>
                         </GridItem>
-                        <GridItem xs={3} sm={3} md={3} lg={3} style={{textAlign: 'right', paddingLeft: 0}}>
+                        <GridItem xs={3} sm={3} md={3} lg={3} style={{textAlign: 'right', padding: "5px 0px 0px 0px"}}>
                             <Button color="default"
                                     onClick={addContent}
                                     variant="contained"
                                     size="small"
-                                    style={{height: "100%"}}
                             >
                                 <div className={classes.muiButtonText}>Add</div>
-                                <Add className={classes.muiButtonIcon}/>
+                                <Add className={classes.muiButtonIcon} fontSize="small"/>
                             </Button>
                         </GridItem>
                     </GridContainer>

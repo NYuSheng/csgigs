@@ -117,10 +117,6 @@ class EditGigAdmins extends React.Component {
 
         return (
             <Dialog
-                classes={{
-                    root: classes.center + " " + classes.modalRoot,
-                    paper: classes.modal
-                }}
                 open={modalOpen}
                 TransitionComponent={Transition}
                 keepMounted
@@ -146,7 +142,7 @@ class EditGigAdmins extends React.Component {
                                 }
                             </h4>
                         </GridItem>
-                        <GridItem xs={6} sm={6} md={6} lg={6}>
+                        <GridItem xs={6} sm={6} md={6} lg={6} style={{paddingRight: 5}}>
                             <Button
                                 justIcon
                                 className={classes.modalCloseButton}
@@ -167,7 +163,7 @@ class EditGigAdmins extends React.Component {
                 <DialogContent
                     id="classic-modal-slide-description"
                     className={classes.modalBody}
-                    style={{paddingBottom: 35, paddingTop: 0, width: 500}}
+                    style={{paddingBottom: 35, paddingTop: 0}}
                 >
                     {
                         status === "loading" ?

@@ -32,9 +32,11 @@ import AssignUsers from "components/Gigs/PopupModals/SweetAlert/AssignUsers";
 import EditGigParticipants from "components/Gigs/PopupModals/SweetAlert/Participants";
 import EditGigAdmins from "components/Gigs/PopupModals/Dialog/EditGigAdmins";
 import AddTask from "components/Gigs/PopupModals/Dialog/AddTask";
+import GigActions from "components/Gigs/PopupModals/Dialog/GigActions";
 import BrownieAllocation from "components/Gigs/PopupModals/Dialog/BrownieAllocation";
 import Table from "components/Gigs/Table/Table";
 import UserProfile from "components/Gigs/Authentication/UserProfile";
+
 
 // dependencies
 import CircularProgressbar from 'react-circular-progressbar';
@@ -99,6 +101,7 @@ class GigDashboard extends React.Component {
             editGigAdmins: false,
             addTask: false,
             brownieAllocation: false,
+            gigActions: false,
             Draft: "info",
             Active: "warning",
             Completed: "success",
@@ -173,62 +176,31 @@ class GigDashboard extends React.Component {
         });
     }
 
-    publishGig() {
-        const authSet = UserProfile.getAuthSet();
-
-        fetch('https://csgigs.com/api/v1/channels.create', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Auth-Token': authSet.token,
-                'X-User-Id': authSet.userId
-            },
-            body: JSON.stringify(this.buildPayLoad())
-        }).then(data => {
-            if (data.status !== 200) {
-                data.json().then(json => {
-                    var errorMsg = json.error || json.message;
-                    NotificationManager.error(errorMsg);
-                });
-            } else {
-                data.json().then(json => {
-                    console.log(json);
-                    this.updateGigChannel(json);
-                });
-            }
-        });
+    notifyGigChannelUpdate(gig) {
+        this.setState({
+            gig: gig
+        })
+        NotificationManager.success("Gig Published!");
     }
 
-    updateGigChannel(payload) {
-        const {gig} = this.state;
-        const update = {
-            rc_channel_id: payload.channel.name
-        }
-        fetch(`/admin-ui/api/gigs/update/${gig._id}`, {
-            method: 'PUT',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(update)
-        }).then(data => {
-            if (data.status !== 200) {
-                data.json().then(json => {
-                    NotificationManager.error(json.error.errmsg);
-                });
-            } else {
-                gig.rc_channel_id = update.rc_channel_id;
-                this.setState({
-                    gig: gig
-                })
-                NotificationManager.success("Gig Published!");
-            }
-        });
+    notifyGigStatusCancelled(gig) {
+        this.setState({
+            gig: gig
+        })
+        NotificationManager.success("Gig Cancelled!");
     }
 
     buildPayLoad() {
         const {gig} = this.state;
         var payload = {};
         payload["name"] = gig.name.replace(/ /g, '');
-        ;
         return payload;
+    }
+
+    gigActions() {
+        this.setState({
+            gigActions: true
+        })
     }
 
     editTask(task) {
@@ -376,7 +348,8 @@ class GigDashboard extends React.Component {
             editGigParticipants,
             editGigAdmins,
             addTask,
-            brownieAllocation
+            brownieAllocation,
+            gigActions
         } = this.state;
 
         if (gig) {
@@ -386,10 +359,15 @@ class GigDashboard extends React.Component {
                     {removeTask}
                     {editTask}
                     {editGigParticipants}
+                    <GigActions modalOpen={gigActions} hidePopup={this.hidePopup.bind(this)}
+                                gig={gig} channelUpdate={this.notifyGigChannelUpdate.bind(this)}
+                                cancelGig={this.notifyGigStatusCancelled.bind(this)}
+                    />
                     <AddTask modalOpen={addTask} hideTask={this.hidePopup.bind(this)} gig={gig}/>
                     <EditGigAdmins modalOpen={editGigAdmins} hidePopup={this.hidePopup.bind(this)}
                                    admins={gig.user_admins}/>
                     <BrownieAllocation modalOpen={brownieAllocation} hidePopup={this.hidePopup.bind(this)} gig={gig}/>
+
                     <GridContainer justify="center">
                         <GridItem xs={6}>
                             <Button className={classes.marginRight} onClick={this.returnToHomepage.bind(this)}>
@@ -397,21 +375,10 @@ class GigDashboard extends React.Component {
                             </Button>
                         </GridItem>
                         <GridItem xs={6} style={{textAlign: "right"}}>
-                            {
-                                !gig.rc_channel_id ? (
-                                    <Button className={classes.marginRight}
-                                            onClick={this.publishGig.bind(this)}
-                                            color="warning"
-                                    >
-                                        Publish
-                                    </Button>
-                                ) : null
-                            }
                             <Button className={classes.marginRight}
-                                    onClick={this.completeGig.bind(this)}
-                                    color="success"
+                                    onClick={this.gigActions.bind(this)}
                             >
-                                Complete
+                                Actions
                             </Button>
                         </GridItem>
                         <GridItem xs={12} sm={12} md={8} lg={8}>
@@ -442,7 +409,7 @@ class GigDashboard extends React.Component {
                                                     gig.rc_channel_id ? (
 
                                                         <a href={'https://csgigs.com/channel/' + gig.rc_channel_id}
-                                                           target="_blank">
+                                                           target="_blank" rel="noopener noreferrer">
                                                             {gig.rc_channel_id}
                                                         </a>
                                                     ) : (

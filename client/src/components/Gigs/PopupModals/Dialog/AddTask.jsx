@@ -153,10 +153,6 @@ class AddTask extends React.Component {
 
         return (
             <Dialog
-                classes={{
-                    root: classes.center + " " + classes.modalRoot,
-                    paper: classes.modal
-                }}
                 open={modalOpen}
                 TransitionComponent={Transition}
                 keepMounted
@@ -182,7 +178,7 @@ class AddTask extends React.Component {
                                 }
                             </h4>
                         </GridItem>
-                        <GridItem xs={6} sm={6} md={6} lg={6}>
+                        <GridItem xs={6} sm={6} md={6} lg={6} style={{paddingRight: 5}}>
                             <Button
                                 justIcon
                                 className={classes.modalCloseButton}
@@ -203,7 +199,7 @@ class AddTask extends React.Component {
                 <DialogContent
                     id="classic-modal-slide-description"
                     className={classes.modalBody}
-                    style={{paddingBottom: 35, paddingTop: 0, width: 500}}
+                    style={{paddingBottom: 35, paddingTop: 0}}
                 >
                     {
                         status === "loading" ?
@@ -230,8 +226,8 @@ class AddTask extends React.Component {
                                             error={taskNameState === "error"}
                                             labelText={
                                                 <span>
-                                            Task Name <small>(required)</small>
-                                        </span>
+                                                    Task Name <small>(required)</small>
+                                                </span>
                                             }
                                             id="taskname"
                                             formControlProps={{
@@ -247,8 +243,8 @@ class AddTask extends React.Component {
                                         <CustomInput
                                             labelText={
                                                 <span>
-                                            Task Description
-                                        </span>
+                                                    Task Description
+                                                </span>
                                             }
                                             id="taskdescription"
                                             formControlProps={{
