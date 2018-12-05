@@ -2,9 +2,6 @@ import React from "react";
 
 // @material-ui/core components
 import withStyles from "@material-ui/core/styles/withStyles";
-import FormControl from "@material-ui/core/FormControl";
-import InputLabel from "@material-ui/core/InputLabel";
-import Select from "@material-ui/core/Select";
 import Slide from "@material-ui/core/Slide";
 import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
@@ -20,8 +17,6 @@ import Warning from "@material-ui/icons/ErrorOutline";
 // core components
 import GridContainer from "components/Grid/GridContainer";
 import GridItem from "components/Grid/GridItem";
-import CustomInput from "components/Gigs/CustomInput/CustomInput";
-import {renderTaskCategories, fetchTaskCategories} from "components/Gigs/Data/TaskCategories";
 import Button from "components/CustomButtons/Button";
 
 // dependencies

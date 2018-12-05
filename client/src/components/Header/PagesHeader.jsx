@@ -1,7 +1,6 @@
 import React from "react";
 import cx from "classnames";
 import PropTypes from "prop-types";
-import {NavLink} from "react-router-dom";
 
 // @material-ui/core components
 import withStyles from "@material-ui/core/styles/withStyles";

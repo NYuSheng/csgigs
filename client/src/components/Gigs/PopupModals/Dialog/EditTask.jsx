@@ -160,7 +160,7 @@ class EditTask extends React.Component {
     }
 
     render() {
-        const {classes, fullScreen, hideTask, task} = this.props;
+        const {classes, fullScreen, task} = this.props;
         const {taskNameState, taskCategoryState, status} = this.state;
 
         return (

@@ -19,8 +19,6 @@ import Icon from "@material-ui/core/Icon";
 // style sheets
 import sidebarStyle from "assets/jss/material-dashboard-pro-react/components/sidebarStyle.jsx";
 
-import avatar from "assets/img/faces/avatar.jpg";
-
 import UserProfile from "components/Gigs/Authentication/UserProfile";
 
 var ps;
@@ -88,8 +86,7 @@ class Sidebar extends React.Component {
             image,
             logoText,
             routes,
-            bgColor,
-            rtlActive
+            bgColor
         } = this.props;
         const itemText =
             classes.itemText +
@@ -97,21 +94,21 @@ class Sidebar extends React.Component {
             cx({
                 [classes.itemTextMini]: this.props.miniActive && this.state.miniActive
             });
-        const collapseItemText =
-            classes.collapseItemText +
-            " " +
-            cx({
-                [classes.collapseItemTextMini]: this.props.miniActive && this.state.miniActive
-            });
+        // const collapseItemText =
+        //     classes.collapseItemText +
+        //     " " +
+        //     cx({
+        //         [classes.collapseItemTextMini]: this.props.miniActive && this.state.miniActive
+        //     });
         const userWrapperClass =
             classes.user +
             " " +
             cx({
                 [classes.whiteAfter]: bgColor === "white"
             });
-        const caret = classes.caret;
-        const collapseItemMini = classes.collapseItemMini;
-        const photo = classes.photo;
+        // const caret = classes.caret;
+        // const collapseItemMini = classes.collapseItemMini;
+        // const photo = classes.photo;
         var user = (
             <div className={userWrapperClass}>
                 <ListItem className={classes.item}>
@@ -269,7 +266,7 @@ class Sidebar extends React.Component {
             cx({
                 [classes.logoNormalSidebarMini]: this.props.miniActive && this.state.miniActive
             });
-        const logoMini = classes.logoMini;
+        // const logoMini = classes.logoMini;
         const logoClasses =
             classes.logo +
             " " +
