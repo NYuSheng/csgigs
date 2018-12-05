@@ -60,3 +60,13 @@ exports.user_login2 = function (req, res, next) {
         res.status(400).send({error: err});
     })
 };
+
+exports.get_user_by_prefix = function (req, res, next) {
+    return User.find({name: { $regex: '.*' + req.body.name + '.*' }}).exec().then((users_retrieved) => {
+        res.status(200).send({
+            users: users_retrieved
+        });
+    }).catch(err => {
+        res.status(400).send({error: err});
+    })
+};
