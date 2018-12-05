@@ -9,6 +9,7 @@ exports.create_tasks = function (req, res, next) {
             task_description:req.body.task_description,
             points: 0,
             task_category: req.body.task_category,
+            users_assigned: [],
             completeAt: null
         }
     );

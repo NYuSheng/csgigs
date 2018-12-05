@@ -103,6 +103,7 @@ class GigActions extends React.Component {
                 }}
                 aria-labelledby="classic-modal-slide-title"
                 aria-describedby="classic-modal-slide-description"
+                maxWidth="xs"
             >
                 <DialogTitle
                     id="classic-modal-slide-title"

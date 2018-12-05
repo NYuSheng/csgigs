@@ -8,6 +8,7 @@ import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogActions from "@material-ui/core/DialogActions";
+import withMobileDialog from '@material-ui/core/withMobileDialog';
 
 // @material-ui/icons
 import Close from "@material-ui/icons/Close";
@@ -19,6 +20,8 @@ import EditableTableCell from "components/Gigs/Table/EditableTableCell";
 import Button from "components/CustomButtons/Button";
 import GridContainer from "components/Grid/GridContainer";
 import GridItem from "components/Grid/GridItem";
+import Card from "components/Card/Card";
+import CardBody from "components/Card/CardBody";
 
 // dependencies
 import Loader from 'react-loader-spinner';
@@ -124,6 +127,17 @@ class BrownieAllocation extends React.Component {
         return true;
     }
 
+    calculateCurrentTotal() {
+        const {tasks} = this.state;
+
+        var currentTotal = 0;
+        tasks.forEach(function (task) {
+            currentTotal += task.points;
+        });
+
+        return currentTotal;
+    }
+
     allocationEditAction() {
         const {gig} = this.props;
         const {tasks} = this.state;
@@ -145,7 +159,7 @@ class BrownieAllocation extends React.Component {
                     body: JSON.stringify(this.buildPayLoad())
                 }).then(data => {
                     if (data.status !== 200) {
-                        data.json().then(json =>{
+                        data.json().then(json => {
                             NotificationManager.error(json.error.errmsg);
                         });
                         this.setState({
@@ -174,16 +188,13 @@ class BrownieAllocation extends React.Component {
     }
 
     render() {
-        const {classes, modalOpen, gig} = this.props;
+        const {classes, modalOpen, gig, fullScreen} = this.props;
         const {tasks, status} = this.state;
 
         return (
 
             <Dialog
-                classes={{
-                    root: classes.center + " " + classes.modalRoot,
-                    paper: classes.modal
-                }}
+                fullScreen={fullScreen}
                 open={modalOpen}
                 TransitionComponent={Transition}
                 keepMounted
@@ -194,22 +205,19 @@ class BrownieAllocation extends React.Component {
                 }}
                 aria-labelledby="classic-modal-slide-title"
                 aria-describedby="classic-modal-slide-description"
+                maxWidth="xs"
             >
                 <DialogTitle
                     id="classic-modal-slide-title"
                     disableTypography
                 >
                     <GridContainer className={classes.modalHeader}>
-                        <GridItem xs={6} sm={6} md={6} lg={6} style={{textAlign: "left"}}>
+                        <GridItem xs={6} sm={6} md={6} lg={6} style={{textAlign: "left", paddingRight: 0}}>
                             <h4 className={classes.modalTitle} style={{fontWeight: "bold"}}>
-                                {
-                                    (status === "working") ?
-                                        "Edit Allocations"
-                                        : null
-                                }
+                                Edit Allocations
                             </h4>
                         </GridItem>
-                        <GridItem xs={6} sm={6} md={6} lg={6}>
+                        <GridItem xs={6} sm={6} md={6} lg={6} style={{paddingRight: 0}}>
                             <Button
                                 justIcon
                                 className={classes.modalCloseButton}
@@ -230,72 +238,84 @@ class BrownieAllocation extends React.Component {
                 <DialogContent
                     id="classic-modal-slide-description"
                     className={classes.modalBody}
-                    style={{padding: 35, paddingTop: 0, width: 500}}
+                    style={{padding: 24, paddingTop: 0}}
                 >
-                    {
-                        status === "loading" ?
-                            (
-                                <GridContainer justify="center">
-                                    <GridItem xs={10} sm={10} md={10} lg={10}>
-                                        <Loader
-                                            type="ThreeDots"
-                                            color="black"
-                                            height="100"
-                                            width="100"
-                                        />
-                                    </GridItem>
-                                </GridContainer>
+                    <GridContainer justify="center">
+                        <GridItem xs={10} sm={10} md={10} lg={10}>
+                            <p style={{
+                                textAlign: "justify",
+                                paddingBottom: 9,
+                                borderBottom: "1px solid grey",
+                                fontSize: 13
+                            }}>
+                                Allocate your brownie points here
+                            </p>
+                        </GridItem>
+                        <GridItem xs={12} sm={12} md={12} lg={12} style={{paddingTop: 10, textAlign: "center"}}>
+                            {
+                                status === "loading" ?
+                                    (
+                                        <div style={{paddingTop: 25}}>
+                                            <Loader
+                                                type="ThreeDots"
+                                                color="black"
+                                                height="100"
+                                                width="100"
+                                            />
+                                        </div>
+                                    ) : null
+                            }
+                            {
+                                status === "working" ?
+                                    (
+                                        <Card style={{padding: 0, margin: "15px 0px 25px 0px"}}>
+                                            <CardBody style={{padding: 8}}>
+                                                <Table
+                                                    tableHeight="200px"
+                                                    tableHeaderColor="primary"
+                                                    tableHead={["Task Name", "Points Allocation"]}
+                                                    tableData={tasks}
+                                                    tableFooter="false"
+                                                    notFoundMessage="No tasks created"
+                                                    setupTableCells={this.setupTableCells.bind(this)}
+                                                />
+                                            </CardBody>
+                                        </Card>
+                                    ) : null
+                            }
+                            {
+                                status === "success" ? (
+                                    <div style={{paddingTop: 25, paddingBottom: 21}}>
+                                        <Success className={classes.icon}
+                                                 style={{height: 100, width: 100, fill: "green"}}/>
+                                        <h4 className={classes.modalTitle} style={{fontWeight: "bold"}}>Allocations
+                                            Edited</h4>
+                                    </div>
+                                ) : null
+                            }
+                        </GridItem>
+                        {
+                            status === "working" ? (
+                                <GridItem xs={10} sm={10} md={10} lg={10}>
+                                    <h4 style={{fontWeight: "bold"}}>Budget: {this.calculateCurrentTotal()} / {gig.points_budget} Points</h4>
+                                </GridItem>
                             ) : null
-                    }
-                    {
-                        status === "working" ?
-                            (
-                                <Table
-                                    tableHeight="200px"
-                                    hover
-                                    tableHeaderColor="primary"
-                                    tableHead={["Task Name", "Points Allocation"]}
-                                    tableData={tasks}
-                                    tableFooter="false"
-                                    notFoundMessage="No tasks created"
-                                    setupTableCells={this.setupTableCells.bind(this)}
-                                />
-                            ) : null
-                    }
-                    {
-                        status === "success" ? (
-                            <React.Fragment>
-                                <Success className={classes.icon} style={{height: 100, width: 100, fill: "green"}}/>
-                                <h4 className={classes.modalTitle} style={{fontWeight: "bold"}}>Allocations Edited</h4>
-                            </React.Fragment>
-                        ) : null
-                    }
+                        }
+                    </GridContainer>
                 </DialogContent>
                 {
                     status === "working" ? (
-                        <DialogActions className={classes.modalFooter}>
-                            <GridContainer>
-                                <GridItem xs={6} sm={6} md={6} lg={6} style={{textAlign: "left"}}>
-                                    {
-                                        status === "working" ? (
-                                            <h4 style={{fontWeight: "bold"}}>Budget: {gig.points_budget} Points</h4>
-                                        ) : null
-                                    }
-                                </GridItem>
-                                <GridItem xs={6} sm={6} md={6} lg={6} style={{textAlign: "right"}}>
-
-                                    <Button onClick={() => this.confirmAllocationEdit()}
-                                            className={classes.button + " " + classes.success}
-                                            color="success">
-                                        Save
-                                    </Button>
-                                    <Button onClick={() => this.closeModal()}
-                                            className={classes.button + " " + classes.danger}
-                                            color="danger">
-                                        Cancel
-                                    </Button>
-                                </GridItem>
-                            </GridContainer>
+                        <DialogActions className={classes.modalFooter} style={{padding: 24}}>
+                            <Button onClick={() => this.confirmAllocationEdit()}
+                                    className={classes.button + " " + classes.success}
+                                    color="success">
+                                Save
+                            </Button>
+                            <Button onClick={() => this.closeModal()}
+                                    className={classes.button + " " + classes.danger}
+                                    color="danger">
+                                Cancel
+                            </Button>
                         </DialogActions>) : null
                 }
             </Dialog>
@@ -312,4 +332,4 @@ class BrownieAllocation extends React.Component {
     }
 }
 
-export default withStyles(notificationsStyle)(BrownieAllocation);
+export default withMobileDialog()(withStyles(notificationsStyle)(BrownieAllocation));

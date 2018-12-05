@@ -34,7 +34,7 @@ function Transition(props) {
     return <Slide direction="down" {...props} />;
 }
 
-class AddTask extends React.Component {
+class EditTask extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -43,14 +43,21 @@ class AddTask extends React.Component {
             taskNameState: "",
             taskCategory: "",
             taskCategoryState: "",
-            status: "",
+            status: ""
         };
     }
 
     componentDidMount() {
         fetchTaskCategories();
+        const {task} = this.props;
         this.setState({
-            status: "working"
+            taskName: task.task_name,
+            taskNameState: "success",
+            taskDescription: task.task_description,
+            taskCategory: task.task_category,
+            taskCategoryState: "success",
+            status: "working",
+            modalOpen: true
         })
     }
 
@@ -75,9 +82,13 @@ class AddTask extends React.Component {
             this.setState({taskCategoryState: "error"})
     }
 
-    validateTaskName(event) {
+    onChangeTaskName(event) {
         const name = event.target.value;
         this.setState({taskName: name});
+        this.validateTaskName(name);
+    }
+
+    validateTaskName(name) {
         name ?
             this.setState({taskNameState: "success"})
             :
@@ -99,8 +110,20 @@ class AddTask extends React.Component {
         return false;
     }
 
-    confirmTaskAdd() {
-        const {gig} = this.props;
+    taskEditAction() {
+        const {editTaskAction, task} = this.props;
+        const {taskName, taskDescription, taskCategory} = this.state;
+
+        var payload = {};
+        payload["id"] = task._id;
+        payload["taskName"] = taskName;
+        payload["taskDescription"] = taskDescription;
+        payload["taskCategory"] = taskCategory;
+        editTaskAction(payload);
+    }
+
+    confirmTaskEdit() {
+        const {task} = this.props;
         const {status} = this.state;
         if (status !== "success") {
             if (this.isValidated()) {
@@ -108,22 +131,20 @@ class AddTask extends React.Component {
                     status: "loading"
                 });
 
-                fetch('/admin-ui/api/tasks/addTask', {
+                fetch(`/admin-ui/api/tasks/updateTask/${task._id}`, {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify(this.buildPayLoad())
                 }).then(data => {
                     if (data.status !== 200) {
-                        data.json().then(json => {
+                        data.json().then(json =>{
                             NotificationManager.error(json.error.errmsg);
                         });
                         this.setState({
                             status: "working"
                         });
                     } else {
-                        data.json().then(json => {
-                            gig.tasks.push(json.task);
-                        });
+                        this.taskEditAction();
                         this.setState({
                             status: "success"
                         });
@@ -135,26 +156,16 @@ class AddTask extends React.Component {
 
     closeModal() {
         const {hideTask} = this.props;
-        const {status} = this.state;
-        hideTask("addTask");
-        if (status === "success") {
-            this.setState({
-                taskName: "",
-                taskDescription: "",
-                taskNameState: "",
-                taskCategory: "",
-                status: "working"
-            })
-        }
+        hideTask("editTask");
     }
 
     render() {
-        const {classes, modalOpen, fullScreen} = this.props;
+        const {classes, fullScreen, hideTask, task} = this.props;
         const {taskNameState, taskCategoryState, status} = this.state;
 
         return (
             <Dialog
-                open={modalOpen}
+                open={true}
                 fullScreen={fullScreen}
                 TransitionComponent={Transition}
                 keepMounted
@@ -174,7 +185,7 @@ class AddTask extends React.Component {
                     <GridContainer className={classes.modalHeader}>
                         <GridItem xs={6} sm={6} md={6} lg={6} style={{textAlign: "left", paddingLeft: 3}}>
                             <h4 className={classes.modalTitle} style={{fontWeight: "bold"}}>
-                                Add New Task
+                                Edit Task
                             </h4>
                         </GridItem>
                         <GridItem xs={6} sm={6} md={6} lg={6} style={{paddingRight: 0}}>
@@ -208,7 +219,7 @@ class AddTask extends React.Component {
                                 borderBottom: "1px solid grey",
                                 fontSize: 13
                             }}>
-                                Create your task here
+                                Edit your task here
                             </p>
                         </GridItem>
 
@@ -237,15 +248,16 @@ class AddTask extends React.Component {
                                                 error={taskNameState === "error"}
                                                 labelText={
                                                     <span>
-                                                    Task Name <small>(required)</small>
-                                                </span>
+                                                        Task Name <small>(required)</small>
+                                                    </span>
                                                 }
                                                 id="taskname"
                                                 formControlProps={{
                                                     fullWidth: true
                                                 }}
                                                 inputProps={{
-                                                    onChange: event => this.validateTaskName(event)
+                                                    defaultValue: task.task_name,
+                                                    onChange: event => this.onChangeTaskName(event)
                                                 }}
                                                 inputType="text"
                                             />
@@ -254,14 +266,15 @@ class AddTask extends React.Component {
                                             <CustomInput
                                                 labelText={
                                                     <span>
-                                                    Task Description
-                                                </span>
+                                                        Task Description
+                                                    </span>
                                                 }
                                                 id="taskdescription"
                                                 formControlProps={{
                                                     fullWidth: true
                                                 }}
                                                 inputProps={{
+                                                    defaultValue: task.task_description,
                                                     multiline: true,
                                                     onChange: event => this.onChangeTaskDescription(event)
                                                 }}
@@ -290,6 +303,7 @@ class AddTask extends React.Component {
                                                     }}
                                                     onChange={this.onChangeTaskCategory}
                                                     inputProps={{
+                                                        defaultValue: task.task_category,
                                                         name: "taskcategory",
                                                         id: "taskcategory"
                                                     }}
@@ -307,7 +321,7 @@ class AddTask extends React.Component {
                                     <div style={{paddingTop: 25}}>
                                         <Success className={classes.icon}
                                                  style={{height: 100, width: 100, fill: "green"}}/>
-                                        <h4 className={classes.modalTitle} style={{fontWeight: "bold"}}>Task Added</h4>
+                                        <h4 className={classes.modalTitle} style={{fontWeight: "bold"}}>Task Edited</h4>
                                     </div>
                                 </GridItem>
                             ) : null
@@ -318,10 +332,10 @@ class AddTask extends React.Component {
                 {
                     status === "working" ? (
                         <DialogActions className={classes.modalFooter} style={{padding: 24}}>
-                            <Button onClick={() => this.confirmTaskAdd()}
+                            <Button onClick={() => this.confirmTaskEdit()}
                                     className={classes.button + " " + classes.success}
                                     color="success">
-                                Add
+                                Save
                             </Button>
                             <Button onClick={() => this.closeModal()}
                                     className={classes.button + " " + classes.danger}
@@ -335,15 +349,14 @@ class AddTask extends React.Component {
     }
 
     buildPayLoad() {
-        const {gig} = this.props;
-        // Construct your payload using state fields
+        const {taskName, taskDescription, taskCategory} = this.state;
+
         var payload = {};
-        payload["gig_name"] = gig.name;
-        payload["task_name"] = this.state.taskName;
-        payload["task_category"] = this.state.taskCategory;
-        payload["task_description"] = this.state.taskDescription;
+        payload["task_name"] = taskName;
+        payload["task_description"] = taskDescription;
+        payload["task_category"] = taskCategory;
         return payload;
     }
 }
 
-export default withMobileDialog()(withStyles(notificationsStyle)(AddTask));
+export default withMobileDialog()(withStyles(notificationsStyle)(EditTask));

@@ -26,10 +26,10 @@ import GigTable from "components/Gigs/Table/Table";
 import GridContainer from "components/Grid/GridContainer";
 import GridItem from "components/Grid/GridItem";
 import Button from "components/CustomButtons/Button";
-import EditTask from "components/Gigs/PopupModals/SweetAlert/EditTask";
-import RemoveTask from "components/Gigs/PopupModals/SweetAlert/RemoveTask";
-import AssignUsers from "components/Gigs/PopupModals/SweetAlert/AssignUsers";
 import EditGigParticipants from "components/Gigs/PopupModals/SweetAlert/Participants";
+import RemoveTask from "components/Gigs/PopupModals/Dialog/RemoveTask";
+import AssignUsers from "components/Gigs/PopupModals/Dialog/AssignUsers";
+import EditTask from "components/Gigs/PopupModals/Dialog/EditTask";
 import EditGigAdmins from "components/Gigs/PopupModals/Dialog/EditGigAdmins";
 import AddTask from "components/Gigs/PopupModals/Dialog/AddTask";
 import GigActions from "components/Gigs/PopupModals/Dialog/GigActions";
@@ -370,13 +370,14 @@ class GigDashboard extends React.Component {
 
                     <GridContainer justify="center">
                         <GridItem xs={6}>
-                            <Button className={classes.marginRight} onClick={this.returnToHomepage.bind(this)}>
+                            <Button className={classes.marginLeft} style={{paddingLeft: 20}} onClick={this.returnToHomepage.bind(this)}>
                                 <KeyboardArrowLeft className={classes.icons}/> Back
                             </Button>
                         </GridItem>
                         <GridItem xs={6} style={{textAlign: "right"}}>
                             <Button className={classes.marginRight}
                                     onClick={this.gigActions.bind(this)}
+                                    style={{height: 42}}
                             >
                                 Actions
                             </Button>

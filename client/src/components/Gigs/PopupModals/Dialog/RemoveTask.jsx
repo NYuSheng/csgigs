@@ -2,7 +2,9 @@ import React from "react";
 
 // @material-ui/core components
 import withStyles from "@material-ui/core/styles/withStyles";
-import TableCell from "@material-ui/core/TableCell";
+import FormControl from "@material-ui/core/FormControl";
+import InputLabel from "@material-ui/core/InputLabel";
+import Select from "@material-ui/core/Select";
 import Slide from "@material-ui/core/Slide";
 import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
@@ -11,18 +13,15 @@ import DialogActions from "@material-ui/core/DialogActions";
 import withMobileDialog from '@material-ui/core/withMobileDialog';
 
 // @material-ui/icons
-import Cancel from "@material-ui/icons/Cancel";
 import Close from "@material-ui/icons/Close";
 import Success from "@material-ui/icons/CheckCircle";
+import Warning from "@material-ui/icons/ErrorOutline";
 
 // core components
-import Card from "components/Card/Card";
-import CardHeader from "components/Card/CardHeader";
-import CardBody from "components/Card/CardBody";
-import Table from "components/Gigs/Table/Table";
-import AutoComplete from 'components/Gigs/AutoComplete/AutoComplete';
 import GridContainer from "components/Grid/GridContainer";
 import GridItem from "components/Grid/GridItem";
+import CustomInput from "components/Gigs/CustomInput/CustomInput";
+import {renderTaskCategories, fetchTaskCategories} from "components/Gigs/Data/TaskCategories";
 import Button from "components/CustomButtons/Button";
 
 // dependencies
@@ -36,89 +35,76 @@ function Transition(props) {
     return <Slide direction="down" {...props} />;
 }
 
-class EditGigAdmins extends React.Component {
+class RemoveTask extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            selectedAdmins: [],
-            status: "",
+            taskId: "",
+            status: ""
         };
     }
 
-    componentWillReceiveProps() {
-        const {admins} = this.props;
+    componentDidMount() {
+        const {task} = this.props;
         this.setState({
-            selectedAdmins: admins,
+            taskId: task._id,
             status: "working"
         })
     }
 
-    setupTableCells(admin) {
-        const {classes} = this.props;
-        const tableCellClasses = classes.tableCell;
-        return (
-            <React.Fragment>
-                <TableCell colSpan="1" className={tableCellClasses}>
-                    {admin.name}
-                </TableCell>
-                <TableCell colSpan="1" className={tableCellClasses} style={{textAlign: 'right'}}>
-                    <Cancel className={classes.icon}/>
-                </TableCell>
-            </React.Fragment>
-        );
-    }
-
-    selectAdmin(admin) {
-        const selectedAdmins = this.state.selectedAdmins;
-        const existingAdmins = selectedAdmins.filter(selectedAdmin => selectedAdmin.id === admin.id)
-        if (existingAdmins.length >= 1) {
-            NotificationManager.error("User " + admin.name + " has been selected");
-        } else {
-            this.setState({
-                selectedAdmins: [admin].concat(selectedAdmins)
-            });
+    taskRemoveAction() {
+        const {gig} = this.props;
+        const {taskId} = this.state;
+        const tasks = gig.tasks;
+        for (var i = tasks.length - 1; i >= 0; --i) {
+            if (tasks[i]._id === taskId) {
+                tasks.splice(i, 1);
+            }
         }
     }
 
-    deselectAdmin(admin) {
-        const selectedAdmins = this.state.selectedAdmins;
-        const adminsAfterRemoval = selectedAdmins.filter(selectedAdmin => selectedAdmin.id !== admin.id);
-        this.setState({
-            selectedAdmins: adminsAfterRemoval
-        });
-    }
-
-    confirmAdminAssign() {
-        const {status} = this.state;
+    confirmTaskRemove() {
+        const {taskId, status} = this.state;
         if (status !== "success") {
             this.setState({
                 status: "loading"
             });
 
-            // API call here to post the updated assigned users
-            // Build your payload using buildPayLoad() method below
-
-            // dummy function to simulate api call
-            setTimeout(() => {
-                this.setState({
-                    status: "success"
-                });
-            }, 1000);
+            fetch(`/admin-ui/api/tasks/removeTask/${taskId}`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'}
+            }).then(data => {
+                if (data.status !== 200) {
+                    data.json().then(json => {
+                        NotificationManager.error(json.error.errmsg);
+                    });
+                    this.setState({
+                        status: "working"
+                    });
+                } else {
+                    data.json().then(json => {
+                        this.taskRemoveAction();
+                    });
+                    this.setState({
+                        status: "success"
+                    });
+                }
+            });
         }
     }
 
     closeModal() {
-        const {hidePopup} = this.props;
-        hidePopup("editGigAdmins");
+        const {hideTask} = this.props;
+        hideTask("removeTask");
     }
 
     render() {
-        const {classes, modalOpen, fullScreen} = this.props;
-        const {selectedAdmins, status} = this.state;
+        const {classes, fullScreen, task} = this.props;
+        const {status} = this.state;
 
         return (
             <Dialog
-                open={modalOpen}
+                open={true}
                 fullScreen={fullScreen}
                 TransitionComponent={Transition}
                 keepMounted
@@ -136,9 +122,9 @@ class EditGigAdmins extends React.Component {
                     disableTypography
                 >
                     <GridContainer className={classes.modalHeader}>
-                        <GridItem xs={6} sm={6} md={6} lg={6} style={{textAlign: "left"}}>
+                        <GridItem xs={6} sm={6} md={6} lg={6} style={{textAlign: "left", paddingLeft: 3}}>
                             <h4 className={classes.modalTitle} style={{fontWeight: "bold"}}>
-                                Edit Admins
+                                Remove Task
                             </h4>
                         </GridItem>
                         <GridItem xs={6} sm={6} md={6} lg={6} style={{paddingRight: 0}}>
@@ -172,10 +158,10 @@ class EditGigAdmins extends React.Component {
                                 borderBottom: "1px solid grey",
                                 fontSize: 13
                             }}>
-                                Manage your event admins here
+                                Task Name: {task.task_name}
                             </p>
                         </GridItem>
-                        <GridItem xs={10} sm={10} md={10} lg={10} style={{textAlign: "center"}}>
+                        <GridItem xs={12} sm={12} md={12} lg={12} style={{textAlign: "center"}}>
                             {
                                 status === "loading" ?
                                     (
@@ -192,34 +178,20 @@ class EditGigAdmins extends React.Component {
                             {
                                 status === "working" ?
                                     (
-                                        <GridContainer>
-                                            <GridItem xs={12} sm={12} md={12} lg={12} style={{padding: 0}}>
-                                                <Card>
-                                                    <CardHeader>
-                                                        <AutoComplete selectInput={this.selectAdmin.bind(this)}/>
-                                                    </CardHeader>
-                                                    <CardBody>
-                                                        <Table
-                                                            tableHeight="150px"
-                                                            hover
-                                                            tableHeaderColor="primary"
-                                                            tableData={selectedAdmins}
-                                                            tableFooter="false"
-                                                            notFoundMessage="No admins selected"
-                                                            setupTableCells={this.setupTableCells.bind(this)}
-                                                            handleTableRowOnClick={this.deselectAdmin.bind(this)}
-                                                        />
-                                                    </CardBody>
-                                                </Card>
-                                            </GridItem>
-                                        </GridContainer>
+                                        <div style={{paddingTop: 35}}>
+                                            <Warning className={classes.icon}
+                                                     style={{height: 100, width: 100, fill: "yellow"}}/>
+                                            <p>You will not be able to recover this task!</p>
+                                        </div>
                                     ) : null
                             }
                             {
                                 status === "success" ? (
                                     <div style={{paddingTop: 25}}>
-                                        <Success className={classes.icon} style={{height: 100, width: 100, fill: "green"}}/>
-                                        <h4 className={classes.modalTitle} style={{fontWeight: "bold"}}>Admins Edited</h4>
+                                        <Success className={classes.icon}
+                                                 style={{height: 100, width: 100, fill: "green"}}/>
+                                        <h4 className={classes.modalTitle} style={{fontWeight: "bold"}}>Task
+                                            Removed</h4>
                                     </div>
                                 ) : null
                             }
@@ -229,10 +201,10 @@ class EditGigAdmins extends React.Component {
                 {
                     status === "working" ? (
                         <DialogActions className={classes.modalFooter} style={{padding: 24}}>
-                            <Button onClick={() => this.confirmAdminAssign()}
+                            <Button onClick={() => this.confirmTaskRemove()}
                                     className={classes.button + " " + classes.success}
                                     color="success">
-                                Save
+                                Confirm
                             </Button>
                             <Button onClick={() => this.closeModal()}
                                     className={classes.button + " " + classes.danger}
@@ -244,10 +216,6 @@ class EditGigAdmins extends React.Component {
             </Dialog>
         );
     }
-
-    buildPayLoad() {
-        // Construct your payload using state fields
-    }
 }
 
-export default withMobileDialog()(withStyles(notificationsStyle)(EditGigAdmins));
+export default withMobileDialog()(withStyles(notificationsStyle)(RemoveTask));

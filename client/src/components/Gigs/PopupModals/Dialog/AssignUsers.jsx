@@ -36,30 +36,30 @@ function Transition(props) {
     return <Slide direction="down" {...props} />;
 }
 
-class EditGigAdmins extends React.Component {
+class AssignUsers extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            selectedAdmins: [],
+            selectedUsers: [],
             status: "",
         };
     }
 
-    componentWillReceiveProps() {
-        const {admins} = this.props;
+    componentDidMount() {
+        const {task} = this.props;
         this.setState({
-            selectedAdmins: admins,
+            selectedUsers: task.users_assigned,
             status: "working"
         })
     }
 
-    setupTableCells(admin) {
+    setupTableCells(user) {
         const {classes} = this.props;
         const tableCellClasses = classes.tableCell;
         return (
             <React.Fragment>
                 <TableCell colSpan="1" className={tableCellClasses}>
-                    {admin.name}
+                    {user.name}
                 </TableCell>
                 <TableCell colSpan="1" className={tableCellClasses} style={{textAlign: 'right'}}>
                     <Cancel className={classes.icon}/>
@@ -68,27 +68,27 @@ class EditGigAdmins extends React.Component {
         );
     }
 
-    selectAdmin(admin) {
-        const selectedAdmins = this.state.selectedAdmins;
-        const existingAdmins = selectedAdmins.filter(selectedAdmin => selectedAdmin.id === admin.id)
-        if (existingAdmins.length >= 1) {
-            NotificationManager.error("User " + admin.name + " has been selected");
+    selectUsers(user) {
+        const selectedUsers = this.state.selectedUsers;
+        const existingUsers = selectedUsers.filter(selectedUser => selectedUser.id === user.id)
+        if (existingUsers.length >= 1) {
+            NotificationManager.error("User " + user.name + " has been selected");
         } else {
             this.setState({
-                selectedAdmins: [admin].concat(selectedAdmins)
+                selectedUsers: [user].concat(selectedUsers)
             });
         }
     }
 
-    deselectAdmin(admin) {
-        const selectedAdmins = this.state.selectedAdmins;
-        const adminsAfterRemoval = selectedAdmins.filter(selectedAdmin => selectedAdmin.id !== admin.id);
+    deselectUser(user) {
+        const selectedUsers = this.state.selectedUsers;
+        const usersAfterRemoval = selectedUsers.filter(selectedUser => selectedUser.id !== user.id);
         this.setState({
-            selectedAdmins: adminsAfterRemoval
+            selectedUsers: usersAfterRemoval
         });
     }
 
-    confirmAdminAssign() {
+    confirmUserAssign() {
         const {status} = this.state;
         if (status !== "success") {
             this.setState({
@@ -108,17 +108,17 @@ class EditGigAdmins extends React.Component {
     }
 
     closeModal() {
-        const {hidePopup} = this.props;
-        hidePopup("editGigAdmins");
+        const {hideTask} = this.props;
+        hideTask("assignUsers");
     }
 
     render() {
-        const {classes, modalOpen, fullScreen} = this.props;
-        const {selectedAdmins, status} = this.state;
+        const {classes, fullScreen} = this.props;
+        const {selectedUsers, status} = this.state;
 
         return (
             <Dialog
-                open={modalOpen}
+                open={true}
                 fullScreen={fullScreen}
                 TransitionComponent={Transition}
                 keepMounted
@@ -138,7 +138,7 @@ class EditGigAdmins extends React.Component {
                     <GridContainer className={classes.modalHeader}>
                         <GridItem xs={6} sm={6} md={6} lg={6} style={{textAlign: "left"}}>
                             <h4 className={classes.modalTitle} style={{fontWeight: "bold"}}>
-                                Edit Admins
+                                Assign Users
                             </h4>
                         </GridItem>
                         <GridItem xs={6} sm={6} md={6} lg={6} style={{paddingRight: 0}}>
@@ -172,7 +172,7 @@ class EditGigAdmins extends React.Component {
                                 borderBottom: "1px solid grey",
                                 fontSize: 13
                             }}>
-                                Manage your event admins here
+                                Manage your task volunteers here
                             </p>
                         </GridItem>
                         <GridItem xs={10} sm={10} md={10} lg={10} style={{textAlign: "center"}}>
@@ -196,18 +196,18 @@ class EditGigAdmins extends React.Component {
                                             <GridItem xs={12} sm={12} md={12} lg={12} style={{padding: 0}}>
                                                 <Card>
                                                     <CardHeader>
-                                                        <AutoComplete selectInput={this.selectAdmin.bind(this)}/>
+                                                        <AutoComplete selectInput={this.selectUsers.bind(this)}/>
                                                     </CardHeader>
                                                     <CardBody>
                                                         <Table
-                                                            tableHeight="150px"
+                                                            tableHeight="100px"
                                                             hover
                                                             tableHeaderColor="primary"
-                                                            tableData={selectedAdmins}
+                                                            tableData={selectedUsers}
                                                             tableFooter="false"
-                                                            notFoundMessage="No admins selected"
+                                                            notFoundMessage="No users selected"
                                                             setupTableCells={this.setupTableCells.bind(this)}
-                                                            handleTableRowOnClick={this.deselectAdmin.bind(this)}
+                                                            handleTableRowOnClick={this.deselectUser.bind(this)}
                                                         />
                                                     </CardBody>
                                                 </Card>
@@ -219,7 +219,7 @@ class EditGigAdmins extends React.Component {
                                 status === "success" ? (
                                     <div style={{paddingTop: 25}}>
                                         <Success className={classes.icon} style={{height: 100, width: 100, fill: "green"}}/>
-                                        <h4 className={classes.modalTitle} style={{fontWeight: "bold"}}>Admins Edited</h4>
+                                        <h4 className={classes.modalTitle} style={{fontWeight: "bold"}}>Users Assigned</h4>
                                     </div>
                                 ) : null
                             }
@@ -229,7 +229,7 @@ class EditGigAdmins extends React.Component {
                 {
                     status === "working" ? (
                         <DialogActions className={classes.modalFooter} style={{padding: 24}}>
-                            <Button onClick={() => this.confirmAdminAssign()}
+                            <Button onClick={() => this.confirmUserAssign()}
                                     className={classes.button + " " + classes.success}
                                     color="success">
                                 Save
@@ -250,4 +250,4 @@ class EditGigAdmins extends React.Component {
     }
 }
 
-export default withMobileDialog()(withStyles(notificationsStyle)(EditGigAdmins));
+export default withMobileDialog()(withStyles(notificationsStyle)(AssignUsers));
