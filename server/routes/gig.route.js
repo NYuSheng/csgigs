@@ -18,7 +18,6 @@ router.put('/addAdmin/:name/:admin_name', gig_controller.gig_add_user_admin);
 router.put('/addParticipant/:name/:participant_name', gig_controller.gig_add_user_participant);
 router.put('/addAttendee/:name/:attendee_name', gig_controller.gig_add_user_attendee);
 
-router.post('/getGigsByStatus/:status', gig_controller.get_gigs_status);
-router.post('/getGigsDetails/:gigname', gig_controller.get_gigs_everything);
+router.post('/getGigsByStatus/:status', gig_controller.gigs_by_status);
 
 module.exports = router;

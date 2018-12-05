@@ -67,9 +67,10 @@ exports.gig_create_temp = asyncMiddleware(async (req, res, next) => {
     );
 
     return gig.save().then(gigCreated => {
-        console.log(aggregation_with_tasks_and_users(req.body.name));
+        var matchCriteria = {'$match': {'name': req.body.name}};
+
         return Gig
-            .aggregate(aggregation_with_tasks_and_users(req.body.name))
+            .aggregate(aggregation_with_tasks_and_users(matchCriteria))
             .exec().then((gigs_retrieved) => {
                 if (gigs_retrieved.length === 0) {
                     return res.status(400).send({
@@ -88,88 +89,18 @@ exports.gig_create_temp = asyncMiddleware(async (req, res, next) => {
     });
 });
 
-function aggregation_with_tasks_and_users(gig_name) {
-    return [
-        {'$match': {'name': gig_name}},
-        {
-            '$lookup': {
-                'from': 'tasks',
-                'localField': 'name',
-                'foreignField': 'gig_name',
-                'as': 'tasks'
-            }
-        },
-        {"$unwind": "$user_admins"},
-        {
-            "$lookup": {
-                "from": "users",
-                "localField": "user_admins",
-                "foreignField": "username",
-                "as": "userObjects"
-            }
-        },
-        {"$unwind": "$userObjects"},
-        {
-            "$group": {
-                "_id": "$_id",
-                "rc_channel_id": {"$first": "$rc_channel_id"},
-                "user_participants": {"$first": "$user_participants"},
-                "user_admins": {"$push": "$userObjects"},
-                "user_attendees": {"$first": "$user_attendees"},
-                "name": {"$first": "$name"},
-                "points_budget": {"$first": "$points_budget"},
-                "status": {"$first": "$status"},
-                "createdAt": {"$first": "$createdAt"},
-                "__v": {"$first": "$__v"},
-                "tasks": {"$first": "$tasks"}
-            }
-        }
-    ]
-}
-
 exports.gigs_details = asyncMiddleware(async (req, res, next) => {
     let status = (req.query.status).split(",");
-    return Gig.aggregate([
-        {"$match":
-                {
-                    "user_admins": { "$in" : [req.params.username]},
-                    "status": { "$in" : status}
-                }
-        },
+
+    var matchCriteria = 
+    {"$match":
         {
-            "$lookup": {
-                "from": 'tasks',
-                "localField": 'name',
-                "foreignField": 'gig_name',
-                "as": 'tasks'
-            }
-        },
-        {"$unwind": "$user_admins"},
-        {
-            "$lookup": {
-                "from": "users",
-                "localField": "user_admins",
-                "foreignField": "username",
-                "as": "userObjects"
-            }
-        },
-        {"$unwind": "$userObjects"},
-        {
-            "$group": {
-                "_id": "$_id",
-                "rc_channel_id": {"$first": "$rc_channel_id"},
-                "user_participants": {"$first": "$user_participants"},
-                "user_admins": {"$push": "$userObjects"},
-                "user_attendees": {"$first": "$user_attendees"},
-                "name": {"$first": "$name"},
-                "points_budget": {"$first": "$points_budget"},
-                "status": {"$first": "$status"},
-                "createdAt": {"$first": "$createdAt"},
-                "__v": {"$first": "$__v"},
-                "tasks": {"$first": "$tasks"}
-            }
+            "user_admins": { "$in" : [req.params.username]},
+            "status": { "$in" : status}
         }
-    ]).exec().then((gigs) => {
+    };
+
+    return Gig.aggregate(aggregation_with_tasks_and_users(matchCriteria)).exec().then((gigs) => {
             res.status(200).send({
                 "gigs": gigs
             });
@@ -180,53 +111,17 @@ exports.gigs_details = asyncMiddleware(async (req, res, next) => {
 });
 
 exports.gig_details = asyncMiddleware(async (req, res, next) => {
-    return Gig.aggregate([
-        {"$match":
-                {
-                    "name": req.params.name
-                }
-        },
-        {
-            "$lookup": {
-                "from": 'tasks',
-                "localField": 'name',
-                "foreignField": 'gig_name',
-                "as": 'tasks'
-            }
-        },
-        {"$unwind": "$user_admins"},
-        {
-            "$lookup": {
-                "from": "users",
-                "localField": "user_admins",
-                "foreignField": "username",
-                "as": "userObjects"
-            }
-        },
-        {"$unwind": "$userObjects"},
-        {
-            "$group": {
-                "_id": "$_id",
-                "rc_channel_id": {"$first": "$rc_channel_id"},
-                "user_participants": {"$first": "$user_participants"},
-                "user_admins": {"$push": "$userObjects"},
-                "user_attendees": {"$first": "$user_attendees"},
-                "name": {"$first": "$name"},
-                "points_budget": {"$first": "$points_budget"},
-                "status": {"$first": "$status"},
-                "createdAt": {"$first": "$createdAt"},
-                "__v": {"$first": "$__v"},
-                "tasks": {"$first": "$tasks"}
-            }
-        }
-    ])
+    var matchCriteria = {'$match': {'name': req.params.name}};
+
+    console.log(req.params.name);
+    return Gig.aggregate(aggregation_with_tasks_and_users(matchCriteria))
         .exec().then((gig_retrieved) => {
             if (gig_retrieved === null) {
                 return res.status(400).send({
                     error: 'Cannot find gig of name ' + req.params.name
                 });
             }
-
+            console.log(gig_retrieved);
             res.status(200).send({
                 gig: gig_retrieved[0]
             });
@@ -306,7 +201,7 @@ exports.gig_add_user_attendee = function (req, res, next) {
         });
 };
 
-exports.get_gigs_status = function (req, res) {
+exports.gigs_by_status = function (req, res) {
     return Gig.find({status: req.params.status}).exec().then((gigs_retrieved) => {
         if (gigs_retrieved.length === 0) {
             return res.status(400).send({
@@ -321,35 +216,41 @@ exports.get_gigs_status = function (req, res) {
     })
 }
 
-exports.get_gigs_everything = function (req, res) {
-    return Gig.aggregate([
-        {$match: {name: req.params.gigname}},
+function aggregation_with_tasks_and_users(matchCriteria) {
+    return [
+        matchCriteria,
         {
-            $lookup: {
-                from: 'tasks',
-                localField: 'name',
-                foreignField: 'gig_name',
-                as: 'task_list'
+            '$lookup': {
+                'from': 'tasks',
+                'localField': 'name',
+                'foreignField': 'gig_name',
+                'as': 'tasks'
+            }
+        },
+        {"$unwind": "$user_admins"},
+        {
+            "$lookup": {
+                "from": "users",
+                "localField": "user_admins",
+                "foreignField": "username",
+                "as": "userObjects"
+            }
+        },
+        {"$unwind": "$userObjects"},
+        {
+            "$group": {
+                "_id": "$_id",
+                "rc_channel_id": {"$first": "$rc_channel_id"},
+                "user_participants": {"$first": "$user_participants"},
+                "user_admins": {"$push": "$userObjects"},
+                "user_attendees": {"$first": "$user_attendees"},
+                "name": {"$first": "$name"},
+                "points_budget": {"$first": "$points_budget"},
+                "status": {"$first": "$status"},
+                "createdAt": {"$first": "$createdAt"},
+                "__v": {"$first": "$__v"},
+                "tasks": {"$first": "$tasks"}
             }
         }
-    ]).exec().then((gigs_retrieved) => {
-        if (gigs_retrieved.length === 0) {
-            return res.status(400).send({
-                error: 'Cannot find any GIGs: ' + req.params.gigname
-            });
-        }
-        res.status(200).send({
-            gigs: gigs_retrieved
-        });
-    }).catch(err => {
-        res.status(400).send({error: err});
-    })
+    ]
 }
-
-
-//method shouldnt be here, may need to further discuss on location of method
-// exports.retrive_gigs = async (req, res, next) => {
-//     return Gig.find({}).exec().then((result) =>{
-//         return result;
-//     });
-// };
