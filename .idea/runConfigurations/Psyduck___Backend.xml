@@ -3,10 +3,10 @@
     <package-json value="$PROJECT_DIR$/server/package.json" />
     <command value="run" />
     <scripts>
-      <script value="dev" />
+      <script value="mac" />
     </scripts>
     <node-interpreter value="project" />
     <envs />
-    <method />
+    <method v="2" />
   </configuration>
 </component>
