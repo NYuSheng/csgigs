@@ -39,7 +39,7 @@ exports.get_tasks_gigs = function (req, res, next) {
     })
 }
 
-//input ID
+//input ID, and field_name/value in body
 exports.update_task = function (req, res, next) {
     Task.findByIdAndUpdate(req.params.taskid, {$set: req.body}, function (err, task) {
         if (err) return next(err);
@@ -66,25 +66,5 @@ exports.remove_task = function (req, res, next) {
         };
         return res.status(200).send(response);
     });
-};
-
-exports.task_add_user = function (req, res, next) {
-    return Task.findOneAndUpdate(
-        {_id: req.params.task_id},
-        {$addToSet: {"users_assigned": req.params.user_name}}, //addToSet ensures no duplicate names in array
-        {'new': true},
-        function (err, task) {
-            if (err || task == null) {
-                console.log(err);
-                return res.status(400).send({
-                    error: 'Cannot find the task.'
-                });
-            } else {
-                res.status(200).send({
-                    tasks: task
-                });
-
-            }
-        });
 };
 
