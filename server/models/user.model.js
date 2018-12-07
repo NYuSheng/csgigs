@@ -22,7 +22,6 @@ let UserSchema = new Schema({
         address:{type:String, required:true},
         verified:{type:Boolean, required:true}
     }],
-    task:[Task],
     updatedAt:{type:Date}
 });
 
