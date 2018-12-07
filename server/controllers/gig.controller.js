@@ -92,7 +92,7 @@ exports.gig_create_temp = asyncMiddleware(async (req, res, next) => {
 exports.gigs_details = asyncMiddleware(async (req, res, next) => {
     let status = (req.query.status).split(",");
 
-    var matchCriteria = 
+    var matchCriteria =
     {"$match":
         {
             "user_admins": { "$in" : [req.params.username]},
@@ -259,6 +259,8 @@ function aggregation_with_tasks_and_users(matchCriteria) {
         {
             "$group": {
                 "_id": "$_id",
+                "description": {"$first": "$description"},
+                "photo": {"$first": "$photo"},
                 "rc_channel_id": {"$first": "$rc_channel_id"},
                 "user_participants": {"$first": "$user_participants"},
                 "user_admins": {"$push": "$userObjects"},
