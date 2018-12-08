@@ -71,7 +71,7 @@ class GigDetailsStep extends React.Component {
 
     selectAdmin(admin) {
         var selectedAdmins = this.state.selectedAdmins;
-        const existingAdmins = selectedAdmins.filter(selectedAdmin => selectedAdmin.id === admin.id)
+        const existingAdmins = selectedAdmins.filter(selectedAdmin => selectedAdmin["_id"] === admin["_id"])
         if (existingAdmins.length >= 1) {
             NotificationManager.error("User " + admin.name + " has been selected");
         } else {
@@ -85,7 +85,7 @@ class GigDetailsStep extends React.Component {
 
     deselectAdmin(admin) {
         const selectedAdmins = this.state.selectedAdmins;
-        const adminsAfterRemoval = selectedAdmins.filter(selectedAdmin => selectedAdmin.id !== admin.id);
+        const adminsAfterRemoval = selectedAdmins.filter(selectedAdmin => selectedAdmin["_id"] !== admin["_id"]);
         if (!adminsAfterRemoval.length) {
             this.setState({
                 adminState: ""
