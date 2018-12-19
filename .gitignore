@@ -2,4 +2,8 @@
 client/node_modules
 server/node_modules
 server/public
+.idea
+.idea/workspace.xml
+client/build
+
 
