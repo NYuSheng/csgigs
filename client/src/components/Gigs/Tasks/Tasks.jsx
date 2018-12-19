@@ -35,7 +35,7 @@ class Tasks extends React.Component {
                             <TableCell className={classes.tableActions} style={{width: "20%", textAlign: "center"}}>
                                 <Tooltip
                                     id="tooltip-top"
-                                    title="Show Assigned"
+                                    title="Edit Assigned"
                                     placement="top"
                                     classes={{tooltip: classes.tooltip}}
                                 >

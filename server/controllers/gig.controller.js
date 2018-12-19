@@ -56,6 +56,8 @@ exports.gig_create_temp = asyncMiddleware(async (req, res, next) => {
     let gig = new Gig(
         {
             name: req.body.name,
+            description: req.body.description,
+            photo: req.body.photo,
             points_budget: req.body.points_budget,
             status: "Draft",
             user_admins: req.body.user_admins,
@@ -302,6 +304,8 @@ function aggregation_with_tasks_and_users(matchCriteria) {
                 "user_admins": {"$first": "$user_admins"},
                 "user_attendees": {"$first": "$user_attendees"},
                 "name": {"$first": "$name"},
+                "description": {"$first": "$description"},
+                "photo": {"$first": "$photo"},
                 "points_budget": {"$first": "$points_budget"},
                 "status": {"$first": "$status"},
                 "createdAt": {"$first": "$createdAt"},
