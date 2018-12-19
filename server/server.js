@@ -29,5 +29,5 @@ app.get('/admin-ui/*', function (req, res) {
 var appPort = 5000;
 
 app.listen(appPort, () => {
-    console.log('Server is up and running on port numner ' + appPort);
+    console.log('Server is up and running on port number ' + appPort);
 });
