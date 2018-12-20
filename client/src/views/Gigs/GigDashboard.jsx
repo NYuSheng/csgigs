@@ -6,7 +6,6 @@ import TableCell from "@material-ui/core/TableCell";
 import MUIButton from "@material-ui/core/Button";
 
 // material-ui icons
-import KeyboardArrowLeft from "@material-ui/icons/KeyboardArrowLeft";
 import BrowniePoints from "@material-ui/icons/AttachMoney";
 import Status from "@material-ui/icons/Timeline";
 import Chat from "@material-ui/icons/Chat";
@@ -33,6 +32,7 @@ import EditTask from "components/Gigs/PopupModals/Dialog/EditTask";
 import EditGigAdmins from "components/Gigs/PopupModals/Dialog/EditGigAdmins";
 import AddTask from "components/Gigs/PopupModals/Dialog/AddTask";
 import GigActions from "components/Gigs/PopupModals/Dialog/GigActions";
+import GigDetails from "components/Gigs/PopupModals/Dialog/GigDetails";
 import BrownieAllocation from "components/Gigs/PopupModals/Dialog/BrownieAllocation";
 import Table from "components/Gigs/Table/Table";
 import UserProfile from "components/Gigs/Authentication/UserProfile";
@@ -102,6 +102,7 @@ class GigDashboard extends React.Component {
             addTask: false,
             brownieAllocation: false,
             gigActions: false,
+            gigDetails: false,
             Draft: "info",
             Active: "warning",
             Completed: "success",
@@ -161,11 +162,19 @@ class GigDashboard extends React.Component {
         );
     }
 
-    returnToHomepage() {
-        const {history} = this.props;
-        history.push({
-            pathname: '/gigs/manage'
-        });
+    gigDetails() {
+        this.setState({
+            gigDetails: true
+        })
+    }
+
+    editDetailsAction(payload) {
+        const {gig} = this.state;
+        gig.photo = payload.photo;
+        gig.description = payload.description;
+        this.setState({
+            gig: gig
+        })
     }
 
     completeGig() {
@@ -349,7 +358,8 @@ class GigDashboard extends React.Component {
             editGigAdmins,
             addTask,
             brownieAllocation,
-            gigActions
+            gigActions,
+            gigDetails
         } = this.state;
 
         if (gig) {
@@ -363,6 +373,9 @@ class GigDashboard extends React.Component {
                                 gig={gig} channelUpdate={this.notifyGigChannelUpdate.bind(this)}
                                 cancelGig={this.notifyGigStatusCancelled.bind(this)}
                     />
+                    <GigDetails modalOpen={gigDetails} hidePopup={this.hidePopup.bind(this)}
+                                gig={gig} editDetailsAction={this.editDetailsAction.bind(this)}
+                    />
                     <AddTask modalOpen={addTask} hideTask={this.hidePopup.bind(this)} gig={gig}/>
                     <EditGigAdmins modalOpen={editGigAdmins} hidePopup={this.hidePopup.bind(this)}
                                    admins={gig.user_admins}/>
@@ -370,14 +383,13 @@ class GigDashboard extends React.Component {
 
                     <GridContainer justify="center">
                         <GridItem xs={6}>
-                            <Button className={classes.marginLeft} style={{paddingLeft: 20}} onClick={this.returnToHomepage.bind(this)}>
-                                <KeyboardArrowLeft className={classes.icons}/> Back
+                            <Button className={classes.marginRight} onClick={this.gigDetails.bind(this)}>
+                                Details
                             </Button>
                         </GridItem>
                         <GridItem xs={6} style={{textAlign: "right"}}>
                             <Button className={classes.marginRight}
                                     onClick={this.gigActions.bind(this)}
-                                    style={{height: 42}}
                             >
                                 Actions
                             </Button>

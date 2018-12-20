@@ -39,11 +39,11 @@ exports.get_tasks_gigs = function (req, res, next) {
     })
 }
 
-//input ID
+//input ID, and field_name/value in body
 exports.update_task = function (req, res, next) {
     Task.findByIdAndUpdate(req.params.taskid, {$set: req.body}, function (err, task) {
         if (err) return next(err);
-        res.send('Task udpated.');
+        res.status(200).send('Task udpated.');
     });
 };
 

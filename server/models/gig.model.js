@@ -6,6 +6,8 @@ var User = mongoose.model('users', userSchema.UserSchema);
 
 let GigsSchema = new Schema({
     name:{type: String, required: true, index: true, unique: true},
+    description: {type: String},
+    photo: {type: String},
     createdAt:{type: Date, default: Date.now},
     rc_channel_id:{type: String, default: null},
     points_budget:{type: Number, required: true},

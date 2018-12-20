@@ -38,10 +38,12 @@ class CreateGig extends React.Component {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
-                name :step.name,
-                points_budget : step.budget,
-                status : "Draft",
-                user_admins: step.selectedAdmins.map(admin => admin.username)
+                name: step.name,
+                description: step.gigDescription,
+                points_budget: step.budget,
+                status: "Draft",
+                user_admins: step.selectedAdmins.map(admin => admin.username),
+                photo: step.gigImage
             })
         }).then(data => {
             if (data.status !== 200) {

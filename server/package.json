@@ -10,6 +10,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "SET NODE_ENV=development& nodemon server.js",
+    "mac": "NODE_ENV=development nodemon server.js",
     "test": "jest unit --detectOpenHandles --forceExit"
   },
   "dependencies": {

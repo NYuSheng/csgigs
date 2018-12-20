@@ -41,7 +41,7 @@ class Wizard extends React.Component {
             movingTabStyle: {
                 transition: "transform 0s"
             },
-            allStates: {}
+            allStates: []
         };
         this.navigationStepChange = this.navigationStepChange.bind(this);
         this.refreshAnimation = this.refreshAnimation.bind(this);
@@ -61,6 +61,7 @@ class Wizard extends React.Component {
         this.refreshAnimation(this.state.currentStep);
     }
     navigationStepChange(key) {
+        console.log(this)
         if (this.props.steps) {
             var validationState = true;
             if (key > this.state.currentStep) {
@@ -171,7 +172,20 @@ class Wizard extends React.Component {
                 undefined) &&
             this.props.finishButtonClick !== undefined
         ) {
-            this.props.finishButtonClick(this[this.props.steps[this.state.currentStep].stepId].sendState());
+            let allStatesArray = [
+                ...this.state.allStates,
+                {
+                    [this.props.steps[this.state.currentStep].stepId]: this[
+                        this.props.steps[this.state.currentStep].stepId
+                        ].sendState()
+                },
+            ]
+            let allStates = {};
+            allStatesArray.forEach(function(state) {
+                let stateValues = (Object.values(state))[0];
+                allStates = Object.assign(stateValues, allStates);
+            });
+            this.props.finishButtonClick(allStates);
         }
     }
     refreshAnimation(index) {

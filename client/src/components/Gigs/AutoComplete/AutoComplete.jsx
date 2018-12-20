@@ -6,6 +6,7 @@ import {withStyles} from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Paper from '@material-ui/core/Paper';
 import MenuItem from '@material-ui/core/MenuItem';
+import Async from "react-async";
 
 const suggestions = [
     {
@@ -49,10 +50,11 @@ function renderInput(inputProps) {
 }
 
 function renderSuggestion({ suggestion, index, itemProps }) {
+    console.log(suggestion);
     return (
         <MenuItem
             {...itemProps}
-            key={suggestion.id}
+            key={suggestion['_id']}
             component="div"
             style={{
                 fontWeight: 400,
@@ -63,23 +65,34 @@ function renderSuggestion({ suggestion, index, itemProps }) {
     );
 }
 
-function getSuggestions(value) {
+function processSuggestion(value, users) {
     const inputValue = deburr(value.trim()).toLowerCase();
     const inputLength = inputValue.length;
     let count = 0;
+    users.filter(user => {  
+        const keep = count < 5;
+        if(keep){
+            count += 1;
+        }
+        return keep;
+    });
+    return users;
+}
 
-    return inputLength === 0
-        ? []
-        : suggestions.filter(suggestion => {
-            const keep =
-                count < 5 && suggestion.name.slice(0, inputLength).toLowerCase() === inputValue;
-
-            if (keep) {
-                count += 1;
-            }
-
-            return keep;
-        });
+const fetchUsers = async ({inputValue}) => {
+    const data = await fetch('/admin-ui/api/users/usersByPrefix', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            name :inputValue
+    })});
+    if (data.status !== 200) {
+        console.log("error");
+        return [];
+    } else {
+        const json = await data.json();
+        return processSuggestion(inputValue, json.users);
+    }
 }
 
 const styles = theme => ({
@@ -159,13 +172,20 @@ class AutoComplete extends React.Component {
                         })}
                         {isOpen ? (
                             <Paper className={classes.paper} square>
-                                {getSuggestions(inputValue2).map((suggestion, index) =>
-                                    renderSuggestion({
-                                        suggestion,
-                                        index,
-                                        itemProps: getItemProps({ item: suggestion })
-                                    }),
-                                )}
+                                <Async promiseFn={fetchUsers} inputValue={inputValue2} watch={inputValue2}>
+                                    <Async.Loading>Loading..</Async.Loading>
+                                    <Async.Resolved>
+                                        {users => (
+                                            users.map((suggestion, index) =>
+                                            renderSuggestion({
+                                                suggestion,
+                                                index,
+                                                itemProps: getItemProps({ item: suggestion })
+                                        }))
+                                        )}
+                                    </Async.Resolved>
+                                    <Async.Rejected>Error</Async.Rejected>
+                                </Async>
                             </Paper>
                         ) : null}
                     </div>

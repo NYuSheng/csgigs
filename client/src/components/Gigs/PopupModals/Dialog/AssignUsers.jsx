@@ -40,6 +40,7 @@ class AssignUsers extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            taskId: "",
             selectedUsers: [],
             status: "",
         };
@@ -47,7 +48,9 @@ class AssignUsers extends React.Component {
 
     componentDidMount() {
         const {task} = this.props;
+        console.log(task);
         this.setState({
+            taskId: task["_id"],
             selectedUsers: task.users_assigned,
             status: "working"
         })
@@ -70,7 +73,7 @@ class AssignUsers extends React.Component {
 
     selectUsers(user) {
         const selectedUsers = this.state.selectedUsers;
-        const existingUsers = selectedUsers.filter(selectedUser => selectedUser.id === user.id)
+        const existingUsers = selectedUsers.filter(selectedUser => selectedUser["_id"] === user["_id"])
         if (existingUsers.length >= 1) {
             NotificationManager.error("User " + user.name + " has been selected");
         } else {
@@ -78,32 +81,42 @@ class AssignUsers extends React.Component {
                 selectedUsers: [user].concat(selectedUsers)
             });
         }
+        console.log(selectedUsers);
     }
 
     deselectUser(user) {
         const selectedUsers = this.state.selectedUsers;
-        const usersAfterRemoval = selectedUsers.filter(selectedUser => selectedUser.id !== user.id);
+        const usersAfterRemoval = selectedUsers.filter(selectedUser => selectedUser["_id"] !== user["_id"]);
         this.setState({
             selectedUsers: usersAfterRemoval
         });
+        console.log(this.state.selectedUsers);
     }
 
     confirmUserAssign() {
+        const {task} = this.props;
         const {status} = this.state;
         if (status !== "success") {
             this.setState({
                 status: "loading"
             });
-
-            // API call here to post the updated assigned users
-            // Build your payload using buildPayLoad() method below
-
-            // dummy function to simulate api call
-            setTimeout(() => {
-                this.setState({
-                    status: "success"
-                });
-            }, 1000);
+            console.log(this.state.taskId);
+            fetch('/admin-ui/api/tasks/updateTask/' + this.state.taskId, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(this.buildPayLoad())
+            }).then(data => {
+                if (data.status !== 200) {
+                    data.json().then(json =>{
+                        NotificationManager.error(json.error.errmsg);
+                    });
+                } else {
+                    task.users_assigned = this.state.selectedUsers;
+                    this.setState({
+                        status: "success"
+                    });
+                }
+            });
         }
     }
 
@@ -246,6 +259,11 @@ class AssignUsers extends React.Component {
     }
 
     buildPayLoad() {
+        var selectedUsernames = this.state.selectedUsers.map(selectedUser => selectedUser.username);
+        console.log(selectedUsernames);
+        return {
+            users_assigned: selectedUsernames
+        }
         // Construct your payload using state fields
     }
 }

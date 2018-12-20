@@ -14,9 +14,11 @@ router.get('/getGigs/:name', gig_controller.gig_details);
 
 //update routes
 router.put('/update/:id', gig_controller.gig_update);
-router.put('/addAdmin/:name/:admin_name', gig_controller.gig_add_user_admin);
-router.put('/addParticipant/:name/:participant_name', gig_controller.gig_add_user_participant);
-router.put('/addAttendee/:name/:attendee_name', gig_controller.gig_add_user_attendee);
+router.put('/addAdmin/:name/:admin_username', gig_controller.gig_add_user_admin);
+router.put('/addParticipant/:name/:participant_username', gig_controller.gig_add_user_participant);
+router.put('/addAttendee/:name/:attendee_username', gig_controller.gig_add_user_attendee);
+
+router.put('/deleteAdmin/:name/:admin_username', gig_controller.gig_delete_user_admin);
 
 router.post('/getGigsByStatus/:status', gig_controller.gigs_by_status);
 
