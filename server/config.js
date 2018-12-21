@@ -12,9 +12,9 @@ const development = {
 
 const production = {
     db: {
-        host: '10.130.93.36',
+        host: 'localhost',
         port: 27017,
-        name: 'parties'
+        name: 'csgigs-admin'
     }
 };
 
