@@ -8,29 +8,6 @@ import Paper from '@material-ui/core/Paper';
 import MenuItem from '@material-ui/core/MenuItem';
 import Async from "react-async";
 
-const suggestions = [
-    {
-        id: "123",
-        name: "Brandon",
-        username: "Brandon"
-    },
-    {
-        id: "128",
-        name: "Kevin",
-        username: "Kevin"
-    },
-    {
-        id: "154",
-        name: "Ernest",
-        username: "Ernest"
-    },
-    {
-        id: "169",
-        name: "superadmin",
-        username: "logintest"
-    }
-];
-
 function renderInput(inputProps) {
     const { InputProps, classes, ref, ...other } = inputProps;
 
@@ -50,7 +27,6 @@ function renderInput(inputProps) {
 }
 
 function renderSuggestion({ suggestion, index, itemProps }) {
-    console.log(suggestion);
     return (
         <MenuItem
             {...itemProps}
@@ -127,6 +103,7 @@ const styles = theme => ({
 });
 
 class AutoComplete extends React.Component {
+
     state = {
         inputValue: ''
     };

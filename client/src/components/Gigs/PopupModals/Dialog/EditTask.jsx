@@ -2,9 +2,6 @@ import React from "react";
 
 // @material-ui/core components
 import withStyles from "@material-ui/core/styles/withStyles";
-import FormControl from "@material-ui/core/FormControl";
-import InputLabel from "@material-ui/core/InputLabel";
-import Select from "@material-ui/core/Select";
 import Slide from "@material-ui/core/Slide";
 import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
@@ -20,7 +17,6 @@ import Success from "@material-ui/icons/CheckCircle";
 import GridContainer from "components/Grid/GridContainer";
 import GridItem from "components/Grid/GridItem";
 import CustomInput from "components/Gigs/CustomInput/CustomInput";
-import {renderTaskCategories, fetchTaskCategories} from "components/Gigs/Data/TaskCategories";
 import Button from "components/CustomButtons/Button";
 
 // dependencies
@@ -48,7 +44,6 @@ class EditTask extends React.Component {
     }
 
     componentDidMount() {
-        fetchTaskCategories();
         const {task} = this.props;
         this.setState({
             taskName: task.task_name,
@@ -282,35 +277,24 @@ class EditTask extends React.Component {
                                             />
                                         </GridItem>
                                         <GridItem xs={10} sm={10} md={10} lg={10}>
-                                            <FormControl
-                                                fullWidth
-                                                className={classes.selectFormControl}
+                                            <CustomInput
+                                                success={taskCategoryState === "success"}
                                                 error={taskCategoryState === "error"}
-                                            >
-                                                <InputLabel
-                                                    htmlFor="taskcategory"
-                                                    className={classes.selectLabel}
-                                                >
-                                                    Choose a Task Category
-                                                </InputLabel>
-                                                <Select
-                                                    native
-                                                    MenuProps={{
-                                                        className: classes.selectMenu
-                                                    }}
-                                                    classes={{
-                                                        select: classes.select
-                                                    }}
-                                                    onChange={this.onChangeTaskCategory}
-                                                    inputProps={{
-                                                        defaultValue: task.task_category,
-                                                        name: "taskcategory",
-                                                        id: "taskcategory"
-                                                    }}
-                                                >
-                                                    {renderTaskCategories()}
-                                                </Select>
-                                            </FormControl>
+                                                labelText={
+                                                    <span>
+                                                    Task Category <small>(required)</small>
+                                                </span>
+                                                }
+                                                id="taskcategory"
+                                                formControlProps={{
+                                                    fullWidth: true
+                                                }}
+                                                inputProps={{
+                                                    defaultValue: task.task_category,
+                                                    onChange: event => this.onChangeTaskCategory(event)
+                                                }}
+                                                inputType="text"
+                                            />
                                         </GridItem>
                                     </React.Fragment>
                                 ) : null

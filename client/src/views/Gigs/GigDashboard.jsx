@@ -20,8 +20,8 @@ import CardHeader from "components/Card/CardHeader";
 import CardBody from "components/Card/CardBody";
 import CardFooter from "components/Card/CardFooter";
 import GigCustomTabs from "components/CustomTabs/GigCustomTabs";
-import GigTasks from "components/Gigs/Tasks/Tasks";
-import GigTable from "components/Gigs/Table/Table";
+import Tasks from "components/Gigs/Tasks/Tasks";
+import Table from "components/Gigs/Table/Table";
 import GridContainer from "components/Grid/GridContainer";
 import GridItem from "components/Grid/GridItem";
 import Button from "components/CustomButtons/Button";
@@ -34,9 +34,7 @@ import AddTask from "components/Gigs/PopupModals/Dialog/AddTask";
 import GigActions from "components/Gigs/PopupModals/Dialog/GigActions";
 import GigDetails from "components/Gigs/PopupModals/Dialog/GigDetails";
 import BrownieAllocation from "components/Gigs/PopupModals/Dialog/BrownieAllocation";
-import Table from "components/Gigs/Table/Table";
 import UserProfile from "components/Gigs/Authentication/UserProfile";
-
 
 // dependencies
 import CircularProgressbar from 'react-circular-progressbar';
@@ -90,6 +88,7 @@ const style = {
 };
 
 class GigDashboard extends React.Component {
+
     constructor(props) {
         super(props);
         this.state = {
@@ -177,8 +176,11 @@ class GigDashboard extends React.Component {
         })
     }
 
-    completeGig() {
-        // TODO: Complete the gig
+    completeGig(gig) {
+        this.setState({
+            gig: gig
+        });
+        NotificationManager.success("Gig Completed!");
         const {history} = this.props;
         history.push({
             pathname: '/gigs/manage'
@@ -315,7 +317,7 @@ class GigDashboard extends React.Component {
                     toReturn.push({
                         tabName: key,
                         tabContent: (
-                            <GigTasks
+                            <Tasks
                                 tasksIndexes={tasksIndexesArray}
                                 tasks={organizedContent[key]}
                                 editTask={this.editTask.bind(this)}
@@ -350,16 +352,10 @@ class GigDashboard extends React.Component {
     render() {
         const {classes} = this.props;
         const {
-            gig,
-            assignUsers,
-            removeTask,
-            editTask,
-            editGigParticipants,
-            editGigAdmins,
-            addTask,
-            brownieAllocation,
-            gigActions,
-            gigDetails
+            gig, assignUsers, removeTask,
+            editTask, editGigParticipants,
+            editGigAdmins, brownieAllocation,
+            addTask, gigActions, gigDetails
         } = this.state;
 
         if (gig) {
@@ -372,6 +368,7 @@ class GigDashboard extends React.Component {
                     <GigActions modalOpen={gigActions} hidePopup={this.hidePopup.bind(this)}
                                 gig={gig} channelUpdate={this.notifyGigChannelUpdate.bind(this)}
                                 cancelGig={this.notifyGigStatusCancelled.bind(this)}
+                                completeGig={this.completeGig.bind(this)}
                     />
                     <GigDetails modalOpen={gigDetails} hidePopup={this.hidePopup.bind(this)}
                                 gig={gig} editDetailsAction={this.editDetailsAction.bind(this)}
@@ -459,7 +456,7 @@ class GigDashboard extends React.Component {
                                             </GridContainer>
                                         </CardHeader>
                                         <CardBody>
-                                            <GigTable
+                                            <Table
                                                 tableData={gig.user_admins}
                                                 setupTableCells={this.setupAdminTableCells.bind(this)}
                                             />
@@ -546,6 +543,3 @@ class GigDashboard extends React.Component {
 }
 
 export default withStyles(style)(GigDashboard);
-
-
-

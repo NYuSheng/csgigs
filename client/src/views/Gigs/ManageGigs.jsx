@@ -7,6 +7,7 @@ import Button from '@material-ui/core/Button';
 
 // core components
 // import Filter from "components/Gigs/Filter/Filter";
+// import Button from "components/CustomButtons/Button";
 import Table from "components/Gigs/Table/Table";
 import Card from "components/Card/Card";
 import CardHeader from "components/Card/CardHeader";
@@ -14,10 +15,9 @@ import CardIcon from "components/Card/CardIcon";
 import CardBody from "components/Card/CardBody";
 import GridContainer from "components/Grid/GridContainer";
 import GridItem from "components/Grid/GridItem";
-// import Button from "components/CustomButtons/Button";
 import UserProfile from "components/Gigs/Authentication/UserProfile";
 
-// material-ui icons
+// @material-ui/icons
 import Event from "@material-ui/icons/Event";
 import Create from "@material-ui/icons/NoteAdd";
 // import FilterIcon from "@material-ui/icons/Filter";
@@ -45,12 +45,13 @@ const style = theme => ({
 });
 
 class ManageGigs extends React.Component {
+
     constructor(props) {
         super(props);
         this.state = {
             gigs: [],
-            // filtered: []
             isLoading: false
+            // filtered: []
         };
     }
 

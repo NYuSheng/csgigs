@@ -1,8 +1,7 @@
 import React from "react";
-// nodejs library to set properties for components
 import PropTypes from "prop-types";
-// nodejs library that concatenates classes
 import classNames from "classnames";
+
 // @material-ui/core components
 import withStyles from "@material-ui/core/styles/withStyles";
 import FormControl from "@material-ui/core/FormControl";
@@ -10,24 +9,17 @@ import InputLabel from "@material-ui/core/InputLabel";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import Input from "@material-ui/core/Input";
 
+// style sheets
 import customInputStyle from "assets/jss/material-dashboard-pro-react/components/customInputStyle.jsx";
 
 class CustomInput extends React.Component {
 
     render() {
         const {
-            classes,
-            formControlProps,
-            labelText,
-            id,
-            labelProps,
-            inputProps,
-            error,
-            white,
-            inputRootCustomClasses,
-            success,
-            helpText,
-            inputType
+            classes, formControlProps, labelText,
+            id, labelProps, inputProps, error,
+            white, inputRootCustomClasses, success,
+            helpText, inputType
         } = this.props;
 
         const labelClasses = classNames({

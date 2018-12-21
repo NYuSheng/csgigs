@@ -48,6 +48,7 @@ const style = theme => ({
 });
 
 class CancelledGigs extends React.Component {
+
     constructor(props) {
         super(props);
         this.state = {

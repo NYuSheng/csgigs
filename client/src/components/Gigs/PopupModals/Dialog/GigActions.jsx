@@ -63,7 +63,7 @@ class GigActions extends React.Component {
                 publishState: true
             })
         }
-        if (gig.status === "Cancelled") {
+        if (gig.status.match("Cancelled|Completed")) {
             this.setState({
                 cancelState: true
             })
@@ -89,7 +89,7 @@ class GigActions extends React.Component {
     }
 
     render() {
-        const {classes, modalOpen, gig, channelUpdate, cancelGig, fullScreen} = this.props;
+        const {classes, modalOpen, gig, channelUpdate, cancelGig, completeGig, fullScreen} = this.props;
         const {modalState, publishState, cancelState} = this.state;
 
         return (
@@ -189,8 +189,9 @@ class GigActions extends React.Component {
                                     <Card style={{marginTop: 0, marginBottom: 10}}>
                                         <CardBody>
                                             <Button className={classes.marginRight}
-                                                // onClick={this.completeGig.bind(this)}
+                                                    onClick={() => {Actions.complete(gig, completeGig)}}
                                                     color="success"
+                                                    disabled={!publishState || gig.status === "Completed"}
                                                     style={{width: "100%"}}
                                             >
                                                 Complete

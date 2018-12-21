@@ -18,7 +18,6 @@ class CreateGig extends React.Component {
         this.state = {
             createGigSuccess: null,
         };
-
     }
 
     componentDidMount() {

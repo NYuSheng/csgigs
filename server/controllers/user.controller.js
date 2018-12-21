@@ -1,4 +1,5 @@
 const User = require('../models/user.model');
+const fetch = require('node-fetch');
 
 //Simple version, without validation or sanitation
 exports.test = function (req, res) {
@@ -25,19 +26,40 @@ exports.user_create = function (req, res, next) {
 };
 
 exports.user_login = function (req, res, next) {
+    const loginDetails = {
+        user: req.body.username,
+        password: req.body.password
+    }
+
     var userName = req.body.username;
-    User.findOne({username: userName}, function (err, users) {
-        if (err) return next(err);
-
-        var role = users.role;
-
-        if (role != "admin"){
-            res.send("Incorrect username/password");
-            return;
+    var password = req.body.password;
+    // User.findOne({username: userName}, function (err, users) {
+    //     if (err) return next(err);
+    //
+    //     var role = users.role;
+    //
+    //     if (role != "admin"){
+    //         res.send("Incorrect username/password");
+    //         return;
+    //     }
+    //
+    //     res.send(users);
+    // });
+    fetch('https://csgigs.com/api/v1/login', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(loginDetails)
+    }).then(loginoutput => loginoutput.json()).then(data => {
+        if (data.status !== "success") {
+            res.status(400).send({
+                error: 'Incorrect username/password'
+            });
+        } else {
+            res.status(200).send({
+                user: data.data
+            });
         }
-
-        res.send(users);
-    });
+    })
 };
 
 exports.user_login2 = function (req, res, next) {

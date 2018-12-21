@@ -20,6 +20,26 @@ const GigActions = (function() {
         });
     }
 
+    var complete = function(gig, completeGig) {
+        const completion = {
+            status: "Completed",
+        }
+        fetch(`/admin-ui/api/gigs/update/${gig._id}`, {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(completion)
+        }).then(data => {
+            if (data.status !== 200) {
+                data.json().then(json => {
+                    NotificationManager.error(json.error.errmsg);
+                });
+            } else {
+                gig.status = completion.status;
+                completeGig(gig);
+            }
+        });
+    }
+
     var publish = function(gig, notifyGigChannelUpdate) {
         const authSet = UserProfile.getAuthSet();
         fetch('https://csgigs.com/api/v1/channels.create', {
@@ -47,6 +67,7 @@ const GigActions = (function() {
 
     var updateGigChannel = function(payload, gig, notifyGigChannelUpdate) {
         const update = {
+            status: "Active",
             rc_channel_id: payload.channel.name
         }
         fetch(`/admin-ui/api/gigs/update/${gig._id}`, {
@@ -59,6 +80,7 @@ const GigActions = (function() {
                     NotificationManager.error(json.error.errmsg);
                 });
             } else {
+                gig.status = update.status;
                 gig.rc_channel_id = update.rc_channel_id;
                 notifyGigChannelUpdate(gig)
             }
@@ -73,7 +95,8 @@ const GigActions = (function() {
 
     return {
         publish: publish,
-        cancel: cancel
+        cancel: cancel,
+        complete: complete
     }
 
 })();
