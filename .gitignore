@@ -6,4 +6,5 @@ server/public
 .idea/workspace.xml
 client/build
 
+.npmrc
 
