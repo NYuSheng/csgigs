@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 const config = require('./config.js');
 const {db: { host, port, name }} = config;
 
-const connectionString = `mongodb://rockchat:Brownie12345@${host}:${port}/${name}`;
+const connectionString = `mongodb://${host}:${port}/${name}`;
 mongoose.connect(connectionString, {useNewUrlParser: true});
 mongoose.Promise = global.Promise;
 mongoose.set('useCreateIndex', true);
