@@ -1,6 +1,8 @@
 import UserProfile from "components/Gigs/Authentication/UserProfile";
 import {NotificationManager} from "react-notifications";
 
+const authSet = UserProfile.getAuthSet();
+
 const GigActions = (function() {
 
     var cancel = function(gig, cancelGig, resetGigAction) {
@@ -14,9 +16,31 @@ const GigActions = (function() {
                 });
             } else {
                 gig.status = "Cancelled";
+                setChannelToReadOnly(gig.rc_channel_id._id);
                 cancelGig(gig);
             }
             resetGigAction();
+        });
+    }
+
+    var setChannelToReadOnly = function(gigChannelId) {
+        const setReadOnlyPayload = {
+            roomId: gigChannelId,
+            readOnly: true,
+            XAuthToken: authSet.token,
+            XUserId: authSet.userId
+        };
+
+        fetch(`/admin-ui/api/rc/readOnly`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(setReadOnlyPayload)
+        }).then(data => {
+            if (data.status !== 200) {
+                data.json().then(json => {
+                    NotificationManager.error(json.error.errmsg);
+                });
+            }
         });
     }
 
@@ -41,7 +65,6 @@ const GigActions = (function() {
     }
 
     var publish = function(gig, notifyGigChannelUpdate) {
-        const authSet = UserProfile.getAuthSet();
         fetch('https://csgigs.com/api/v1/channels.create', {
             method: 'POST',
             headers: {
@@ -68,7 +91,7 @@ const GigActions = (function() {
     var updateGigChannel = function(payload, gig, notifyGigChannelUpdate) {
         const update = {
             status: "Active",
-            rc_channel_id: payload.channel.name
+            rc_channel_id: payload.channel
         }
         fetch(`/admin-ui/api/gigs/update/${gig._id}`, {
             method: 'PUT',

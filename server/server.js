@@ -5,6 +5,7 @@ var path = require('path');
 var bodyParser = require('body-parser');
 
 var user = require('./routes/user.route');
+var rc = require('./routes/rc.route');
 var gig = require('./routes/gig.route');
 var task = require('./routes/task.route');
 var taskcategories = require('./routes/taskhashtag.route');
@@ -19,6 +20,7 @@ app.use(bodyParser.urlencoded({extended: false}));
 
 app.use('/admin-ui', express.static(path.join(__dirname, './public')));
 app.use('/admin-ui/api/users', user);
+app.use('/admin-ui/api/rc', rc);
 app.use('/admin-ui/api/gigs', gig);
 app.use('/admin-ui/api/tasks', task)
 app.use('/admin-ui/api/task-categories', taskcategories);

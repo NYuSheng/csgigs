@@ -9,7 +9,7 @@ let GigsSchema = new Schema({
     description: {type: String},
     photo: {type: String},
     createdAt:{type: Date, default: Date.now},
-    rc_channel_id:{type: String, default: null},
+    rc_channel_id:{type: Object, default: null},
     points_budget:{type: Number, required: true},
     status:{type: String, required: true},
     user_admins:[{type: String}],

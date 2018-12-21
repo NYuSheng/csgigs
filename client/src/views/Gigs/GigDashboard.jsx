@@ -420,7 +420,7 @@ class GigDashboard extends React.Component {
 
                                                         <a href={'https://csgigs.com/channel/' + gig.rc_channel_id}
                                                            target="_blank" rel="noopener noreferrer">
-                                                            {gig.rc_channel_id}
+                                                            {gig.rc_channel_id.name}
                                                         </a>
                                                     ) : (
                                                         "Not Published"
