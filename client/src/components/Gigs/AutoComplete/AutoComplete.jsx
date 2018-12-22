@@ -1,11 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import deburr from 'lodash/deburr';
-import Downshift from 'downshift';
+
+// @material-ui/core components
 import {withStyles} from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Paper from '@material-ui/core/Paper';
 import MenuItem from '@material-ui/core/MenuItem';
+
+// dependencies
+import Downshift from 'downshift';
 import Async from "react-async";
 
 function renderInput(inputProps) {
@@ -41,9 +44,7 @@ function renderSuggestion({ suggestion, index, itemProps }) {
     );
 }
 
-function processSuggestion(value, users) {
-    const inputValue = deburr(value.trim()).toLowerCase();
-    const inputLength = inputValue.length;
+function processSuggestion(users) {
     let count = 0;
     users.filter(user => {  
         const keep = count < 5;
@@ -67,9 +68,9 @@ const fetchUsers = async ({inputValue}) => {
         return [];
     } else {
         const json = await data.json();
-        return processSuggestion(inputValue, json.users);
+        return processSuggestion(json.users);
     }
-}
+};
 
 const styles = theme => ({
     root: {
@@ -113,7 +114,7 @@ class AutoComplete extends React.Component {
     };
 
     handleChange = item => {
-        const { selectInput } = this.props
+        const { selectInput } = this.props;
 
         this.setState({
             inputValue: '',

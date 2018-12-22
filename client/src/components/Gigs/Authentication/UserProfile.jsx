@@ -10,7 +10,6 @@ var UserProfile = (function() {
             } else {
                 console.log("Error - User avatar not found");
             }
-            user.me.username = "logintest";
             sessionStorage.setItem('user', JSON.stringify(user))
         })
     }

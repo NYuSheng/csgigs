@@ -1,8 +1,6 @@
 import UserProfile from "components/Gigs/Authentication/UserProfile";
 import {NotificationManager} from "react-notifications";
 
-const authSet = UserProfile.getAuthSet();
-
 const GigActions = (function() {
 
     var cancel = function(gig, cancelGig, resetGigAction) {
@@ -24,6 +22,7 @@ const GigActions = (function() {
     }
 
     var setChannelToReadOnly = function(gigChannelId) {
+        const authSet = UserProfile.getAuthSet();
         const setReadOnlyPayload = {
             roomId: gigChannelId,
             readOnly: true,
@@ -65,6 +64,7 @@ const GigActions = (function() {
     }
 
     var publish = function(gig, notifyGigChannelUpdate) {
+        const authSet = UserProfile.getAuthSet();
         fetch('https://csgigs.com/api/v1/channels.create', {
             method: 'POST',
             headers: {

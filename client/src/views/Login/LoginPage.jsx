@@ -12,7 +12,7 @@ import LockOutline from "@material-ui/icons/LockOutlined";
 // core components
 import GridContainer from "components/Grid/GridContainer";
 import GridItem from "components/Grid/GridItem";
-import CustomInput from "components/CustomInput/CustomInput";
+import CustomInput from "components/Gigs/CustomInput/CustomInput";
 import Button from "components/CustomButtons/Button";
 import Card from "components/Card/Card";
 import CardBody from "components/Card/CardBody";
@@ -23,6 +23,7 @@ import PagesHeader from "components/Header/PagesHeader";
 
 // dependencies
 import {NotificationManager, NotificationContainer} from "react-notifications";
+import Loader from 'react-loader-spinner';
 import bgImage from "assets/img/register.jpeg";
 
 // style sheets
@@ -34,10 +35,11 @@ class LoginPage extends React.Component {
         super(props);
         this.state = {
             cardAnimaton: "cardHidden",
-            username: '',
-            password: '',
-            usernameState: '',
-            passwordState: ''
+            username: "",
+            password: "",
+            usernameState: "",
+            passwordState: "",
+            isLoading: false
         };
 
         this.handleUsernameChange = this.handleUsernameChange.bind(this);
@@ -47,37 +49,31 @@ class LoginPage extends React.Component {
 
     handleUsernameChange(e) {
         const username = e.target.value;
+
         this.setState({
-            username: username
+            username: username,
+            usernameState: username ? "success" : "error"
         });
-        username ?
-            this.setState({usernameState: "success"})
-            :
-            this.setState({usernameState: "error"})
     }
 
     handlePasswordChange(e) {
         const password = e.target.value;
         this.setState({
-            password: e.target.value
+            password: e.target.value,
+            passwordState: password ? "success" : "error"
         });
-        password ?
-            this.setState({passwordState: "success"})
-            :
-            this.setState({passwordState: "error"})
     }
 
     isValidated() {
-        if (
-            this.state.usernameState === "success" &&
-            this.state.passwordState === "success"
-        ) {
+        const {usernameState, passwordState} = this.state;
+
+        if (usernameState === "success" && passwordState === "success") {
             return true;
         } else {
-            if (this.state.usernameState !== "success") {
+            if (usernameState !== "success") {
                 this.setState({usernameState: "error"});
             }
-            if (this.state.passwordState !== "success") {
+            if (passwordState !== "success") {
                 this.setState({passwordState: "error"});
             }
         }
@@ -103,7 +99,11 @@ class LoginPage extends React.Component {
         const loginDetails = {
             username: this.state.username,
             password: this.state.password
-        }
+        };
+
+        this.setState({
+            isLoading: true
+        });
 
         fetch('/admin-ui/api/users/login', {
             method: 'POST',
@@ -119,6 +119,9 @@ class LoginPage extends React.Component {
                     pathname: "/dashboard"
                 });
             }
+            this.setState({
+                isLoading: false
+            });
         })
     }
 
@@ -135,7 +138,7 @@ class LoginPage extends React.Component {
 
     render() {
         const {classes, ...rest} = this.props;
-        const {usernameState, passwordState} = this.state;
+        const {usernameState, passwordState, isLoading} = this.state;
         return (
             <div>
                 <PagesHeader {...rest} />
@@ -172,6 +175,7 @@ class LoginPage extends React.Component {
                                                     }}
                                                     inputProps={{
                                                         onChange: event => this.handleUsernameChange(event),
+                                                        disabled: isLoading,
                                                         endAdornment: (
                                                             <InputAdornment position="end">
                                                                 <Face className={classes.inputAdornmentIcon}/>
@@ -194,6 +198,7 @@ class LoginPage extends React.Component {
                                                     }}
                                                     inputProps={{
                                                         onChange: event => this.handlePasswordChange(event),
+                                                        disabled: isLoading,
                                                         endAdornment: (
                                                             <InputAdornment position="end">
                                                                 <LockOutline className={classes.inputAdornmentIcon}/>
@@ -202,13 +207,30 @@ class LoginPage extends React.Component {
                                                     }}
                                                     inputType="password"
                                                 />
+                                                <div style={{
+                                                    margin: "0 auto", width: 100,
+                                                    visibility: isLoading ? "visible" : "hidden"}}
+                                                >
+                                                    <div style={{float: "left", display: "inline-block"}}>
+                                                        <p style={{paddingTop: 3}}>Logging in</p>
+                                                    </div>
+                                                    <div style={{float: "right", display: "inline-block"}}>
+                                                        <Loader
+                                                            type="ThreeDots"
+                                                            color="black"
+                                                            height="30"
+                                                            width="30"
+                                                        />
+                                                    </div>
+                                                </div>
                                             </CardBody>
                                             <CardFooter className={classes.justifyContentCenter}>
                                                 <GridContainer>
                                                     <GridItem xs={12} sm={12} md={12} lg={12}>
                                                         <Button id="login" type="submit"
                                                                 color="info" simple size="lg"
-                                                                block style={{paddingBottom: 0}}
+                                                                block style={{paddingTop: 0, paddingBottom: 0}}
+                                                                disabled={isLoading}
                                                         >
                                                             Login
                                                         </Button>
@@ -217,6 +239,7 @@ class LoginPage extends React.Component {
                                                         <Button id="forget_password" onClick={this.forgetPassword}
                                                                 color="info" simple size="lg" block
                                                                 style={{paddingTop: 0, paddingBottom: 0}}
+                                                                disabled={isLoading}
                                                         >
                                                             Forget Password
                                                         </Button>

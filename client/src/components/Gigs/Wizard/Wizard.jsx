@@ -4,13 +4,16 @@ import PropTypes from "prop-types";
 
 // @material-ui/core components
 import withStyles from "@material-ui/core/styles/withStyles";
+
 // core components
 import Button from "components/CustomButtons/Button.jsx";
 import Card from "components/Card/Card.jsx";
 
+// style sheets
 import wizardStyle from "assets/jss/material-dashboard-pro-react/components/wizardStyle.jsx";
 
 class Wizard extends React.Component {
+
     constructor(props) {
         super(props);
         var width;
@@ -34,14 +37,13 @@ class Wizard extends React.Component {
         this.state = {
             currentStep: 0,
             color: this.props.color,
-            nextButton: this.props.steps.length > 1 ? true : false,
+            nextButton: this.props.steps.length > 1,
             previousButton: false,
-            finishButton: this.props.steps.length === 1 ? true : false,
+            finishButton: this.props.steps.length === 1,
             width: width,
             movingTabStyle: {
                 transition: "transform 0s"
-            },
-            allStates: []
+            }
         };
         this.navigationStepChange = this.navigationStepChange.bind(this);
         this.refreshAnimation = this.refreshAnimation.bind(this);
@@ -50,37 +52,42 @@ class Wizard extends React.Component {
         this.finishButtonClick = this.finishButtonClick.bind(this);
         this.updateWidth = this.updateWidth.bind(this);
     }
+
     componentDidMount() {
         this.refreshAnimation(0);
         window.addEventListener("resize", this.updateWidth);
     }
+
     componentWillUnmount() {
         window.removeEventListener("resize", this.updateWidth);
     }
+
     updateWidth() {
         this.refreshAnimation(this.state.currentStep);
     }
+
+    setStepState(key, stepsLength) {
+        this.setState({
+            currentStep: key,
+            nextButton: stepsLength > key + 1,
+            previousButton: key > 0,
+            finishButton: stepsLength === key + 1
+        });
+        this.refreshAnimation(key);
+    }
+
     navigationStepChange(key) {
         console.log(this)
-        if (this.props.steps) {
+        const {steps} = this.props;
+        const {currentStep} = this.state;
+
+        if (steps) {
             var validationState = true;
-            if (key > this.state.currentStep) {
-                for (var i = this.state.currentStep; i < key; i++) {
-                    if (this[this.props.steps[i].stepId].sendState !== undefined) {
-                        this.setState({
-                            allStates: [
-                                ...this.state.allStates,
-                                {
-                                    [this.props.steps[i].stepId]: this[
-                                        this.props.steps[i].stepId
-                                        ].sendState()
-                                }
-                            ]
-                        });
-                    }
+            if (key > currentStep) {
+                for (var i = currentStep; i < key; i++) {
                     if (
-                        this[this.props.steps[i].stepId].isValidated !== undefined &&
-                        this[this.props.steps[i].stepId].isValidated() === false
+                        this[steps[i].stepId].isValidated !== undefined &&
+                        this[steps[i].stepId].isValidated() === false
                     ) {
                         validationState = false;
                         break;
@@ -88,106 +95,62 @@ class Wizard extends React.Component {
                 }
             }
             if (validationState) {
-                this.setState({
-                    currentStep: key,
-                    nextButton: this.props.steps.length > key + 1 ? true : false,
-                    previousButton: key > 0 ? true : false,
-                    finishButton: this.props.steps.length === key + 1 ? true : false
-                });
-                this.refreshAnimation(key);
+                this.setStepState(key, steps.length);
             }
         }
     }
+
     nextButtonClick() {
+        const {validate, steps} = this.props;
+        const {currentStep} = this.state;
+
         if (
-            (this.props.validate &&
-                ((this[this.props.steps[this.state.currentStep].stepId].isValidated !==
-                    undefined &&
-                    this[
-                        this.props.steps[this.state.currentStep].stepId
-                        ].isValidated()) ||
-                    this[this.props.steps[this.state.currentStep].stepId].isValidated ===
-                    undefined)) ||
-            this.props.validate === undefined
+            (validate &&
+                (
+                    (this[steps[currentStep].stepId].isValidated !== undefined
+                        && this[steps[currentStep].stepId].isValidated()
+                    ) || this[steps[currentStep].stepId].isValidated === undefined
+                )
+            ) || validate === undefined
         ) {
-            if (
-                this[this.props.steps[this.state.currentStep].stepId].sendState !==
-                undefined
-            ) {
-                this.setState({
-                    allStates: [
-                        ...this.state.allStates,
-                        {
-                            [this.props.steps[this.state.currentStep].stepId]: this[
-                                this.props.steps[this.state.currentStep].stepId
-                                ].sendState()
-                        }
-                    ]
-                });
-            }
-            var key = this.state.currentStep + 1;
-            this.setState({
-                currentStep: key,
-                nextButton: this.props.steps.length > key + 1 ? true : false,
-                previousButton: key > 0 ? true : false,
-                finishButton: this.props.steps.length === key + 1 ? true : false
-            });
-            this.refreshAnimation(key);
+            const key = currentStep + 1;
+            this.setStepState(key, steps.length);
         }
     }
+
     previousButtonClick() {
-        if (
-            this[this.props.steps[this.state.currentStep].stepId].sendState !==
-            undefined
-        ) {
-            this.setState({
-                allStates: [
-                    ...this.state.allStates,
-                    {
-                        [this.props.steps[this.state.currentStep].stepId]: this[
-                            this.props.steps[this.state.currentStep].stepId
-                            ].sendState()
-                    }
-                ]
-            });
-        }
-        var key = this.state.currentStep - 1;
+        const {steps} = this.props;
+        const {currentStep} = this.state;
+
+        var key = currentStep - 1;
         if (key >= 0) {
-            this.setState({
-                currentStep: key,
-                nextButton: this.props.steps.length > key + 1 ? true : false,
-                previousButton: key > 0 ? true : false,
-                finishButton: this.props.steps.length === key + 1 ? true : false
-            });
-            this.refreshAnimation(key);
+            this.setStepState(key, steps.length);
         }
     }
+
     finishButtonClick() {
-        if (
-            this.props.validate &&
-            ((this[this.props.steps[this.state.currentStep].stepId].isValidated !==
-                undefined &&
-                this[this.props.steps[this.state.currentStep].stepId].isValidated()) ||
-                this[this.props.steps[this.state.currentStep].stepId].isValidated ===
-                undefined) &&
-            this.props.finishButtonClick !== undefined
+        const {validate, steps, finishButtonClick} = this.props;
+        const {currentStep} = this.state;
+
+        if (validate &&
+            (
+                (
+                    this[steps[currentStep].stepId].isValidated !== undefined
+                    && this[steps[currentStep].stepId].isValidated()
+                ) || this[steps[currentStep].stepId].isValidated === undefined
+            ) && finishButtonClick !== undefined
         ) {
-            let allStatesArray = [
-                ...this.state.allStates,
-                {
-                    [this.props.steps[this.state.currentStep].stepId]: this[
-                        this.props.steps[this.state.currentStep].stepId
-                        ].sendState()
-                },
-            ]
+            const wizard = this;
             let allStates = {};
-            allStatesArray.forEach(function(state) {
-                let stateValues = (Object.values(state))[0];
-                allStates = Object.assign(stateValues, allStates);
+            steps.forEach(function(step) {
+                const stepId = step.stepId;
+                const stepState = wizard[stepId].sendState();
+                allStates = Object.assign(stepState, allStates);
             });
             this.props.finishButtonClick(allStates);
         }
     }
+
     refreshAnimation(index) {
         var total = this.props.steps.length;
         var li_width = 100 / total;
@@ -232,6 +195,7 @@ class Wizard extends React.Component {
         };
         this.setState({ movingTabStyle: movingTabStyle });
     }
+
     render() {
         const { classes, title, subtitle, color, steps } = this.props;
         return (
@@ -245,14 +209,12 @@ class Wizard extends React.Component {
                         <ul className={classes.nav}>
                             {steps.map((prop, key) => {
                                 return (
-                                    <li
-                                        className={classes.steps}
+                                    <li className={classes.steps}
                                         key={key}
                                         style={{ width: this.state.width }}
                                     >
-                                        <a
-                                            className={classes.stepsAnchor}
-                                            onClick={() => this.navigationStepChange(key)}
+                                        <a className={classes.stepsAnchor}
+                                           onClick={() => this.navigationStepChange(key)}
                                         >
                                             {prop.stepName}
                                         </a>
