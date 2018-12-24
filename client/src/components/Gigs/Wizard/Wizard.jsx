@@ -77,7 +77,6 @@ class Wizard extends React.Component {
     }
 
     navigationStepChange(key) {
-        console.log(this)
         const {steps} = this.props;
         const {currentStep} = this.state;
 

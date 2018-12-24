@@ -1,6 +1,6 @@
-var UserProfile = (function() {
+var UserProfile = (function () {
 
-    var login = function(user) {
+    var login = function (user) {
         fetch(`https://csgigs.com/api/v1/users.getAvatar?username=${user.me.username}`, {
             method: 'GET',
             headers: {'Content-Type': 'application/json'}
@@ -14,8 +14,8 @@ var UserProfile = (function() {
         })
     }
 
-    var authenticate = function() {
-        try{
+    var authenticate = function () {
+        try {
             const user = JSON.parse(sessionStorage.getItem('user'));
             if (user) {
                 return true;
@@ -27,7 +27,7 @@ var UserProfile = (function() {
         }
     }
 
-    var getAuthSet = function() {
+    var getAuthSet = function () {
         const user = JSON.parse(sessionStorage.getItem('user'));
         var authSet = {};
         authSet["token"] = user.authToken;
@@ -35,7 +35,7 @@ var UserProfile = (function() {
         return authSet;
     }
 
-    var getUser = function() {
+    var getUser = function () {
         const user = JSON.parse(sessionStorage.getItem('user'));
         return user;
     }

@@ -110,6 +110,9 @@ class LoginPage extends React.Component {
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(loginDetails)
         }).then(loginoutput => loginoutput.json()).then(data => {
+            this.setState({
+                isLoading: false
+            });
             if (data.error) {
                 NotificationManager.error(data.error);
             } else {
@@ -119,9 +122,6 @@ class LoginPage extends React.Component {
                     pathname: "/dashboard"
                 });
             }
-            this.setState({
-                isLoading: false
-            });
         })
     }
 

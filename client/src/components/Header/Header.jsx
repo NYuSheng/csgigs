@@ -49,7 +49,7 @@ function Header({...props}) {
                             strict: false
                         });
                         if (match) {
-                            name = match.params.gigId;
+                            name = props.history.location.headername;
                         }
                     }
                 }

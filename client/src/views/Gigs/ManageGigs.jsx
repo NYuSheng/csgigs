@@ -112,7 +112,7 @@ class ManageGigs extends React.Component {
         const {history} = this.props;
         history.push({
             headername: `${gig.name}`,
-            pathname: `/gigs/manage/${gig.name}`
+            pathname: `/gigs/manage/${gig._id}`
         });
     }
 

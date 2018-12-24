@@ -19,6 +19,7 @@ import GridItem from "components/Grid/GridItem";
 import Button from "components/CustomButtons/Button";
 import CustomInput from "components/Gigs/CustomInput/CustomInput";
 import PictureUpload from "components/Gigs/CustomUpload/PictureUpload";
+import UserProfile from "components/Gigs/Authentication/UserProfile";
 
 // dependencies
 import {NotificationManager} from "react-notifications";
@@ -95,13 +96,14 @@ class GigDetails extends React.Component {
     }
 
     confirmGigDetailsEdit() {
+        const user = UserProfile.getUser();
         const {gig, editDetailsAction} = this.props;
         this.setState({
             status: "loading"
         });
         let payload = this.buildPayLoad();
 
-        fetch(`/admin-ui/api/gigs/update/${gig._id}`, {
+        fetch(`/admin-ui/api/gigs/${user.me.username}/${gig._id}`, {
             method: 'PUT',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(payload)

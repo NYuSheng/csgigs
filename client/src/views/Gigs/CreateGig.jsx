@@ -21,7 +21,7 @@ class CreateGig extends React.Component {
     }
 
     componentDidMount() {
-        var authenticated = UserProfile.authenticate();
+        const authenticated = UserProfile.authenticate();
         if (!authenticated) {
             const {history} = this.props;
             history.push({
@@ -31,18 +31,22 @@ class CreateGig extends React.Component {
     }
 
     finishButtonClick(step) {
-        const gigCreatorUsername = UserProfile.getUser();
-        step.selectedAdmins.push(gigCreatorUsername.me);
+        const gigCreator = UserProfile.getUser();
+        const authSet = UserProfile.getAuthSet();
+        step.selectedAdmins.push(gigCreator.me);
         fetch('/admin-ui/api/gigs/create', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
+                user: gigCreator.me.name,
                 name: step.name,
                 description: step.gigDescription,
                 points_budget: step.budget,
                 status: "Draft",
-                user_admins: step.selectedAdmins.map(admin => admin.username),
-                photo: step.gigImage
+                user_admins: step.selectedAdmins,
+                photo: step.gigImage,
+                XAuthToken: authSet.token,
+                XUserId: authSet.userId
             })
         }).then(data => {
             if (data.status !== 200) {

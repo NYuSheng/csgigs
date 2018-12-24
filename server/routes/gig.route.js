@@ -1,23 +1,16 @@
 const express = require('express');
 const router = express.Router();
-
-// Require the controllers WHICH WE DID NOT CREATE YET!!
 const gig_controller = require('../controllers/gig.controller');
 
-
-// a simple test url to check that all of our files are communicating correctly.
-router.get('/:username', gig_controller.gigs_details);
-// router.post('/create', gig_controller.gig_create);
-router.post('/create', gig_controller.gig_create_temp);
-router.post('/cancel/:name', gig_controller.gig_cancel);
-router.get('/getGigs/:name', gig_controller.gig_details);
+router.get('/:username', gig_controller.get_user_all_gigs);
+router.get('/:username/:id', gig_controller.get_user_gig);
+router.put('/:username/:id', gig_controller.update_gig);
+router.post('/create', gig_controller.create_gig);
 
 //update routes
-router.put('/update/:id', gig_controller.gig_update);
 router.put('/addAdmin/:name/:admin_username', gig_controller.gig_add_user_admin);
 router.put('/addParticipant/:name/:participant_username', gig_controller.gig_add_user_participant);
 router.put('/addAttendee/:name/:attendee_username', gig_controller.gig_add_user_attendee);
-
 router.put('/deleteAdmin/:name/:admin_username', gig_controller.gig_delete_user_admin);
 
 router.post('/getGigsByStatus/:status', gig_controller.gigs_by_status);
