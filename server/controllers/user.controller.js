@@ -43,7 +43,7 @@ exports.user_login = function (req, res, next) {
 };
 
 exports.get_user_by_prefix = function (req, res, next) {
-    return User.find({name: { $regex: '.*' + req.body.name + '.*' }}).exec().then((users_retrieved) => {
+    return User.find({name: { $regex: '.*' + req.body.name + '.*', $options: "i" }}).exec().then((users_retrieved) => {
         res.status(200).send({
             users: users_retrieved
         });
