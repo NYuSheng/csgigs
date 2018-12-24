@@ -67,7 +67,7 @@ exports.get_user_all_gigs = asyncMiddleware(async (req, res, next) => {
         {
             "$match":
                 {
-                    "user_admins": {"$in": [req.params.username]},
+                    "user_admins": {"$in": [req.params.admin_name]},
                     "status": {"$in": status}
                 }
         };

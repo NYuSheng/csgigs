@@ -2,8 +2,8 @@ const express = require('express');
 const router = express.Router();
 const gig_controller = require('../controllers/gig.controller');
 
-router.get('/:username', gig_controller.get_user_all_gigs);
-router.get('/:username/:id', gig_controller.get_user_gig);
+router.get('/:admin_name', gig_controller.get_user_all_gigs);
+router.get('/:admin_name/:id', gig_controller.get_user_gig);
 router.put('/:username/:id', gig_controller.update_gig);
 router.post('/create', gig_controller.create_gig);
 

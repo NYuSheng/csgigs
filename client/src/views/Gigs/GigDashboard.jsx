@@ -124,7 +124,7 @@ class GigDashboard extends React.Component {
 
     setupData(gigId) {
         const user = UserProfile.getUser();
-        fetch(`/admin-ui/api/gigs/${user.me.username}/${gigId}`, {
+        fetch(`/admin-ui/api/gigs/${user.me.name}/${gigId}`, {
             method: 'GET',
             headers: {'Content-Type': 'application/json'}
         }).then(data => {
