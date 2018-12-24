@@ -12,5 +12,4 @@ let TaskSchema = new Schema({
     completeAt:{type:Date}
 });
 
-// Export the model
 module.exports = mongoose.model('tasks', TaskSchema);

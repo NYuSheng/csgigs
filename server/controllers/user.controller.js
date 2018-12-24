@@ -1,11 +1,6 @@
 const User = require('../models/user.model');
 const fetch = require('node-fetch');
 
-//Simple version, without validation or sanitation
-exports.test = function (req, res) {
-    res.send('Greetings from the Test controller!');
-};
-
 exports.user_create = function (req, res, next) {
     let user = new User(
         {
@@ -30,21 +25,6 @@ exports.user_login = function (req, res, next) {
         user: req.body.username,
         password: req.body.password
     }
-
-    var userName = req.body.username;
-    var password = req.body.password;
-    // User.findOne({username: userName}, function (err, users) {
-    //     if (err) return next(err);
-    //
-    //     var role = users.role;
-    //
-    //     if (role != "admin"){
-    //         res.send("Incorrect username/password");
-    //         return;
-    //     }
-    //
-    //     res.send(users);
-    // });
     fetch('https://csgigs.com/api/v1/login', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
@@ -59,27 +39,6 @@ exports.user_login = function (req, res, next) {
                 user: data.data
             });
         }
-    })
-};
-
-exports.user_login2 = function (req, res, next) {
-    return User.findOne({username:req.body.username}).exec().then((user_retrieved) => {
-        if(user_retrieved === null){
-            return res.status(400).send({
-                error: 'Cannot Find User ' + req.body.name
-            });
-        }
-        var role = user_retrieved.role;
-        if(role !=="admin"){
-            return res.status(400).send({
-                error: 'User is not an Admin. '
-            });
-        }
-        res.status(200).send({
-            adminuser: user_retrieved
-        });
-    }).catch(err=>{
-        res.status(400).send({error: err});
     })
 };
 

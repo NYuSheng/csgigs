@@ -20,7 +20,6 @@ exports.taskhashtag_create = asyncMiddleware(async (req, res, next) => {
 });
 
 exports.taskhashtags_details = asyncMiddleware(async (req, res, next) => {
-
     return TaskHashTag.find({}).exec().then((tags) => {
         res.status(200).send({
             "tags" : tags

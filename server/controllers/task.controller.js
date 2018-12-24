@@ -1,6 +1,5 @@
 const Task = require('../models/task.model');
 
-//Simple version, without validation or sanitation
 exports.create_tasks = function (req, res, next) {
     let task = new Task(
         {
@@ -39,7 +38,6 @@ exports.get_tasks_gigs = function (req, res, next) {
     })
 }
 
-//input ID, and field_name/value in body
 exports.update_task = function (req, res, next) {
     Task.findByIdAndUpdate(req.params.taskid, {$set: req.body}, function (err, task) {
         if (err) return next(err);
@@ -48,7 +46,7 @@ exports.update_task = function (req, res, next) {
 };
 
 exports.update_points_allocation = function (req, res, next) {
-    var tasks = req.body.tasks;
+    const tasks = req.body.tasks;
     tasks.forEach(function (task) {
         Task.findByIdAndUpdate(task._id, {$set: task}, function (err, task) {
             if (err) return next(err);
