@@ -1,13 +1,13 @@
 const fetch = require('node-fetch');
 
-exports.set_read_only = function (req, res, next) {
+exports.set_read_only_channel = function (req, res, next) {
     const body = {
         roomId: req.body.roomId,
         readOnly: req.body.readOnly,
     };
 
     const headers = get_headers(req.body);
-    rc_set_read_only(headers, body, res);
+    rc_set_read_only_channel(headers, body, res);
 };
 
 exports.create_group = function (payload, auth_set) {
@@ -30,12 +30,39 @@ exports.add_owners_to_group = function (rc_group_id, gig_owners, auth_set) {
     });
 };
 
+exports.set_group_type = function (req, res) {
+    const headers = get_headers(req.body);
+    const body = {
+        roomId: req.body.roomId,
+        type: req.body.type,
+    };
+    rc_set_group_type(headers, body, res);
+};
+
 function get_headers(input) {
     return {
         'Content-Type': 'application/json',
         'X-Auth-Token': input.XAuthToken,
         'X-User-Id': input.XUserId
     };
+}
+
+function rc_set_group_type(headers, body, res) {
+    fetch('https://csgigs.com/api/v1/groups.setType', {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify(body)
+    }).then(output => output.json()).then(data => {
+        if (!data.success) {
+            res.status(400).send({
+                error: 'Unable to set group to ' + body.type
+            });
+        } else {
+            res.status(200).send({
+                group: data.group
+            });
+        }
+    });
 }
 
 function rc_add_owner_to_group(headers, body) {
@@ -50,7 +77,7 @@ function rc_add_owner_to_group(headers, body) {
     });
 }
 
-function rc_set_read_only(headers, body, res) {
+function rc_set_read_only_channel(headers, body, res) {
     fetch('https://csgigs.com/api/v1/channels.setReadOnly', {
         method: 'POST',
         headers: headers,

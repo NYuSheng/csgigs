@@ -9,7 +9,7 @@ const GigActions = (function () {
             status: "Cancelled"
         };
 
-        fetch(`/admin-ui/api/gigs/${user.me.username}/${gig._id}`, {
+        fetch(`/admin-ui/api/gigs/${user.me.name}/${gig._id}`, {
             method: 'PUT',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(cancelPayload)
@@ -38,7 +38,7 @@ const GigActions = (function () {
             XUserId: authSet.userId
         };
 
-        fetch(`/admin-ui/api/rc/readOnly`, {
+        fetch(`/admin-ui/api/rc/set_read_only_channel`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(setReadOnlyPayload)
@@ -56,7 +56,7 @@ const GigActions = (function () {
         const completion = {
             status: "Completed",
         };
-        fetch(`/admin-ui/api/gigs/${user.me.username}/${gig._id}`, {
+        fetch(`/admin-ui/api/gigs/${user.me.name}/${gig._id}`, {
             method: 'PUT',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(completion)
@@ -75,13 +75,13 @@ const GigActions = (function () {
     var publish = function (gig, notifyGigChannelUpdate) {
         const authSet = UserProfile.getAuthSet();
         const publishPayload = {
-            name: gig.name.replace(/ /g, '_'),
-            members: gig.user_admins.map(admin => admin.name),
+            roomId: gig.rc_channel_id._id,
+            type: "c",
             XAuthToken: authSet.token,
             XUserId: authSet.userId
         };
 
-        fetch(`/admin-ui/api/rc/create`, {
+        fetch(`/admin-ui/api/rc/set_group_type`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(publishPayload)
@@ -93,38 +93,19 @@ const GigActions = (function () {
             } else {
                 data.json().then(json => {
                     console.log(json);
-                    // updateGigChannel(json, gig, notifyGigChannelUpdate);
+                    updateGigChannel(json, gig, notifyGigChannelUpdate);
                 });
             }
         });
-
-        // fetch('https://csgigs.com/api/v1/channels.create', {
-        //     method: 'POST',
-        //     headers: {
-        //         'Content-Type': 'application/json',
-        //         'X-Auth-Token': authSet.token,
-        //         'X-User-Id': authSet.userId
-        //     },
-        //     body: JSON.stringify(buildPayLoad(gig))
-        // }).then(data => {
-        //     if (data.status !== 200) {
-        //         data.json().then(json => {
-        //             var errorMsg = json.error || json.message;
-        //             NotificationManager.error(errorMsg);
-        //         });
-        //     } else {
-        //
-        //     }
-        // });
     }
 
     var updateGigChannel = function (payload, gig, notifyGigChannelUpdate) {
         const user = UserProfile.getUser();
         const update = {
             status: "Active",
-            rc_channel_id: payload.channel
+            rc_channel_id: payload.group
         }
-        fetch(`/admin-ui/api/gigs/${user.me.username}/${gig._id}`, {
+        fetch(`/admin-ui/api/gigs/${user.me.name}/${gig._id}`, {
             method: 'PUT',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(update)

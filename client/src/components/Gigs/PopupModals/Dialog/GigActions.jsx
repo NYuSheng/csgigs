@@ -41,10 +41,11 @@ class GigActions extends React.Component {
 
     componentWillMount() {
         const {gig} = this.props;
-        if (gig.rc_channel_id) {
+        if (gig.status !== "Draft") {
             this.setState({
                 publishState: true
             })
+
         }
         if (gig.status === "Cancelled") {
             this.setState({
@@ -58,7 +59,7 @@ class GigActions extends React.Component {
 
     componentWillReceiveProps(){
         const {gig} = this.props;
-        if (gig.rc_channel_id) {
+        if (gig.status !== "Draft") {
             this.setState({
                 publishState: true
             })
