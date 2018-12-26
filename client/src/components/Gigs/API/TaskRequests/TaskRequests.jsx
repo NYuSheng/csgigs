@@ -1,5 +1,6 @@
 import UserProfile from "components/Gigs/Authentication/UserProfile";
 import {publishMessage} from "components/Gigs/API/RocketChat/RocketChat";
+import {update} from "components/Gigs/API/Tasks/Tasks";
 import {NotificationManager} from "react-notifications";
 
 export const listen = function(task) {
@@ -26,17 +27,24 @@ export const listen = function(task) {
     }
 };
 
-export const reject = function(payload) {
+export const approval = function(payload) {
     fetch(`/admin-ui/api/task_requests/${payload.taskRequestId}`, {
         method: 'PUT',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({
-            status: "Rejected",
+            status: payload.status,
         })
     }).then(data => {
         if (data.status === 200) {
             publishMessage(buildPublishMessage(payload));
-            NotificationManager.success(payload.user_name + " has been rejected.");
+            if (payload.status === "Approved") {
+                payload.assignedUsers.push(payload.user);
+                const updateTaskPayload = {
+                    users_assigned: payload.assignedUsers.map(user => user.name)
+                };
+                update(payload.taskId, updateTaskPayload);
+            }
+            NotificationManager.success(payload.user.name + " has been " + payload.status + ".");
         } else {
             data.json().then(json =>{
                 NotificationManager.error(json.error.errmsg);
@@ -49,7 +57,7 @@ function buildPublishMessage (payload) {
     const authSet = UserProfile.getAuthSet();
     const publishPayload = {};
 
-    publishPayload["message"] = "Approval for " + payload.user_name + " for task " +
+    publishPayload["message"] = "Approval for " + payload.user.name + " for task " +
         payload.taskName + " has been " + payload.status;
     publishPayload["roomId"] = payload.roomId;
     publishPayload["XAuthToken"] = authSet.token;

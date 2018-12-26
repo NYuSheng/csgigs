@@ -3,7 +3,16 @@ const task_status = 'Pending';
 
 exports.get_requests_by_id = function (req, res) {
     const task_id = req.params.task_id;
-    return Task_Requests.find({task_id: task_id, status: task_status}).exec().then((task_requests) => {
+    const match_criteria =
+        {
+            "$match":
+                {
+                    "task_id": task_id,
+                    "status": task_status
+                }
+        };
+
+    return Task_Requests.aggregate(aggregation_with_users(match_criteria)).exec().then((task_requests) => {
         res.status(200).send({
             task_requests: task_requests
         });
@@ -36,3 +45,25 @@ exports.update_request_status = function (req, res, next) {
         res.send("Task request updated.");
     });
 };
+
+function aggregation_with_users(match_criteria) {
+    return [
+        match_criteria,
+        {
+            "$lookup": {
+                "from": "users",
+                "localField": "user",
+                "foreignField": "name",
+                "as": "userObject"
+            }
+        },
+        {
+            "$project": {
+                "_id": "$_id",
+                "task_id": "$task_id",
+                "user": {"$arrayElemAt": [ "$userObject", 0 ]},
+                "status": "$status"
+            }
+        }
+    ]
+}

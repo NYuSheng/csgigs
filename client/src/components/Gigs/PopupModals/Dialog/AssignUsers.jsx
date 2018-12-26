@@ -18,21 +18,15 @@ import Close from "@material-ui/icons/Close";
 import Success from "@material-ui/icons/CheckCircle";
 
 // core components
-import Card from "components/Card/Card";
-import CardHeader from "components/Card/CardHeader";
-import CardBody from "components/Card/CardBody";
 import Table from "components/Gigs/Table/Table";
-import AutoComplete from 'components/Gigs/AutoComplete/AutoComplete';
 import GridContainer from "components/Grid/GridContainer";
 import GridItem from "components/Grid/GridItem";
 import Button from "components/CustomButtons/Button";
 import NavPills from "components/NavPills/NavPills";
-import UserProfile from "components/Gigs/Authentication/UserProfile";
-import {listen, reject} from "components/Gigs/API/TaskRequests/TaskRequests";
+import {listen, approval} from "components/Gigs/API/TaskRequests/TaskRequests";
 
 // dependencies
 import Loader from 'react-loader-spinner';
-import {NotificationManager} from "react-notifications";
 
 // style sheets
 import notificationsStyle from "assets/jss/material-dashboard-pro-react/views/notificationsStyle.jsx";
@@ -91,7 +85,7 @@ class AssignUsers extends React.Component {
         return (
             <React.Fragment>
                 <TableCell className={tableCellClasses}>
-                    {user.user}
+                    {user.user.name}
                 </TableCell>
                 <TableCell className={tableCellClasses} style={{textAlign: 'right'}}>
                     <Button justIcon color="success" onClick={() => this.approveRequest(user.user, user._id)}>
@@ -105,8 +99,19 @@ class AssignUsers extends React.Component {
         );
     }
 
-    approveRequest(user) {
-        alert(user);
+    approveRequest(user,taskRequestId) {
+        const {task, gigChannelId} = this.props;
+        const {taskId, assignedUsers} = this.state;
+        const payload = {
+            taskRequestId : taskRequestId,
+            taskName: task.task_name,
+            taskId: taskId,
+            assignedUsers: assignedUsers,
+            status: "Approved",
+            user: user,
+            roomId: gigChannelId
+        };
+        approval(payload);
     }
 
     rejectRequest(user, taskRequestId) {
@@ -115,59 +120,19 @@ class AssignUsers extends React.Component {
             taskRequestId : taskRequestId,
             taskName: task.task_name,
             status: "Rejected",
-            user_name: user,
+            user: user,
             roomId: gigChannelId
         };
-        reject(payload);
+        approval(payload);
     }
 
-    selectUsers(user) {
-        const selectedUsers = this.state.selectedUsers;
-        const existingUsers = selectedUsers.filter(selectedUser => selectedUser["_id"] === user["_id"])
-        if (existingUsers.length >= 1) {
-            NotificationManager.error("User " + user.name + " has been selected");
-        } else {
-            this.setState({
-                selectedUsers: [user].concat(selectedUsers)
-            });
-        }
-        console.log(selectedUsers);
-    }
-
-    deselectUser(user) {
+    remove(user) {
         const selectedUsers = this.state.assignedUsers;
         const usersAfterRemoval = selectedUsers.filter(selectedUser => selectedUser["_id"] !== user["_id"]);
         this.setState({
             assignedUsers: usersAfterRemoval
         });
         console.log(this.state.assignedUsers);
-    }
-
-    confirmUserAssign() {
-        const {task} = this.props;
-        const {status} = this.state;
-        if (status !== "success") {
-            this.setState({
-                status: "loading"
-            });
-            console.log(this.state.taskId);
-            fetch('/admin-ui/api/tasks/updateTask/' + this.state.taskId, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(this.buildPayLoad())
-            }).then(data => {
-                if (data.status !== 200) {
-                    data.json().then(json => {
-                        NotificationManager.error(json.error.errmsg);
-                    });
-                } else {
-                    task.users_assigned = this.state.selectedUsers;
-                    this.setState({
-                        status: "success"
-                    });
-                }
-            });
-        }
     }
 
     assignedUsersContent() {
@@ -182,7 +147,7 @@ class AssignUsers extends React.Component {
                     tableFooter="false"
                     notFoundMessage="No users assigned"
                     setupTableCells={this.setupAssignedUsersTableCells.bind(this)}
-                    handleTableRowOnClick={this.deselectUser.bind(this)}
+                    handleTableRowOnClick={this.remove.bind(this)}
                 />
             </div>
         );
@@ -210,7 +175,7 @@ class AssignUsers extends React.Component {
 
     render() {
         const {classes, fullScreen} = this.props;
-        const {selectedUsers, status, approvals} = this.state;
+        const {status} = this.state;
 
         return (
             <Dialog
@@ -291,32 +256,15 @@ class AssignUsers extends React.Component {
                                     (
                                         <GridContainer>
                                             <GridItem xs={12} sm={12} md={12} lg={12} style={{padding: 0}}>
-                                                {/*<Card>*/}
-                                                {/*<CardHeader>*/}
-                                                {/*<AutoComplete selectInput={this.selectUsers.bind(this)}/>*/}
-                                                {/*</CardHeader>*/}
-                                                {/*<CardBody>*/}
-                                                {/*<Table*/}
-                                                {/*tableHeight="100px"*/}
-                                                {/*hover*/}
-                                                {/*tableHeaderColor="primary"*/}
-                                                {/*tableData={selectedUsers}*/}
-                                                {/*tableFooter="false"*/}
-                                                {/*notFoundMessage="No users selected"*/}
-                                                {/*setupTableCells={this.setupTableCells.bind(this)}*/}
-                                                {/*handleTableRowOnClick={this.deselectUser.bind(this)}*/}
-                                                {/*/>*/}
-                                                {/*</CardBody>*/}
-                                                {/*</Card>*/}
                                                 <NavPills
                                                     color="warning"
                                                     tabs={[
                                                         {
-                                                            tabButton: "Profile",
+                                                            tabButton: "Assigned",
                                                             tabContent: (this.assignedUsersContent())
                                                         },
                                                         {
-                                                            tabButton: "Settings",
+                                                            tabButton: "Approvals",
                                                             tabContent: (this.userApprovalsContent())
                                                         }
                                                     ]}
@@ -355,15 +303,6 @@ class AssignUsers extends React.Component {
                 }
             </Dialog>
         );
-    }
-
-    buildPayLoad() {
-        var selectedUsernames = this.state.selectedUsers.map(selectedUser => selectedUser.username);
-        console.log(selectedUsernames);
-        return {
-            users_assigned: selectedUsernames
-        }
-        // Construct your payload using state fields
     }
 }
 

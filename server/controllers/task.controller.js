@@ -39,7 +39,7 @@ exports.get_tasks_gigs = function (req, res, next) {
 }
 
 exports.update_task = function (req, res, next) {
-    Task.findByIdAndUpdate(req.params.taskid, {$set: req.body}, function (err, task) {
+    Task.findByIdAndUpdate(req.params.task_id, {$set: req.body}, function (err, task) {
         if (err) return next(err);
         res.status(200).send('Task udpated.');
     });
