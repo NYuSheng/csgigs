@@ -260,6 +260,7 @@ class GigDashboard extends React.Component {
             assignUsers: (
                 <AssignUsers hideTask={this.hidePopup.bind(this)}
                              task={task}
+                             gigChannelId={this.state.gig.rc_channel_id._id}
                 />
             )
         })

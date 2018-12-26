@@ -11,6 +11,8 @@ import DialogActions from "@material-ui/core/DialogActions";
 import withMobileDialog from '@material-ui/core/withMobileDialog';
 
 // @material-ui/icons
+import Reject from "@material-ui/icons/Close";
+import Accept from "@material-ui/icons/Done";
 import Cancel from "@material-ui/icons/Cancel";
 import Close from "@material-ui/icons/Close";
 import Success from "@material-ui/icons/CheckCircle";
@@ -24,6 +26,9 @@ import AutoComplete from 'components/Gigs/AutoComplete/AutoComplete';
 import GridContainer from "components/Grid/GridContainer";
 import GridItem from "components/Grid/GridItem";
 import Button from "components/CustomButtons/Button";
+import NavPills from "components/NavPills/NavPills";
+import UserProfile from "components/Gigs/Authentication/UserProfile";
+import {listen, reject} from "components/Gigs/API/TaskRequests/TaskRequests";
 
 // dependencies
 import Loader from 'react-loader-spinner';
@@ -41,21 +46,31 @@ class AssignUsers extends React.Component {
         super(props);
         this.state = {
             taskId: "",
-            selectedUsers: [],
+            assignedUsers: [],
             status: "",
+            approvals: []
         };
+    }
+
+    taskRequestsListener() {
+        listen(this);
     }
 
     componentDidMount() {
         const {task} = this.props;
+        this.mounted = true;
         this.setState({
             taskId: task["_id"],
-            selectedUsers: task.users_assigned,
+            assignedUsers: task.users_assigned,
             status: "working"
         })
     }
 
-    setupTableCells(user) {
+    componentWillUnmount() {
+        this.mounted = false;
+    }
+
+    setupAssignedUsersTableCells(user) {
         const {classes} = this.props;
         const tableCellClasses = classes.tableCell;
         return (
@@ -68,6 +83,42 @@ class AssignUsers extends React.Component {
                 </TableCell>
             </React.Fragment>
         );
+    }
+
+    setupUserApprovalsTableCells(user) {
+        const {classes} = this.props;
+        const tableCellClasses = classes.tableCell;
+        return (
+            <React.Fragment>
+                <TableCell className={tableCellClasses}>
+                    {user.user}
+                </TableCell>
+                <TableCell className={tableCellClasses} style={{textAlign: 'right'}}>
+                    <Button justIcon color="success" onClick={() => this.approveRequest(user.user, user._id)}>
+                        <Accept className={classes.buttonIcon}/>
+                    </Button>
+                    <Button justIcon color="danger" onClick={() => this.rejectRequest(user.user, user._id)}>
+                        <Reject className={classes.buttonIcon}/>
+                    </Button>
+                </TableCell>
+            </React.Fragment>
+        );
+    }
+
+    approveRequest(user) {
+        alert(user);
+    }
+
+    rejectRequest(user, taskRequestId) {
+        const {task, gigChannelId} = this.props;
+        const payload = {
+            taskRequestId : taskRequestId,
+            taskName: task.task_name,
+            status: "Rejected",
+            user_name: user,
+            roomId: gigChannelId
+        };
+        reject(payload);
     }
 
     selectUsers(user) {
@@ -84,12 +135,12 @@ class AssignUsers extends React.Component {
     }
 
     deselectUser(user) {
-        const selectedUsers = this.state.selectedUsers;
+        const selectedUsers = this.state.assignedUsers;
         const usersAfterRemoval = selectedUsers.filter(selectedUser => selectedUser["_id"] !== user["_id"]);
         this.setState({
-            selectedUsers: usersAfterRemoval
+            assignedUsers: usersAfterRemoval
         });
-        console.log(this.state.selectedUsers);
+        console.log(this.state.assignedUsers);
     }
 
     confirmUserAssign() {
@@ -106,7 +157,7 @@ class AssignUsers extends React.Component {
                 body: JSON.stringify(this.buildPayLoad())
             }).then(data => {
                 if (data.status !== 200) {
-                    data.json().then(json =>{
+                    data.json().then(json => {
                         NotificationManager.error(json.error.errmsg);
                     });
                 } else {
@@ -119,6 +170,39 @@ class AssignUsers extends React.Component {
         }
     }
 
+    assignedUsersContent() {
+        const {assignedUsers} = this.state;
+        return (
+            <div>
+                <Table
+                    tableHeight="100px"
+                    hover
+                    tableHeaderColor="primary"
+                    tableData={assignedUsers}
+                    tableFooter="false"
+                    notFoundMessage="No users assigned"
+                    setupTableCells={this.setupAssignedUsersTableCells.bind(this)}
+                    handleTableRowOnClick={this.deselectUser.bind(this)}
+                />
+            </div>
+        );
+    }
+
+    userApprovalsContent() {
+        const {approvals} = this.state;
+        return (
+            <div>
+                <Table
+                    tableHeaderColor="primary"
+                    tableData={approvals}
+                    tableFooter="false"
+                    notFoundMessage="No pending approvals"
+                    setupTableCells={this.setupUserApprovalsTableCells.bind(this)}
+                />
+            </div>
+        );
+    }
+
     closeModal() {
         const {hideTask} = this.props;
         hideTask("assignUsers");
@@ -126,7 +210,7 @@ class AssignUsers extends React.Component {
 
     render() {
         const {classes, fullScreen} = this.props;
-        const {selectedUsers, status} = this.state;
+        const {selectedUsers, status, approvals} = this.state;
 
         return (
             <Dialog
@@ -176,6 +260,7 @@ class AssignUsers extends React.Component {
                     className={classes.modalBody}
                     style={{paddingBottom: 35, paddingTop: 0}}
                 >
+                    {this.taskRequestsListener()}
                     <GridContainer justify="center">
                         <GridItem xs={10} sm={10} md={10} lg={10}>
                             <p style={{
@@ -206,23 +291,36 @@ class AssignUsers extends React.Component {
                                     (
                                         <GridContainer>
                                             <GridItem xs={12} sm={12} md={12} lg={12} style={{padding: 0}}>
-                                                <Card>
-                                                    <CardHeader>
-                                                        <AutoComplete selectInput={this.selectUsers.bind(this)}/>
-                                                    </CardHeader>
-                                                    <CardBody>
-                                                        <Table
-                                                            tableHeight="100px"
-                                                            hover
-                                                            tableHeaderColor="primary"
-                                                            tableData={selectedUsers}
-                                                            tableFooter="false"
-                                                            notFoundMessage="No users selected"
-                                                            setupTableCells={this.setupTableCells.bind(this)}
-                                                            handleTableRowOnClick={this.deselectUser.bind(this)}
-                                                        />
-                                                    </CardBody>
-                                                </Card>
+                                                {/*<Card>*/}
+                                                {/*<CardHeader>*/}
+                                                {/*<AutoComplete selectInput={this.selectUsers.bind(this)}/>*/}
+                                                {/*</CardHeader>*/}
+                                                {/*<CardBody>*/}
+                                                {/*<Table*/}
+                                                {/*tableHeight="100px"*/}
+                                                {/*hover*/}
+                                                {/*tableHeaderColor="primary"*/}
+                                                {/*tableData={selectedUsers}*/}
+                                                {/*tableFooter="false"*/}
+                                                {/*notFoundMessage="No users selected"*/}
+                                                {/*setupTableCells={this.setupTableCells.bind(this)}*/}
+                                                {/*handleTableRowOnClick={this.deselectUser.bind(this)}*/}
+                                                {/*/>*/}
+                                                {/*</CardBody>*/}
+                                                {/*</Card>*/}
+                                                <NavPills
+                                                    color="warning"
+                                                    tabs={[
+                                                        {
+                                                            tabButton: "Profile",
+                                                            tabContent: (this.assignedUsersContent())
+                                                        },
+                                                        {
+                                                            tabButton: "Settings",
+                                                            tabContent: (this.userApprovalsContent())
+                                                        }
+                                                    ]}
+                                                />
                                             </GridItem>
                                         </GridContainer>
                                     ) : null
@@ -230,8 +328,10 @@ class AssignUsers extends React.Component {
                             {
                                 status === "success" ? (
                                     <div style={{paddingTop: 25}}>
-                                        <Success className={classes.icon} style={{height: 100, width: 100, fill: "green"}}/>
-                                        <h4 className={classes.modalTitle} style={{fontWeight: "bold"}}>Users Assigned</h4>
+                                        <Success className={classes.icon}
+                                                 style={{height: 100, width: 100, fill: "green"}}/>
+                                        <h4 className={classes.modalTitle} style={{fontWeight: "bold"}}>Users
+                                            Assigned</h4>
                                     </div>
                                 ) : null
                             }

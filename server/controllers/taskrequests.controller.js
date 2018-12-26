@@ -4,7 +4,6 @@ const task_status = 'Pending';
 exports.get_requests_by_id = function (req, res) {
     const task_id = req.params.task_id;
     return Task_Requests.find({task_id: task_id, status: task_status}).exec().then((task_requests) => {
-        console.log(task_requests);
         res.status(200).send({
             task_requests: task_requests
         });
@@ -32,7 +31,7 @@ exports.create_task_request = function (req, res) {
 };
 
 exports.update_request_status = function (req, res, next) {
-    Task_Requests.findByIdAndUpdate(req.params.task_request_id, {status: req.body.status}, function (err, gig) {
+    Task_Requests.findByIdAndUpdate(req.params.task_request_id, {status: req.body.status}, function (err, result) {
         if (err) return next(err);
         res.send("Task request updated.");
     });
