@@ -61,6 +61,21 @@ exports.create_gig = asyncMiddleware(async (req, res, next) => {
 
 });
 
+exports.get_gig_name = asyncMiddleware(async (req, res, next) => {
+    return Gig.find({ "_id": ObjectID(req.params.id)}).exec().then((gig) => {
+        if (gig == null) {
+            return res.status(400).send({
+                error: "Cannot find Gig with id: " + req.params.id
+            });
+        }
+        res.status(200).send({
+            gig_name: gig[0].name
+        });
+    }).catch(err => {
+        res.status(400).send({error: err});
+    });
+});
+
 exports.get_user_all_gigs = asyncMiddleware(async (req, res, next) => {
     let status = (req.query.status).split(",");
     const matchCriteria =

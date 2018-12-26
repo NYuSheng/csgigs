@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const gig_controller = require('../controllers/gig.controller');
 
+router.get('/get_name_by_id/:id', gig_controller.get_gig_name);
 router.get('/:admin_name', gig_controller.get_user_all_gigs);
 router.get('/:admin_name/:id', gig_controller.get_user_gig);
 router.put('/:admin_name/:id', gig_controller.update_gig);
