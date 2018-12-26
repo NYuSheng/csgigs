@@ -16,14 +16,12 @@ import CardBody from "components/Card/CardBody";
 import GridContainer from "components/Grid/GridContainer";
 import GridItem from "components/Grid/GridItem";
 import UserProfile from "components/Gigs/Authentication/UserProfile";
+import {getUserGigs} from "components/Gigs/API/Gigs/Gigs";
 
 // @material-ui/icons
 import Event from "@material-ui/icons/Event";
 import Create from "@material-ui/icons/NoteAdd";
 // import FilterIcon from "@material-ui/icons/Filter";
-
-// dependencies
-import {NotificationManager} from "react-notifications";
 
 // style sheets
 import {cardTitle} from "assets/jss/material-dashboard-pro-react.jsx";
@@ -68,29 +66,19 @@ class ManageGigs extends React.Component {
     }
 
     setupData() {
-        const user = UserProfile.getUser();
+        getUserGigs(this.setLoadingState.bind(this), this.setGigsState.bind(this));
+    }
+
+    setLoadingState(loadingState) {
         this.setState({
-            isLoading: true
-        });
-        fetch(`/admin-ui/api/gigs/${user.me.name}?status=Draft,Active`, {
-            method: 'GET',
-            headers: {'Content-Type': 'application/json'}
-        }).then(data => {
-            if (data.status !== 200) {
-                data.json().then(json =>{
-                    NotificationManager.error(json.error.errmsg);
-                });
-            } else {
-                data.json().then(json =>{
-                    this.setState({
-                        gigs: json.gigs
-                    })
-                });
-            }
-            this.setState({
-                isLoading: false
-            })
-        });
+            isLoading: loadingState
+        })
+    }
+
+    setGigsState(gigs) {
+        this.setState({
+            gigs: gigs
+        })
     }
 
     setupTableCells(gig) {
