@@ -47,6 +47,34 @@ function get_headers(input) {
     };
 }
 
+exports.publish_message = function (req, res) {
+    const headers = get_headers(req.body);
+    const body = {
+        roomId: req.body.roomId,
+        text: req.body.message,
+    };
+
+    rc_publish_message(headers, body, res)
+}
+
+function rc_publish_message(headers, body, res) {
+    fetch('https://csgigs.com/api/v1/chat.postMessage', {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify(body)
+    }).then(output => output.json()).then(data => {
+        if (!data.success) {
+            res.status(400).send({
+                error: 'Unable to publish message to ' + body.roomId
+            });
+        } else {
+            res.status(200).send({
+                message: data.message
+            });
+        }
+    });
+}
+
 function rc_set_group_type(headers, body, res) {
     fetch('https://csgigs.com/api/v1/groups.setType', {
         method: 'POST',
