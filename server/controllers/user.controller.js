@@ -1,5 +1,6 @@
 const User = require('../models/user.model');
 const fetch = require('node-fetch');
+const rc_controller = require('../controllers/rc.controller');
 
 exports.user_create = function (req, res, next) {
     let user = new User(
@@ -25,21 +26,8 @@ exports.user_login = function (req, res, next) {
         user: req.body.username,
         password: req.body.password
     }
-    fetch('https://csgigs.com/api/v1/login', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(loginDetails)
-    }).then(loginoutput => loginoutput.json()).then(data => {
-        if (data.status !== "success") {
-            res.status(400).send({
-                error: 'Incorrect username/password'
-            });
-        } else {
-            res.status(200).send({
-                user: data.data
-            });
-        }
-    })
+
+    rc_controller.rc_user_login(loginDetails, res);
 };
 
 exports.get_user_by_prefix = function (req, res, next) {

@@ -1,5 +1,23 @@
 const fetch = require('node-fetch');
 
+exports.rc_user_login = function(body, res){
+    fetch('https://csgigs.com/api/v1/login', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(body)
+    }).then(loginoutput => loginoutput.json()).then(data => {
+        if (data.status !== "success") {
+            res.status(400).send({
+                error: 'Incorrect username/password'
+            });
+        } else {
+            res.status(200).send({
+                user: data.data
+            });
+        }
+    });
+};
+
 exports.set_read_only_channel = function (req, res, next) {
     const body = {
         roomId: req.body.roomId,
