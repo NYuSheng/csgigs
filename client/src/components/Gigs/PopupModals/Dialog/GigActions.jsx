@@ -183,7 +183,7 @@ class GigActions extends React.Component {
                                         </CardBody>
                                     </Card>
                                     <p style={{textAlign: "justify", paddingBottom: 9, borderBottom: "1px solid grey", fontSize: 13}}>
-                                        Publishing the gig allows you to create a channel in Rocket Chat
+                                        Publishing the gig sets the status to "Active", making the Rocket Chat group public.
                                     </p>
                                 </GridItem>
                                 <GridItem xs={10} sm={10} md={10} lg={10}>
@@ -200,7 +200,7 @@ class GigActions extends React.Component {
                                         </CardBody>
                                     </Card>
                                     <p style={{textAlign: "justify", paddingBottom: 9, borderBottom: "1px solid grey", fontSize: 13}}>
-                                        Completing the gig wraps up the gig and distributes the Brownie points as allocated
+                                        Completing the gig sets the status to "Completed".
                                     </p>
                                 </GridItem>
                                 <GridItem xs={10} sm={10} md={10} lg={10}>

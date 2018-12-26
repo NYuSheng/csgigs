@@ -8,7 +8,7 @@ var user = require('./routes/user.route');
 var rc = require('./routes/rc.route');
 var gig = require('./routes/gig.route');
 var task = require('./routes/task.route');
-var taskcategories = require('./routes/taskhashtag.route');
+var task_request = require('./routes/taskrequests.route');
 
 var app = express();
 
@@ -23,7 +23,8 @@ app.use('/admin-ui/api/users', user);
 app.use('/admin-ui/api/rc', rc);
 app.use('/admin-ui/api/gigs', gig);
 app.use('/admin-ui/api/tasks', task)
-app.use('/admin-ui/api/task-categories', taskcategories);
+app.use('/admin-ui/api/task_requests', task_request)
+
 app.get('/admin-ui/*', function (req, res) {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });

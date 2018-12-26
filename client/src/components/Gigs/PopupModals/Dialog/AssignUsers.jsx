@@ -48,7 +48,6 @@ class AssignUsers extends React.Component {
 
     componentDidMount() {
         const {task} = this.props;
-        console.log(task);
         this.setState({
             taskId: task["_id"],
             selectedUsers: task.users_assigned,
