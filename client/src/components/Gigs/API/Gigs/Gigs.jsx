@@ -35,7 +35,7 @@ export const create = function (step, callback) {
 export const getUserGigs = function (loadingCallback, gigsCallback) {
     const user = UserProfile.getUser();
     loadingCallback(true);
-    fetch(`/admin-ui/api/gigs/${user.me.name}?status=Draft,Active`, {
+    fetch(`/admin-ui/api/gigs/${user.me._id}?status=Draft,Active`, {
         method: 'GET',
         headers: {'Content-Type': 'application/json'}
     }).then(data => {

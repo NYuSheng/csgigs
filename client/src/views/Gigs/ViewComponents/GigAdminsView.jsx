@@ -17,6 +17,7 @@ import CardBody from "components/Card/CardBody";
 import GridContainer from "components/Grid/GridContainer";
 import GridItem from "components/Grid/GridItem";
 import EditGigAdmins from "components/Gigs/PopupModals/Dialog/EditGigAdmins";
+import {getUserAdminsByGigId} from "components/Gigs/API/Gigs/UserAdmins";
 
 class GigAdminsView extends React.Component {
 
@@ -30,13 +31,28 @@ class GigAdminsView extends React.Component {
 
     componentWillMount() {
         const {gigId} = this.props;
-        console.log(gigId);
         this.setupData(gigId);
     }
 
     setupData(gigId) {
-        // call api to get out gig admins
-        // set state of this component
+        getUserAdminsByGigId(gigId, this.setAdminsState.bind(this));
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (this.state.modalOpen !== prevState.modalOpen) {
+            const {gigId} = this.props;
+            getUserAdminsByGigId(gigId, this.setAdminsState.bind(this));
+        }
+    }
+    // componentDidUpdate() {
+    //     const {gigId} = this.props;
+    //     getUserAdminsByGigId(gigId, this.setAdminsState.bind(this));
+    // }
+
+    setAdminsState(admins) {
+        this.setState({
+            admins: admins
+        })
     }
 
     setupTableCells(admin) {

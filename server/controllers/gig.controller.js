@@ -144,8 +144,9 @@ exports.get_user_admins = asyncMiddleware(async (req, res, next) => {
                     error: "Cannot find gig of id " + req.params.id
                 });
             }
+
             res.status(200).send({
-                gig: gig_retrieved[0]
+                user_admins: gig_retrieved[0].user_admins
             });
 
         }).catch(err => {
@@ -332,7 +333,7 @@ function aggregation_with_tasks_and_users(matchCriteria) {
             "$lookup": {
                 "from": "users",
                 "localField": "user_admins",
-                "foreignField": "name",
+                "foreignField": "_id",
                 "as": "userObjects"
             }
         },
