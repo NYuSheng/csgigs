@@ -13,7 +13,7 @@ router.post('/:id/deleteUserParticipant', gig_controller.delete_user_participant
 router.post('/create', gig_controller.create_gig);
 router.get('/get_name_by_id/:id', gig_controller.get_gig_name);
 router.get('/:user_id', gig_controller.get_user_all_gigs);
-router.get('/:user_id/:id', gig_controller.get_user_gig);
+router.get('/:user_id/:id', gig_controller.get_gig_by_id);
 
 router.post('/getGigsByStatus/:status', gig_controller.gigs_by_status);
 
