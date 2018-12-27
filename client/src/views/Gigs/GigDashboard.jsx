@@ -6,30 +6,28 @@ import TableCell from "@material-ui/core/TableCell";
 import BrowniePoints from "@material-ui/icons/AttachMoney";
 import Status from "@material-ui/icons/Timeline";
 import Chat from "@material-ui/icons/Chat";
-import Participants from "@material-ui/icons/PeopleOutline";
+
 // core components
 import Card from "components/Card/Card";
 import CardIcon from "components/Card/CardIcon";
 import CardHeader from "components/Card/CardHeader";
 import CardBody from "components/Card/CardBody";
 import CardFooter from "components/Card/CardFooter";
-import GigCustomTabs from "components/CustomTabs/GigCustomTabs";
 import Tasks from "components/Gigs/Tasks/Tasks";
 import Table from "components/Gigs/Table/Table";
 import GridContainer from "components/Grid/GridContainer";
 import GridItem from "components/Grid/GridItem";
 import Button from "components/CustomButtons/Button";
-import EditGigParticipants from "components/Gigs/PopupModals/SweetAlert/Participants";
 import RemoveTask from "components/Gigs/PopupModals/Dialog/RemoveTask";
 import AssignUsers from "components/Gigs/PopupModals/Dialog/AssignUsers";
 import EditTask from "components/Gigs/PopupModals/Dialog/EditTask";
-import EditGigAdmins from "components/Gigs/PopupModals/Dialog/EditGigAdmins";
 import AddTask from "components/Gigs/PopupModals/Dialog/AddTask";
 import GigActions from "components/Gigs/PopupModals/Dialog/GigActions";
 import GigDetails from "components/Gigs/PopupModals/Dialog/GigDetails";
 import BrownieAllocation from "components/Gigs/PopupModals/Dialog/BrownieAllocation";
 import UserProfile from "components/Gigs/Authentication/UserProfile";
-import GigAdminView from "views/Gigs/ViewComponents/GigAdminView";
+import GigAdminsView from "views/Gigs/ViewComponents/GigAdminsView";
+import GigTasksView from "views/Gigs/ViewComponents/GigTasksView";
 
 // dependencies
 import CircularProgressbar from 'react-circular-progressbar';
@@ -37,6 +35,7 @@ import {NotificationManager} from "react-notifications";
 // style sheets
 import {cardTitle, roseColor} from "assets/jss/material-dashboard-pro-react.jsx";
 import 'react-circular-progressbar/dist/styles.css';
+import GigParticipantsView from "./ViewComponents/GigParticipantsView";
 
 const style = {
     cardTitle,
@@ -89,9 +88,7 @@ class GigDashboard extends React.Component {
             gig: null,
             removeTask: null,
             assignUsers: null,
-            editGigParticipants: null,
             editTask: false,
-            editGigAdmins: false,
             addTask: false,
             brownieAllocation: false,
             gigActions: false,
@@ -136,26 +133,6 @@ class GigDashboard extends React.Component {
         });
     }
 
-    setupAdminTableCells(admin) {
-        const {classes} = this.props;
-        const tableCellClasses = classes.tableCell;
-        return (
-            <TableCell colSpan="1" className={tableCellClasses}>
-                {admin.name}
-            </TableCell>
-        );
-    }
-
-    setupParticipantTableCells(group) {
-        const {classes} = this.props;
-        const tableCellClasses = classes.tableCell;
-        return (
-            <TableCell colSpan="1" className={tableCellClasses}>
-                {group.name}
-            </TableCell>
-        );
-    }
-
     gigDetails() {
         this.setState({
             gigDetails: true
@@ -194,13 +171,6 @@ class GigDashboard extends React.Component {
             gig: gig
         })
         NotificationManager.success("Gig Cancelled!");
-    }
-
-    buildPayLoad() {
-        const {gig} = this.state;
-        var payload = {};
-        payload["name"] = gig.name.replace(/ /g, '');
-        return payload;
     }
 
     gigActions() {
@@ -260,22 +230,6 @@ class GigDashboard extends React.Component {
         })
     }
 
-    editGigAdmins() {
-        this.setState({
-            editGigAdmins: true
-        })
-    }
-
-    editGigParticipants(group) {
-        this.setState({
-            editGigParticipants: (
-                <EditGigParticipants hidePopup={this.hidePopup.bind(this)}
-                                     participants={group}
-                />
-            )
-        })
-    }
-
     editBrownieAllocation() {
         this.setState({
             brownieAllocation: true
@@ -286,47 +240,6 @@ class GigDashboard extends React.Component {
         this.setState({
             [popupState]: false
         });
-    }
-
-    organizeTabContent(tasks) {
-        var toReturn = [];
-        var organizedContent = [];
-
-        if (tasks) {
-            tasks.forEach(function (task) {
-                var category = task.task_category;
-                if (organizedContent.hasOwnProperty(category)) {
-                    organizedContent[category].push(task)
-                } else {
-                    organizedContent[category] = [];
-                    organizedContent[category].push(task)
-                }
-            });
-
-            for (var key in organizedContent) {
-                if (organizedContent.hasOwnProperty(key)) {
-                    var i;
-                    var tasksIndexesArray = []
-                    for (i = 0; i < organizedContent[key].length; i++) {
-                        tasksIndexesArray.push(i);
-                    }
-                    toReturn.push({
-                        tabName: key,
-                        tabContent: (
-                            <Tasks
-                                tasksIndexes={tasksIndexesArray}
-                                tasks={organizedContent[key]}
-                                editTask={this.editTask.bind(this)}
-                                removeTask={this.removeTask.bind(this)}
-                                assignUsers={this.assignUsers.bind(this)}
-                            />
-                        )
-                    });
-                }
-            }
-        }
-
-        return toReturn;
     }
 
     calculatePoints(gig) {
@@ -349,8 +262,7 @@ class GigDashboard extends React.Component {
         const {classes} = this.props;
         const {
             gig, assignUsers, removeTask,
-            editTask, editGigParticipants,
-            editGigAdmins, brownieAllocation,
+            editTask, brownieAllocation,
             addTask, gigActions, gigDetails
         } = this.state;
 
@@ -360,7 +272,6 @@ class GigDashboard extends React.Component {
                     {assignUsers}
                     {removeTask}
                     {editTask}
-                    {editGigParticipants}
                     <GigActions modalOpen={gigActions} hidePopup={this.hidePopup.bind(this)}
                                 gig={gig} channelUpdate={this.notifyGigChannelUpdate.bind(this)}
                                 cancelGig={this.notifyGigStatusCancelled.bind(this)}
@@ -370,8 +281,6 @@ class GigDashboard extends React.Component {
                                 gig={gig} editDetailsAction={this.editDetailsAction.bind(this)}
                     />
                     <AddTask modalOpen={addTask} hideTask={this.hidePopup.bind(this)} gig={gig}/>
-                    <EditGigAdmins modalOpen={editGigAdmins} hidePopup={this.hidePopup.bind(this)}
-                                   admins={gig.user_admins}/>
                     <BrownieAllocation modalOpen={brownieAllocation} hidePopup={this.hidePopup.bind(this)} gig={gig}/>
 
                     <GridContainer justify="center">
@@ -428,7 +337,7 @@ class GigDashboard extends React.Component {
                                     </Card>
                                 </GridItem>
                                 <GridItem xs={12} sm={12} md={12} lg={12}>
-                                    <GigAdminView gigId={gig._id} {...this.props}/>
+                                    <GigAdminsView gigId={gig._id} {...this.props}/>
                                 </GridItem>
                             </GridContainer>
                         </GridItem>
@@ -469,35 +378,10 @@ class GigDashboard extends React.Component {
                             </Card>
                         </GridItem>
                         <GridItem xs={12} sm={12} md={4} lg={4}>
-                            <Card pricing>
-                                <CardHeader color="brown" stats icon>
-                                    <CardIcon color="brown">
-                                        <Participants/>
-                                    </CardIcon>
-                                    <p className={classes.cardCategory} style={{fontSize: 20, marginTop: 15}}>Gig
-                                        Participants</p>
-                                </CardHeader>
-                                <CardBody pricing>
-                                    <Table
-                                        tableHeight="250px"
-                                        hover
-                                        tableHeaderColor="primary"
-                                        tableData={gig.user_participants}
-                                        tableFooter="false"
-                                        notFoundMessage="No participants found"
-                                        setupTableCells={this.setupParticipantTableCells.bind(this)}
-                                        handleTableRowOnClick={this.editGigParticipants.bind(this)}
-                                    />
-                                </CardBody>
-                            </Card>
+                            <GigParticipantsView gigId={gig._id} {...this.props}/>
                         </GridItem>
                         <GridItem xs={12} sm={12} md={8} lg={8}>
-                            <GigCustomTabs
-                                title="Tasks:"
-                                headerColor="teal"
-                                tabs={this.organizeTabContent(gig.tasks)}
-                                addContent={this.addTask.bind(this)}
-                            />
+                            <GigTasksView gigId={gig._id} {...this.props} />
                         </GridItem>
                     </GridContainer>
                 </div>
