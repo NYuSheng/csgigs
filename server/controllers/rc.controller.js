@@ -93,6 +93,25 @@ function rc_publish_message(headers, body, res) {
     });
 }
 
+exports.publish_broadcast_message = function (room_id, message, auth_set){
+    const headers = get_headers(auth_set);
+    const body = {
+        roomId: room_id,
+        text: message,
+    };
+
+    fetch('https://csgigs.com/api/v1/chat.postMessage', {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify(body)
+    }).then(output => output.json()).then(data => {
+        if (!data.success) {
+        }
+    });
+
+}
+
+
 function rc_set_group_type(headers, body, res) {
     fetch('https://csgigs.com/api/v1/groups.setType', {
         method: 'POST',

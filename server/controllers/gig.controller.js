@@ -31,6 +31,14 @@ exports.create_gig = asyncMiddleware(async (req, res, next) => {
             XUserId: req.body.XUserId
         };
 
+        //publish_bot with broadcast_test channel
+        const authSet_bot = {
+            XAuthToken: 'VynD2oNIieXVkn_nkqBSq1DKv5_5LhC1-ZKrz9q-bwl',
+            XUserId: 'Zjh2Hmnsbwq5MGMv8'
+        }
+        const roomId = "2EvneDEerT9jGLYYf";
+
+
         const gig_id_and_name = {
             _id: gig_created._id,
             name: gig_created.name
@@ -47,6 +55,8 @@ exports.create_gig = asyncMiddleware(async (req, res, next) => {
             Gig.findByIdAndUpdate(gig_created._id, { rc_channel_id : created_group}, function (err, gig) {
                 if (err) return next(err);
             });
+            const message = "Please reply 'Attend' for event: " + gig_created.name;
+            rc_controller.publish_broadcast_message(roomId, message, authSet_bot);
         }
 
         res.status(200).send({
