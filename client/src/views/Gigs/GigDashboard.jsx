@@ -381,7 +381,7 @@ class GigDashboard extends React.Component {
                             <GigParticipantsView gigId={gig._id} {...this.props}/>
                         </GridItem>
                         <GridItem xs={12} sm={12} md={8} lg={8}>
-                            <GigTasksView gigId={gig._id} {...this.props} />
+                            <GigTasksView gigId={gig._id} gigRoomId={gig.rc_channel_id._id} />
                         </GridItem>
                     </GridContainer>
                 </div>

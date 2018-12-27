@@ -27,11 +27,6 @@ exports.get_tasks_gigs = function (req, res, next) {
     const matchCriteria = {"$match": {"gig_id": new ObjectID(req.params.gig_id)}};
     return Task
         .aggregate(task_aggregation_with_user_assigned(matchCriteria)).exec().then((tasks_retrieved) => {
-        if(tasks_retrieved.length === 0){
-            return res.status(400).send({
-                error: 'Cannot related task for GIG: ' + req.params.gig_id
-            });
-        }
         res.status(200).send({
             tasks: tasks_retrieved
         });
@@ -48,7 +43,7 @@ exports.update_task = function (req, res, next) {
 };
 
 exports.remove_task = function (req, res, next) {
-    Task.findByIdAndRemove(req.params.taskid, (err, task) => {
+    Task.findByIdAndRemove(req.params.task_id, (err, task) => {
         if (err) return res.status(500).send(err);
         const response = {
             message: "Task successfully deleted",

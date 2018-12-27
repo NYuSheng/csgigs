@@ -26,7 +26,6 @@ class GigParticipantsView extends React.Component {
 
     componentWillMount() {
         const {gigId} = this.props;
-        console.log(gigId);
         this.setupData(gigId);
     }
 

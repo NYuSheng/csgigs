@@ -77,7 +77,7 @@ exports.get_gig_by_id = asyncMiddleware(async (req, res, next) => {
             });
         }
         res.status(200).send({
-            gig: gig
+            gig: gig[0]
         });
     }).catch(err => {
         res.status(400).send({error: err});
@@ -107,6 +107,7 @@ exports.get_user_all_gigs = asyncMiddleware(async (req, res, next) => {
             "status": {"$in": status}
         };
     return Gig.find(matchCriteria).exec().then((gigs) => {
+
             res.status(200).send({
                 "gigs": gigs
             });

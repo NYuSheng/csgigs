@@ -22,7 +22,6 @@ import {add} from "components/Gigs/API/Tasks/Tasks";
 
 // dependencies
 import Loader from 'react-loader-spinner';
-import {NotificationManager} from "react-notifications";
 
 // style sheets
 import notificationsStyle from "assets/jss/material-dashboard-pro-react/views/notificationsStyle.jsx";
@@ -40,12 +39,19 @@ class AddTask extends React.Component {
             taskNameState: "",
             taskCategory: "",
             taskCategoryState: "",
-            status: "",
+            status: "working",
         };
     }
 
-    componentDidMount() {
-        this.setStatusState("working");
+    componentWillReceiveProps() {
+        this.setState({
+            taskName: "",
+            taskDescription: "",
+            taskNameState: "",
+            taskCategory: "",
+            taskCategoryState: "",
+            status: "working",
+        })
     }
 
     onChangeTaskCategory(event) {
@@ -92,33 +98,26 @@ class AddTask extends React.Component {
     }
 
     confirmTaskAdd() {
-        const {gig} = this.props;
+        const {gigRoomId, gigId} = this.props;
         const {status} = this.state;
         if (status !== "success") {
             if (this.isValidated()) {
-                add(gig, this.state, this.setStatusState.bind(this));
+                add(gigRoomId, gigId, this.state, this.setStatusState.bind(this));
             }
         }
     }
 
     closeModal() {
         const {hideTask} = this.props;
-        const {status} = this.state;
         hideTask("addTask");
-        if (status === "success") {
-            this.setState({
-                taskName: "",
-                taskDescription: "",
-                taskNameState: "",
-                taskCategory: "",
-                status: "working"
-            })
-        }
     }
 
     render() {
         const {classes, modalOpen, fullScreen} = this.props;
-        const {taskNameState, taskCategoryState, status} = this.state;
+        const {
+            taskName, taskDescription, taskCategory,
+            taskNameState, taskCategoryState, status
+        } = this.state;
 
         return (
             <Dialog
@@ -213,6 +212,7 @@ class AddTask extends React.Component {
                                                     fullWidth: true
                                                 }}
                                                 inputProps={{
+                                                    value: taskName,
                                                     onChange: event => this.onChangeTaskName(event)
                                                 }}
                                                 inputType="text"
@@ -230,6 +230,7 @@ class AddTask extends React.Component {
                                                     fullWidth: true
                                                 }}
                                                 inputProps={{
+                                                    value: taskDescription,
                                                     multiline: true,
                                                     onChange: event => this.onChangeTaskDescription(event)
                                                 }}
@@ -250,6 +251,7 @@ class AddTask extends React.Component {
                                                     fullWidth: true
                                                 }}
                                                 inputProps={{
+                                                    value: taskCategory,
                                                     onChange: event => this.onChangeTaskCategory(event)
                                                 }}
                                                 inputType="text"

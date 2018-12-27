@@ -42,7 +42,7 @@ export const approval = function(payload) {
                 const updateTaskPayload = {
                     users_assigned: payload.assignedUsers.map(user => user.name)
                 };
-                update(payload.taskId, updateTaskPayload);
+                update(payload.taskId, updateTaskPayload, null);
             }
             NotificationManager.success(payload.user.name + " has been " + payload.status + ".");
         } else {

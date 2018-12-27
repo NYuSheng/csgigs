@@ -44,10 +44,6 @@ class GigAdminsView extends React.Component {
             getUserAdminsByGigId(gigId, this.setAdminsState.bind(this));
         }
     }
-    // componentDidUpdate() {
-    //     const {gigId} = this.props;
-    //     getUserAdminsByGigId(gigId, this.setAdminsState.bind(this));
-    // }
 
     setAdminsState(admins) {
         this.setState({

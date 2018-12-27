@@ -1,33 +1,52 @@
 import React from "react";
 
-// @material-ui/core components
-import TableCell from "@material-ui/core/TableCell";
-
 // core components
 import CustomTabs from "components/Gigs/CustomTabs/CustomTabs";
 import Tasks from "components/Gigs/Tasks/Tasks";
 import AddTask from "components/Gigs/PopupModals/Dialog/AddTask";
+import EditTask from "components/Gigs/PopupModals/Dialog/EditTask";
+import {retreive} from "components/Gigs/API/Tasks/Tasks";
 
 class GigTasksView extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
+            selectedTask: null,
             tasks: [],
-            addTaskModelOpen: false
+            addTaskModalOpen: false,
+            editTaskModalOpen: false
         };
     }
 
     componentWillMount() {
         const {gigId} = this.props;
-        console.log(gigId);
         this.setupData(gigId);
     }
 
     setupData(gigId) {
-        // call api to get out gig admins
-        // set state of this component
+        retreive(gigId, this.setTasksState.bind(this));
     }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (this.isAnyPopupClicked(prevState)) {
+            const {gigId} = this.props;
+            retreive(gigId, this.setTasksState.bind(this));
+        }
+    }
+
+    isAnyPopupClicked(prevState) {
+        return this.state.addTaskModalOpen !== prevState.addTaskModalOpen ||
+            this.state.editTaskModalOpen !== prevState.editTaskModalOpen;
+    }
+
+    setTasksState(tasks) {
+        this.setState({
+            tasks: tasks
+        })
+    }
+
+
 
     organizeTabContent(tasks) {
         var toReturn = [];
@@ -57,9 +76,9 @@ class GigTasksView extends React.Component {
                             <Tasks
                                 tasksIndexes={tasksIndexesArray}
                                 tasks={organizedContent[key]}
-                                editTask={this.editTask.bind(this)}
-                                removeTask={this.removeTask.bind(this)}
-                                assignUsers={this.assignUsers.bind(this)}
+                                editTask={this.openEditTaskPopup.bind(this)}
+                                // removeTask={this.removeTask.bind(this)}
+                                // assignUsers={this.assignUsers.bind(this)}
                             />
                         )
                     });
@@ -70,30 +89,56 @@ class GigTasksView extends React.Component {
         return toReturn;
     }
 
-    openAddTaskPopup() {
+    openEditTaskPopup(task) {
         this.setState({
-            addTaskModelOpen: true
+            selectedTask: task,
+            editTaskModalOpen: true
         })
     }
 
-    hidePopup() {
+    openAddTaskPopup() {
         this.setState({
-            modalOpen: false
+            addTaskModalOpen: true
+        })
+    }
+
+    hidePopup(popupState) {
+        this.setState({
+            [popupState + 'ModalOpen']: false
         });
     }
 
     render() {
-        const {classes} = this.props;
-        const {addTaskModelOpen, tasks} = this.state;
+        const {gigId, gigRoomId} = this.props;
+        const {
+            addTaskModalOpen, editTaskModalOpen, tasks,
+            selectedTask
+        } = this.state;
 
         return (
             <div>
-                {/*<AddTask modalOpen={addTaskModelOpen} hideTask={this.hidePopup.bind(this)} gig={gig}/>*/}
+                <AddTask modalOpen={addTaskModalOpen}
+                         hideTask={this.hidePopup.bind(this)}
+                         gigRoomId={gigRoomId}
+                         gigId={gigId}
+                />
+                <EditTask modalOpen={editTaskModalOpen}
+                          hideTask={this.hidePopup.bind(this)}
+                          task={selectedTask}
+                />
+                {/*<RemoveTask hideTask={this.hidePopup.bind(this)}*/}
+                            {/*task={task}*/}
+                            {/*gig={gig}*/}
+                {/*/>*/}
+                {/*<AssignUsers hideTask={this.hidePopup.bind(this)}*/}
+                             {/*task={task}*/}
+                             {/*gigChannelId={this.state.gig.rc_channel_id._id}*/}
+                {/*/>*/}
                 <CustomTabs
                     title="Tasks:"
                     headerColor="teal"
                     tabs={this.organizeTabContent(tasks)}
-                    //addContent={this.addTaskModelOpen.bind(this)}
+                    addContent={this.openAddTaskPopup.bind(this)}
                 />
             </div>
         );
