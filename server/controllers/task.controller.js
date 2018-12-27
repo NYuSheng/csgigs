@@ -1,12 +1,12 @@
 const Task = require('../models/task.model');
+const ObjectID = require('mongodb').ObjectID;
 
 exports.create_tasks = function (req, res, next) {
     let task = new Task(
         {
-            gig_name: req.body.gig_name,
+            gig_id: ObjectID(req.body.gig_id),
             task_name:req.body.task_name,
             task_description:req.body.task_description,
-            points: 0,
             task_category: req.body.task_category,
             users_assigned: [],
             completeAt: null
@@ -24,10 +24,12 @@ exports.create_tasks = function (req, res, next) {
 };
 
 exports.get_tasks_gigs = function (req, res, next) {
-    return Task.find({gig_name:req.params.gigname}).exec().then((tasks_retrieved) => {
+    const matchCriteria = {"$match": {"gig_id": new ObjectID(req.params.gig_id)}};
+    return Task
+        .aggregate(task_aggregation_with_user_assigned(matchCriteria)).exec().then((tasks_retrieved) => {
         if(tasks_retrieved.length === 0){
             return res.status(400).send({
-                error: 'Cannot related task for GIG: ' + req.params.gigname
+                error: 'Cannot related task for GIG: ' + req.params.gig_id
             });
         }
         res.status(200).send({
@@ -45,16 +47,6 @@ exports.update_task = function (req, res, next) {
     });
 };
 
-exports.update_points_allocation = function (req, res, next) {
-    const tasks = req.body.tasks;
-    tasks.forEach(function (task) {
-        Task.findByIdAndUpdate(task._id, {$set: task}, function (err, task) {
-            if (err) return next(err);
-        });
-    });
-    res.status(200).send('Points udpated.');
-};
-
 exports.remove_task = function (req, res, next) {
     Task.findByIdAndRemove(req.params.taskid, (err, task) => {
         if (err) return res.status(500).send(err);
@@ -65,4 +57,18 @@ exports.remove_task = function (req, res, next) {
         return res.status(200).send(response);
     });
 };
+
+function task_aggregation_with_user_assigned(matchCriteria) {
+    return [
+        matchCriteria,
+        {
+            "$lookup": {
+                "from": "users",
+                "localField": "users_assigned",
+                "foreignField": "_id",
+                "as": "users_assigned"
+            }
+        }
+    ]
+}
 

@@ -193,30 +193,12 @@ exports.delete_user_admin = asyncMiddleware(async (req, res, next) => {
 function gig_aggregation_with_user_admin(matchCriteria) {
     return [
         matchCriteria,
-        {"$unwind": "$user_admins"},
         {
             "$lookup": {
                 "from": "users",
                 "localField": "user_admins",
                 "foreignField": "_id",
-                "as": "userObjects"
-            }
-        },
-        {"$unwind": "$userObjects"},
-        {
-            "$group": {
-                "_id": "$_id",
-                "description": {"$first": "$description"},
-                "photo": {"$first": "$photo"},
-                "rc_channel_id": {"$first": "$rc_channel_id"},
-                "user_participants": {"$first": "$user_participants"},
-                "user_admins": {"$push": "$userObjects"},
-                "user_attendees": {"$first": "$user_attendees"},
-                "name": {"$first": "$name"},
-                "points_budget": {"$first": "$points_budget"},
-                "status": {"$first": "$status"},
-                "createdAt": {"$first": "$createdAt"},
-                "__v": {"$first": "$__v"}
+                "as": "user_admins"
             }
         }
         ]
@@ -284,121 +266,12 @@ exports.delete_user_participant = asyncMiddleware(async (req, res, next) => {
 function gig_aggregation_with_user_participant(matchCriteria){
     return [
         matchCriteria,
-        {"$unwind": "$user_participants"},
         {
             "$lookup": {
                 "from": "users",
                 "localField": "user_participants",
                 "foreignField": "_id",
-                "as": "userObjects"
-            }
-        },
-        {"$unwind": "$userObjects"},
-        {
-            "$group": {
-                "_id": "$_id",
-                "description": {"$first": "$description"},
-                "photo": {"$first": "$photo"},
-                "rc_channel_id": {"$first": "$rc_channel_id"},
-                "user_participants": {"$push": "$userObjects"},
-                "user_admins": {"$first": "$user_admins"},
-                "user_attendees": {"$first": "$user_attendees"},
-                "name": {"$first": "$name"},
-                "points_budget": {"$first": "$points_budget"},
-                "status": {"$first": "$status"},
-                "createdAt": {"$first": "$createdAt"},
-                "__v": {"$first": "$__v"}
-            }
-        }
-    ]
-
-}
-
-function aggregation_with_tasks_and_users(matchCriteria) {
-    return [
-        matchCriteria,
-        {
-            '$lookup': {
-                'from': 'tasks',
-                'localField': 'name',
-                'foreignField': 'gig_name',
-                'as': 'tasks'
-            }
-        },
-        {"$unwind": "$user_admins"},
-        {
-            "$lookup": {
-                "from": "users",
-                "localField": "user_admins",
-                "foreignField": "_id",
-                "as": "userObjects"
-            }
-        },
-        {"$unwind": "$userObjects"},
-        {"$unwind": "$tasks"},
-        {
-            "$lookup": {
-                "from": "users",
-                "localField": "tasks.users_assigned",
-                "foreignField": "name",
-                "as": "task_users"
-            }
-        },
-        {"$unwind": "$task_users"},
-        {
-            "$group": {
-                "_id": "$tasks._id",
-                "gigs_id": {"$first": "$_id"},
-                "description": {"$first": "$description"},
-                "photo": {"$first": "$photo"},
-                "rc_channel_id": {"$first": "$rc_channel_id"},
-                "user_participants": {"$first": "$user_participants"},
-                "user_admins": {"$addToSet": "$userObjects"},
-                "user_attendees": {"$first": "$user_attendees"},
-                "name": {"$first": "$name"},
-                "points_budget": {"$first": "$points_budget"},
-                "status": {"$first": "$status"},
-                "createdAt": {"$first": "$createdAt"},
-                "__v": {"$first": "$__v"},
-                "task_name": {"$first": "$tasks.task_name"},
-                "gig_name" : {"$first": "$tasks.gig_name"},
-                "task_description" : {"$first": "$tasks.task_description"},
-                "points" : {"$first": "$tasks.points"},
-                "task_category" : {"$first": "$tasks.task_category"},
-                "completeAt" : {"$first": "$tasks.completeAt"},
-                "appliedAt" : {"$first": "$tasks.appliedAt"},
-                "__v" : {"$first": "$tasks.__v"},
-                "users_assigned": {"$addToSet": "$task_users"}
-            }
-        },
-        {
-            "$group": {
-                "_id": "$gigs_id",
-                "description": {"$first": "$description"},
-                "photo": {"$first": "$photo"},
-                "rc_channel_id": {"$first": "$rc_channel_id"},
-                "user_participants": {"$first": "$user_participants"},
-                "user_admins": {"$first": "$user_admins"},
-                "user_attendees": {"$first": "$user_attendees"},
-                "name": {"$first": "$name"},
-                "points_budget": {"$first": "$points_budget"},
-                "status": {"$first": "$status"},
-                "createdAt": {"$first": "$createdAt"},
-                "__v": {"$first": "$__v"},
-                "tasks": {
-                    "$push": {
-                        "_id": "$_id",
-                        "task_name": "$task_name",
-                        "gig_name" : "$gig_name",
-                        "task_description" : "$task_description",
-                        "points" : "$points",
-                        "task_category" : "$task_category",
-                        "completeAt" : "$completeAt",
-                        "appliedAt" : "$appliedAt",
-                        "__v" : "$__v",
-                        "users_assigned": "$users_assigned"
-                    }
-                }
+                "as": "user_participants"
             }
         }
     ]
