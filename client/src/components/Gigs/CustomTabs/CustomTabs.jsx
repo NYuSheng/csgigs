@@ -34,7 +34,7 @@ const style = {
     }
 };
 
-class GigCustomTabs extends React.Component {
+class CustomTabs extends React.Component {
     state = {
         value: 0
     };
@@ -125,7 +125,7 @@ class GigCustomTabs extends React.Component {
     }
 }
 
-GigCustomTabs.propTypes = {
+CustomTabs.propTypes = {
     classes: PropTypes.object.isRequired,
     headerColor: PropTypes.oneOf([
         "warning",
@@ -148,4 +148,4 @@ GigCustomTabs.propTypes = {
     plainTabs: PropTypes.bool
 };
 
-export default withStyles(style)(GigCustomTabs);
+export default withStyles(style)(CustomTabs);

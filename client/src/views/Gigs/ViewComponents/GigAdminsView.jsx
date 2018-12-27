@@ -1,11 +1,14 @@
 import React from "react";
 
 // @material-ui/core components
-import withStyles from "@material-ui/core/styles/withStyles";
 import TableCell from "@material-ui/core/TableCell";
+import MUIButton from "@material-ui/core/Button";
+
+// @material-ui/icons
+import People from "@material-ui/icons/People";
+import Edit from "@material-ui/icons/Edit";
 
 // core components
-// import Filter from "components/Gigs/Filter/Filter";
 import Table from "components/Gigs/Table/Table";
 import Card from "components/Card/Card";
 import CardHeader from "components/Card/CardHeader";
@@ -13,22 +16,9 @@ import CardIcon from "components/Card/CardIcon";
 import CardBody from "components/Card/CardBody";
 import GridContainer from "components/Grid/GridContainer";
 import GridItem from "components/Grid/GridItem";
-import MUIButton from "@material-ui/core/Button";
 import EditGigAdmins from "components/Gigs/PopupModals/Dialog/EditGigAdmins";
 
-// material-ui icons
-import People from "@material-ui/icons/People";
-import Edit from "@material-ui/icons/Edit";
-
-// dependencies
-
-// style sheets
-import {cardTitle} from "assets/jss/material-dashboard-pro-react.jsx";
-
-// import FilterIcon from "@material-ui/icons/Filter";
-
-
-class GigAdminView extends React.Component {
+class GigAdminsView extends React.Component {
 
     constructor(props) {
         super(props);
@@ -105,6 +95,7 @@ class GigAdminView extends React.Component {
                     <CardBody>
                         <Table
                             tableData={admins}
+                            notFoundMessage="No admins found"
                             setupTableCells={this.setupTableCells.bind(this)}
                         />
                     </CardBody>
@@ -114,4 +105,4 @@ class GigAdminView extends React.Component {
     }
 }
 
-export default (GigAdminView);
+export default GigAdminsView;

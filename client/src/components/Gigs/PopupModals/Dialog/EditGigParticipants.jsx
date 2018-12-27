@@ -36,7 +36,7 @@ function Transition(props) {
     return <Slide direction="down" {...props} />;
 }
 
-class EditGigAdmins extends React.Component {
+class EditGigParticipants extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -249,4 +249,4 @@ class EditGigAdmins extends React.Component {
     }
 }
 
-export default withMobileDialog()(withStyles(notificationsStyle)(EditGigAdmins));
+export default withMobileDialog()(withStyles(notificationsStyle)(EditGigParticipants));

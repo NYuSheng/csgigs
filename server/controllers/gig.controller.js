@@ -69,6 +69,24 @@ exports.create_gig = asyncMiddleware(async (req, res, next) => {
     }
 });
 
+exports.get_user_gig = asyncMiddleware(async (req, res, next) => {
+    const matchCriteria = {"$match": {"_id": new ObjectID(req.params.id)}};
+    return Gig
+        .aggregate(aggregation_with_tasks_and_users(matchCriteria)).exec().then((gig_retrieved) => {
+            if (gig_retrieved === null) {
+                return res.status(400).send({
+                    error: "Cannot find gig of id " + req.params.id
+                });
+            }
+            res.status(200).send({
+                gig: gig_retrieved[0]
+            });
+
+        }).catch(err => {
+            res.status(400).send({error: err});
+        });
+});
+
 exports.get_gig_name = asyncMiddleware(async (req, res, next) => {
     return Gig.find({ "_id": ObjectID(req.params.id)}).exec().then((gig) => {
         if (gig == null) {
