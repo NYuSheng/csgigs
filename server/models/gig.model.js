@@ -9,9 +9,9 @@ let GigsSchema = new Schema({
     rc_channel_id:{type: Object, default: null},
     points_budget:{type: Number, required: true},
     status:{type: String, required: true},
-    user_admins:[{type: String}],
-    user_participants:[{type: String}],
-    user_attendees:[{type: String}]
+    user_admins:[{type: mongoose.Schema.Types.ObjectId}],
+    user_participants:[{type: mongoose.Schema.Types.ObjectId}]
+    // user_attendees:[{type: String}]
 });
 
 module.exports = mongoose.model('gigs', GigsSchema);

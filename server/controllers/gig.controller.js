@@ -67,8 +67,6 @@ exports.create_gig = asyncMiddleware(async (req, res, next) => {
         console.log(error);
         res.status(500).send({error});
     }
-
-
 });
 
 exports.get_gig_name = asyncMiddleware(async (req, res, next) => {
@@ -86,13 +84,14 @@ exports.get_gig_name = asyncMiddleware(async (req, res, next) => {
     });
 });
 
+//TODO
 exports.get_user_all_gigs = asyncMiddleware(async (req, res, next) => {
     let status = (req.query.status).split(",");
     const matchCriteria =
         {
             "$match":
                 {
-                    "user_admins": {"$in": [req.params.admin_name]},
+                    "user_admins": {"$in": [req.params.user_id]},
                     "status": {"$in": status}
                 }
         };
@@ -106,106 +105,6 @@ exports.get_user_all_gigs = asyncMiddleware(async (req, res, next) => {
             res.status(500).send({error: err});
         });
 });
-
-exports.get_user_gig = asyncMiddleware(async (req, res, next) => {
-    const matchCriteria = {"$match": {"_id": new ObjectID(req.params.id)}};
-    return Gig
-        .aggregate(aggregation_with_tasks_and_users(matchCriteria)).exec().then((gig_retrieved) => {
-            if (gig_retrieved === null) {
-                return res.status(400).send({
-                    error: "Cannot find gig of id " + req.params.id
-                });
-            }
-            res.status(200).send({
-                gig: gig_retrieved[0]
-            });
-
-        }).catch(err => {
-            res.status(400).send({error: err});
-        });
-});
-
-exports.update_gig = function (req, res, next) {
-    Gig.findByIdAndUpdate(req.params.id, {$set: req.body}, function (err, gig) {
-        if (err) return next(err);
-        res.send("Gig updated.");
-    });
-};
-
-exports.gig_add_user_admin = function (req, res, next) {
-    return Gig.findOneAndUpdate(
-        {name: req.params.name},
-        {$addToSet: {"user_admins": req.params.admin_username}}, //addToSet ensures no duplicate names in array
-        {"new": true},
-        function (err, gig) {
-            if (err || gig == null) {
-                console.log(err);
-                return res.status(400).send({
-                    error: "Cannot find gig of name " + req.params.name
-                });
-            } else {
-                res.status(200).send({
-                    gig: gig
-                });
-
-            }
-        });
-};
-
-exports.gig_delete_user_admin = function (req, res, next) {
-    return Gig.findOneAndUpdate(
-        {name: req.params.name},
-        {$pullAll: {"user_admins": [req.params.admin_username]}}, //remove all instances of the user admin
-        {"new": true}, // return updated new array
-        function (err, gig) {
-            if (err || gig == null) {
-                console.log(err);
-                return res.status(400).send({
-                    error: "Cannot find gig of name " + req.params.name
-                });
-            } else {
-                res.status(200).send({
-                    gig: gig
-                });
-            }
-        });
-};
-
-exports.gig_add_user_participant = function (req, res, next) {
-    return Gig.findOneAndUpdate(
-        {name: req.params.name},
-        {$addToSet: {"user_participants": req.params.participant_username}}, //addToSet ensures no duplicate names in array
-        {"new": true},
-        function (err, gig) {
-            if (err || gig == null) {
-                return res.status(400).send({
-                    error: "Cannot find gig of name " + req.params.name
-                });
-            } else {
-                res.status(200).send({
-                    gig: gig
-                });
-            }
-        });
-};
-
-exports.gig_add_user_attendee = function (req, res, next) {
-    return Gig.findOneAndUpdate(
-        {name: req.params.name},
-        {$addToSet: {"user_attendees": req.params.attendee_username}}, //addToSet ensures no duplicate names in array
-        {"new": true},
-        function (err, gig) {
-            if (err || gig == null) {
-                return res.status(400).send({
-                    error: "Cannot find gig of name " + req.params.name
-                });
-            } else {
-                res.status(200).send({
-                    gig: gig
-                });
-            }
-        });
-};
 
 exports.gigs_by_status = function (req, res) {
     return Gig.find({status: req.params.status}).exec().then((gigs_retrieved) => {
@@ -221,6 +120,188 @@ exports.gigs_by_status = function (req, res) {
         res.status(400).send({error: err});
     });
 };
+
+
+exports.get_user_admins = asyncMiddleware(async (req, res, next) => {
+    const matchCriteria = {"$match": {"_id": new ObjectID(req.params.id)}};
+    return Gig
+        .aggregate(gig_aggregation_with_user_admin(matchCriteria)).exec().then((gig_retrieved) => {
+            if (gig_retrieved === null) {
+                return res.status(400).send({
+                    error: "Cannot find gig of id " + req.params.id
+                });
+            }
+            res.status(200).send({
+                gig: gig_retrieved[0]
+            });
+
+        }).catch(err => {
+            res.status(400).send({error: err});
+        });
+});
+
+exports.add_user_admin = asyncMiddleware(async (req, res, next) => {
+    return Gig.findOneAndUpdate(
+        {"_id": new ObjectID(req.params.id)},
+        {$addToSet: {"user_admins": new ObjectID(req.body.user_id)}}, //addToSet ensures no duplicate names in array
+        {"new": true},
+        function (err, gig) {
+            if (err || gig == null) {
+                console.log(err);
+                return res.status(400).send({
+                    error: "Cannot find gig of name " + req.params.name
+                });
+            } else {
+                res.status(200).send({
+                    gig: gig
+                });
+
+            }
+        });
+});
+
+exports.delete_user_admin = asyncMiddleware(async (req, res, next) => {
+    return Gig.findOneAndUpdate(
+        {"_id": new ObjectID(req.params.id)},
+        {$pullAll: {"user_admins": [new ObjectID(req.body.user_id)]}}, //remove all instances of the user admin
+        {"new": true}, // return updated new array
+        function (err, gig) {
+            if (err || gig == null) {
+                console.log(err);
+                return res.status(400).send({
+                    error: "Cannot find admin of id " + req.body.user_id
+                });
+            } else {
+                res.status(200).send({
+                    gig: gig
+                });
+            }
+        });
+});
+
+function gig_aggregation_with_user_admin(matchCriteria) {
+    return [
+        matchCriteria,
+        {"$unwind": "$user_admins"},
+        {
+            "$lookup": {
+                "from": "users",
+                "localField": "user_admins",
+                "foreignField": "_id",
+                "as": "userObjects"
+            }
+        },
+        {"$unwind": "$userObjects"},
+        {
+            "$group": {
+                "_id": "$_id",
+                "description": {"$first": "$description"},
+                "photo": {"$first": "$photo"},
+                "rc_channel_id": {"$first": "$rc_channel_id"},
+                "user_participants": {"$first": "$user_participants"},
+                "user_admins": {"$push": "$userObjects"},
+                "user_attendees": {"$first": "$user_attendees"},
+                "name": {"$first": "$name"},
+                "points_budget": {"$first": "$points_budget"},
+                "status": {"$first": "$status"},
+                "createdAt": {"$first": "$createdAt"},
+                "__v": {"$first": "$__v"}
+            }
+        }
+        ]
+}
+
+exports.get_user_participants = asyncMiddleware(async (req, res, next) => {
+    const matchCriteria = {"$match": {"_id": new ObjectID(req.params.id)}};
+    return Gig
+        .aggregate(gig_aggregation_with_user_participant(matchCriteria)).exec().then((gig_retrieved) => {
+            if (gig_retrieved === null) {
+                return res.status(400).send({
+                    error: "Cannot find Gig of id " + req.params.id
+                });
+            }
+            res.status(200).send({
+                gig: gig_retrieved[0]
+            });
+
+        }).catch(err => {
+            res.status(400).send({error: err});
+        });
+});
+
+
+exports.add_user_participant = asyncMiddleware(async (req, res, next) => {
+    return Gig.findOneAndUpdate(
+        {"_id": new ObjectID(req.params.id)},
+        {$addToSet: {"user_participants": ObjectID(req.body.user_id)}}, //addToSet ensures no duplicate names in array
+        {"new": true},
+        function (err, gig) {
+            if (err || gig == null) {
+                console.log(err);
+                return res.status(400).send({
+                    error: "Cannot find Gig of id " + req.params.id
+                });
+            } else {
+                res.status(200).send({
+                    gig: gig
+                });
+
+            }
+        });
+});
+
+exports.delete_user_participant = asyncMiddleware(async (req, res, next) => {
+    return Gig.findOneAndUpdate(
+        {"_id": new ObjectID(req.params.id)},
+        {$pullAll: {"user_participants": [new ObjectID(req.body.user_id)]}}, //remove all instances of the user admin
+        {"new": true}, // return updated new array
+        function (err, gig) {
+            if (err || gig == null) {
+                console.log(err);
+                console.log(gig);
+                return res.status(400).send({
+                    error: "Cannot find participant of id " + req.body.user_id
+                });
+            } else {
+                res.status(200).send({
+                    gig: gig
+                });
+            }
+        });
+});
+
+function gig_aggregation_with_user_participant(matchCriteria){
+    return [
+        matchCriteria,
+        {"$unwind": "$user_participants"},
+        {
+            "$lookup": {
+                "from": "users",
+                "localField": "user_participants",
+                "foreignField": "_id",
+                "as": "userObjects"
+            }
+        },
+        {"$unwind": "$userObjects"},
+        {
+            "$group": {
+                "_id": "$_id",
+                "description": {"$first": "$description"},
+                "photo": {"$first": "$photo"},
+                "rc_channel_id": {"$first": "$rc_channel_id"},
+                "user_participants": {"$push": "$userObjects"},
+                "user_admins": {"$first": "$user_admins"},
+                "user_attendees": {"$first": "$user_attendees"},
+                "name": {"$first": "$name"},
+                "points_budget": {"$first": "$points_budget"},
+                "status": {"$first": "$status"},
+                "createdAt": {"$first": "$createdAt"},
+                "__v": {"$first": "$__v"}
+            }
+        }
+    ]
+
+}
 
 function aggregation_with_tasks_and_users(matchCriteria) {
     return [
