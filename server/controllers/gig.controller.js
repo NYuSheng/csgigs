@@ -233,21 +233,70 @@ function aggregation_with_tasks_and_users(matchCriteria) {
             }
         },
         {"$unwind": "$userObjects"},
+        {"$unwind": "$tasks"},
+        {
+            "$lookup": {
+                "from": "users",
+                "localField": "tasks.users_assigned",
+                "foreignField": "name",
+                "as": "task_users"
+            }
+        },
+        {"$unwind": "$task_users"},
         {
             "$group": {
-                "_id": "$_id",
-                "rc_channel_id": {"$first": "$rc_channel_id"},
-                "user_participants": {"$first": "$user_participants"},
-                "user_admins": {"$push": "$userObjects"},
-                "user_attendees": {"$first": "$user_attendees"},
-                "name": {"$first": "$name"},
+                "_id": "$tasks._id",
+                "gigs_id": {"$first": "$_id"},
                 "description": {"$first": "$description"},
                 "photo": {"$first": "$photo"},
+                "rc_channel_id": {"$first": "$rc_channel_id"},
+                "user_participants": {"$first": "$user_participants"},
+                "user_admins": {"$addToSet": "$userObjects"},
+                "user_attendees": {"$first": "$user_attendees"},
+                "name": {"$first": "$name"},
                 "points_budget": {"$first": "$points_budget"},
                 "status": {"$first": "$status"},
                 "createdAt": {"$first": "$createdAt"},
                 "__v": {"$first": "$__v"},
-                "tasks": {"$first": "$tasks"}
+                "task_name": {"$first": "$tasks.task_name"},
+                "gig_name" : {"$first": "$tasks.gig_name"},
+                "task_description" : {"$first": "$tasks.task_description"},
+                "points" : {"$first": "$tasks.points"},
+                "task_category" : {"$first": "$tasks.task_category"},
+                "completeAt" : {"$first": "$tasks.completeAt"},
+                "appliedAt" : {"$first": "$tasks.appliedAt"},
+                "__v" : {"$first": "$tasks.__v"},
+                "users_assigned": {"$addToSet": "$task_users"}
+            }
+        },
+        {
+            "$group": {
+                "_id": "$gigs_id",
+                "description": {"$first": "$description"},
+                "photo": {"$first": "$photo"},
+                "rc_channel_id": {"$first": "$rc_channel_id"},
+                "user_participants": {"$first": "$user_participants"},
+                "user_admins": {"$first": "$user_admins"},
+                "user_attendees": {"$first": "$user_attendees"},
+                "name": {"$first": "$name"},
+                "points_budget": {"$first": "$points_budget"},
+                "status": {"$first": "$status"},
+                "createdAt": {"$first": "$createdAt"},
+                "__v": {"$first": "$__v"},
+                "tasks": {
+                    "$push": {
+                        "_id": "$_id",
+                        "task_name": "$task_name",
+                        "gig_name" : "$gig_name",
+                        "task_description" : "$task_description",
+                        "points" : "$points",
+                        "task_category" : "$task_category",
+                        "completeAt" : "$completeAt",
+                        "appliedAt" : "$appliedAt",
+                        "__v" : "$__v",
+                        "users_assigned": "$users_assigned"
+                    }
+                }
             }
         }
     ]

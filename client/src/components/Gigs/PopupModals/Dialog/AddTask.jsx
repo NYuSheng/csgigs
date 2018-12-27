@@ -18,6 +18,7 @@ import GridContainer from "components/Grid/GridContainer";
 import GridItem from "components/Grid/GridItem";
 import CustomInput from "components/Gigs/CustomInput/CustomInput";
 import Button from "components/CustomButtons/Button";
+import {add} from "components/Gigs/API/Tasks/Tasks";
 
 // dependencies
 import Loader from 'react-loader-spinner';
@@ -44,17 +45,15 @@ class AddTask extends React.Component {
     }
 
     componentDidMount() {
-        this.setState({
-            status: "working"
-        })
+        this.setStatusState("working");
     }
 
     onChangeTaskCategory(event) {
         const category = event.target.value;
         this.setState({
-            taskCategory: category
+            taskCategory: category,
+            taskCategoryState: category ? "success" : "error"
         });
-        this.validateTaskCategory(category)
     };
 
     onChangeTaskDescription(event) {
@@ -63,20 +62,12 @@ class AddTask extends React.Component {
         })
     }
 
-    validateTaskCategory(category) {
-        category ?
-            this.setState({taskCategoryState: "success"})
-            :
-            this.setState({taskCategoryState: "error"})
-    }
-
-    validateTaskName(event) {
+    onChangeTaskName(event) {
         const name = event.target.value;
-        this.setState({taskName: name});
-        name ?
-            this.setState({taskNameState: "success"})
-            :
-            this.setState({taskNameState: "error"})
+        this.setState({
+            taskName: name,
+            taskNameState: name ? "success" : "error"
+        });
     }
 
     isValidated() {
@@ -94,36 +85,18 @@ class AddTask extends React.Component {
         return false;
     }
 
+    setStatusState(status) {
+        this.setState({
+            status: status
+        })
+    }
+
     confirmTaskAdd() {
         const {gig} = this.props;
         const {status} = this.state;
         if (status !== "success") {
             if (this.isValidated()) {
-                this.setState({
-                    status: "loading"
-                });
-
-                fetch('/admin-ui/api/tasks/addTask', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(this.buildPayLoad())
-                }).then(data => {
-                    if (data.status !== 200) {
-                        data.json().then(json => {
-                            NotificationManager.error(json.error.errmsg);
-                        });
-                        this.setState({
-                            status: "working"
-                        });
-                    } else {
-                        data.json().then(json => {
-                            gig.tasks.push(json.task);
-                        });
-                        this.setState({
-                            status: "success"
-                        });
-                    }
-                });
+                add(gig, this.state, this.setStatusState.bind(this));
             }
         }
     }
@@ -240,7 +213,7 @@ class AddTask extends React.Component {
                                                     fullWidth: true
                                                 }}
                                                 inputProps={{
-                                                    onChange: event => this.validateTaskName(event)
+                                                    onChange: event => this.onChangeTaskName(event)
                                                 }}
                                                 inputType="text"
                                             />
@@ -316,17 +289,6 @@ class AddTask extends React.Component {
                 }
             </Dialog>
         );
-    }
-
-    buildPayLoad() {
-        const {gig} = this.props;
-        // Construct your payload using state fields
-        var payload = {};
-        payload["gig_name"] = gig.name;
-        payload["task_name"] = this.state.taskName;
-        payload["task_category"] = this.state.taskCategory;
-        payload["task_description"] = this.state.taskDescription;
-        return payload;
     }
 }
 
