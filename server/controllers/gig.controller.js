@@ -84,19 +84,14 @@ exports.get_gig_name = asyncMiddleware(async (req, res, next) => {
     });
 });
 
-//TODO
 exports.get_user_all_gigs = asyncMiddleware(async (req, res, next) => {
     let status = (req.query.status).split(",");
     const matchCriteria =
         {
-            "$match":
-                {
-                    "user_admins": {"$in": [req.params.user_id]},
-                    "status": {"$in": status}
-                }
+            "user_admins": {"$in": [ObjectID(req.params.user_id)]},
+            "status": {"$in": status}
         };
-    return Gig
-        .aggregate(aggregation_with_tasks_and_users(matchCriteria)).exec().then((gigs) => {
+    return Gig.find(matchCriteria).exec().then((gigs) => {
             res.status(200).send({
                 "gigs": gigs
             });
