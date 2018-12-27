@@ -55,7 +55,7 @@ exports.create_gig = asyncMiddleware(async (req, res, next) => {
             Gig.findByIdAndUpdate(gig_created._id, { rc_channel_id : created_group}, function (err, gig) {
                 if (err) return next(err);
             });
-            const message = "Please reply 'Attend' for event: " + gig_created.name;
+            const message = "Please reply 'Attend' for event: *" + gig_created.name + "*";
             rc_controller.publish_broadcast_message(roomId, message, authSet_bot);
         }
 
