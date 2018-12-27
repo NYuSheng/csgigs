@@ -1,18 +1,12 @@
 import React from "react";
-
 // @material-ui/core components
 import withStyles from "@material-ui/core/styles/withStyles";
 import TableCell from "@material-ui/core/TableCell";
-import MUIButton from "@material-ui/core/Button";
-
 // material-ui icons
 import BrowniePoints from "@material-ui/icons/AttachMoney";
 import Status from "@material-ui/icons/Timeline";
 import Chat from "@material-ui/icons/Chat";
-import People from "@material-ui/icons/People";
 import Participants from "@material-ui/icons/PeopleOutline";
-import Edit from "@material-ui/icons/Edit";
-
 // core components
 import Card from "components/Card/Card";
 import CardIcon from "components/Card/CardIcon";
@@ -35,11 +29,11 @@ import GigActions from "components/Gigs/PopupModals/Dialog/GigActions";
 import GigDetails from "components/Gigs/PopupModals/Dialog/GigDetails";
 import BrownieAllocation from "components/Gigs/PopupModals/Dialog/BrownieAllocation";
 import UserProfile from "components/Gigs/Authentication/UserProfile";
+import GigAdminView from "views/Gigs/ViewComponents/GigAdminView";
 
 // dependencies
 import CircularProgressbar from 'react-circular-progressbar';
 import {NotificationManager} from "react-notifications";
-
 // style sheets
 import {cardTitle, roseColor} from "assets/jss/material-dashboard-pro-react.jsx";
 import 'react-circular-progressbar/dist/styles.css';
@@ -434,36 +428,7 @@ class GigDashboard extends React.Component {
                                     </Card>
                                 </GridItem>
                                 <GridItem xs={12} sm={12} md={12} lg={12}>
-                                    <Card>
-                                        <CardHeader color="rose" icon>
-                                            <GridContainer style={{width: "100%", margin: 0}}>
-                                                <GridItem xs={9} sm={9} md={9} lg={9} style={{paddingLeft: 0}}>
-                                                    <CardIcon color="rose">
-                                                        <People/>
-                                                    </CardIcon>
-                                                    <h4 className={classes.cardCategory}>Gig Admin(s)</h4>
-                                                </GridItem>
-                                                <GridItem xs={3} sm={3} md={3} lg={3} style={{textAlign: 'right', padding: 10}}>
-                                                    {/*TODO: Edit admins (only super admin)*/}
-                                                    <MUIButton color="default"
-                                                               onClick={this.editGigAdmins.bind(this)}
-                                                               variant="contained"
-                                                               size="small"
-                                                               style={{height: "100%", padding: 0}}
-                                                    >
-                                                        <div className={classes.muiButtonText}>Edit</div>
-                                                        <Edit className={classes.muiButtonIcon} style={{margin: 0}}/>
-                                                    </MUIButton>
-                                                </GridItem>
-                                            </GridContainer>
-                                        </CardHeader>
-                                        <CardBody>
-                                            <Table
-                                                tableData={gig.user_admins}
-                                                setupTableCells={this.setupAdminTableCells.bind(this)}
-                                            />
-                                        </CardBody>
-                                    </Card>
+                                    <GigAdminView gigId={gig._id} {...this.props}/>
                                 </GridItem>
                             </GridContainer>
                         </GridItem>
