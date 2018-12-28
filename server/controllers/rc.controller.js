@@ -26,8 +26,8 @@ exports.set_read_only_channel = function(req, res, next) {
     readOnly: req.body.readOnly
   };
 
-  const headers = get_headers(req.body);
-  rc_set_read_only_channel(headers, body, res);
+    const headers = get_headers(req.headers);
+    rc_set_read_only_channel(headers, body, res);
 };
 
 exports.create_group = function(auth_set, name, members) {
@@ -50,29 +50,29 @@ exports.add_owners_to_group = function(rc_group_id, gig_owners, auth_set) {
   });
 };
 
-exports.set_group_type = function(req, res) {
-  const headers = get_headers(req.body);
-  const body = {
-    roomId: req.body.roomId,
-    type: req.body.type
-  };
-  rc_set_group_type(headers, body, res);
+exports.set_group_type = function (req, res) {
+    const headers = get_headers(req.headers);
+    const body = {
+        roomId: req.body.roomId,
+        type: req.body.type
+    };
+    rc_set_group_type(headers, body, res);
 };
 
 function get_headers(input) {
-  return {
-    "Content-Type": "application/json",
-    "X-Auth-Token": input.XAuthToken,
-    "X-User-Id": input.XUserId
-  };
+    return {
+        "Content-Type": "application/json",
+        "X-Auth-Token": input["x-auth-token"],
+        "X-User-Id": input["x-user-id"]
+    };
 }
 
-exports.publish_message = function(req, res) {
-  const headers = get_headers(req.body);
-  const body = {
-    roomId: req.body.roomId,
-    text: req.body.message
-  };
+exports.publish_message = function (req, res) {
+    const headers = get_headers(req.headers);
+    const body = {
+        roomId: req.body.roomId,
+        text: req.body.message
+    };
 
   rc_publish_message(headers, body, res);
 };

@@ -79,7 +79,6 @@ export const remove = function(gigRoomId, taskId, taskName, statusCallback) {
 };
 
 function buildTaskPublishMessage (gigRoomId, task) {
-    const authSet = UserProfile.getAuthSet();
     const publishPayload = {};
 
     publishPayload["message"] = "" +
@@ -88,8 +87,6 @@ function buildTaskPublishMessage (gigRoomId, task) {
         "\n Task Description: " + task.task_description +
         "\nReply to volunteer for this task.";
     publishPayload["roomId"] = gigRoomId;
-    publishPayload["XAuthToken"] = authSet.token;
-    publishPayload["XUserId"] = authSet.userId;
 
     return publishPayload;
 };

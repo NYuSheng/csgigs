@@ -23,14 +23,15 @@ import BrownieAllocation from "components/Gigs/PopupModals/Dialog/BrownieAllocat
 import UserProfile from "components/Gigs/Authentication/UserProfile";
 import GigAdminsView from "views/Gigs/ViewComponents/GigAdminsView";
 import GigTasksView from "views/Gigs/ViewComponents/GigTasksView";
+import GigParticipantsView from "views/Gigs/ViewComponents/GigParticipantsView";
 import {getUserGig} from "components/Gigs/API/Gigs/Gigs";
+
 // dependencies
 import CircularProgressbar from 'react-circular-progressbar';
-import {NotificationManager} from "react-notifications";
+
 // style sheets
 import {cardTitle, roseColor} from "assets/jss/material-dashboard-pro-react.jsx";
 import 'react-circular-progressbar/dist/styles.css';
-import GigParticipantsView from "./ViewComponents/GigParticipantsView";
 
 const style = {
     cardTitle,
@@ -82,7 +83,7 @@ class GigDashboard extends React.Component {
         this.state = {
             gig: null,
             brownieAllocation: false,
-            gigActions: false,
+            gigActionsModalOpen: false,
             gigDetailsModalOpen: false,
             Draft: "info",
             Active: "warning",
@@ -112,7 +113,8 @@ class GigDashboard extends React.Component {
     }
 
     isAnyPopupClicked(prevState) {
-        return this.state.gigDetailsModalOpen !== prevState.gigDetailsModalOpen;
+        return this.state.gigDetailsModalOpen !== prevState.gigDetailsModalOpen ||
+            this.state.gigActionsModalOpen !== prevState.gigActionsModalOpen;
     }
 
     setupData(gigId) {
@@ -131,34 +133,9 @@ class GigDashboard extends React.Component {
         })
     }
 
-    completeGig(gig) {
+    openGigActionsPopup() {
         this.setState({
-            gig: gig
-        });
-        NotificationManager.success("Gig Completed!");
-        const {history} = this.props;
-        history.push({
-            pathname: '/gigs/manage'
-        });
-    }
-
-    notifyGigChannelUpdate(gig) {
-        this.setState({
-            gig: gig
-        })
-        NotificationManager.success("Gig Published!");
-    }
-
-    notifyGigStatusCancelled(gig) {
-        this.setState({
-            gig: gig
-        })
-        NotificationManager.success("Gig Cancelled!");
-    }
-
-    gigActions() {
-        this.setState({
-            gigActions: true
+            gigActionsModalOpen: true
         })
     }
 
@@ -194,16 +171,15 @@ class GigDashboard extends React.Component {
         const {classes} = this.props;
         const {
             gig, brownieAllocation,
-            gigActions, gigDetailsModalOpen
+            gigActionsModalOpen, gigDetailsModalOpen
         } = this.state;
 
         if (gig) {
             return (
                 <div>
-                    <GigActions modalOpen={gigActions} hidePopup={this.hidePopup.bind(this)}
-                                gig={gig} channelUpdate={this.notifyGigChannelUpdate.bind(this)}
-                                cancelGig={this.notifyGigStatusCancelled.bind(this)}
-                                completeGig={this.completeGig.bind(this)}
+                    <GigActions modalOpen={gigActionsModalOpen}
+                                hidePopup={this.hidePopup.bind(this)}
+                                gig={gig}
                     />
                     <GigDetails modalOpen={gigDetailsModalOpen}
                                 hidePopup={this.hidePopup.bind(this)}
@@ -218,7 +194,7 @@ class GigDashboard extends React.Component {
                         </GridItem>
                         <GridItem xs={6} style={{textAlign: "right"}}>
                             <Button className={classes.marginRight}
-                                    onClick={this.gigActions.bind(this)}
+                                    onClick={this.openGigActionsPopup.bind(this)}
                             >
                                 Actions
                             </Button>

@@ -1,5 +1,6 @@
 import {NotificationManager} from "react-notifications";
 import UserProfile from "components/Gigs/Authentication/UserProfile";
+import {setRoomToReadOnly, publishMessage} from "components/Gigs/API/RocketChat/RocketChat";
 
 export const create = function (step, callback) {
     const gigCreator = UserProfile.getUser();
@@ -7,7 +8,11 @@ export const create = function (step, callback) {
     step.selectedAdmins.push(gigCreator.me);
     fetch('/admin-ui/api/gigs/create', {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+            'Content-Type': 'application/json',
+            'x-auth-token': authSet.token,
+            'x-user-id': authSet.userId
+        },
         body: JSON.stringify({
             user: gigCreator.me.name,
             name: step.name,
@@ -15,9 +20,7 @@ export const create = function (step, callback) {
             points_budget: step.budget,
             status: "Draft",
             user_admins: step.selectedAdmins,
-            photo: step.gigImage,
-            XAuthToken: authSet.token,
-            XUserId: authSet.userId
+            photo: step.gigImage
         })
     }).then(data => {
         if (data.status !== 200) {
@@ -88,3 +91,51 @@ export const update = function (gigId, payload, statusCallback) {
         }
     });
 };
+
+export const cancel = function (gigId, gigRoomId, payload, statusCallback) {
+    const user = UserProfile.getUser();
+    if (statusCallback) statusCallback("loading");
+    fetch(`/admin-ui/api/gigs/${user.me._id}/${gigId}`, {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(payload)
+    }).then(data => {
+        if (data.status !== 200) {
+            data.json().then(json => {
+                NotificationManager.error(json.error.errmsg);
+            });
+            if (statusCallback) statusCallback("working");
+        } else {
+            publishMessage(buildPublishMessage(gigRoomId, payload.status));
+            setRoomToReadOnly(gigRoomId);
+            if (statusCallback) statusCallback("success");
+        }
+    });
+};
+
+export const complete = function (gigId, gigRoomId, payload, statusCallback) {
+    const user = UserProfile.getUser();
+    if (statusCallback) statusCallback("loading");
+    fetch(`/admin-ui/api/gigs/${user.me._id}/${gigId}`, {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(payload)
+    }).then(data => {
+        if (data.status !== 200) {
+            data.json().then(json => {
+                NotificationManager.error(json.error.errmsg);
+            });
+            if (statusCallback) statusCallback("working");
+        } else {
+            publishMessage(buildPublishMessage(gigRoomId, payload.status));
+            if (statusCallback) statusCallback("success");
+        }
+    });
+};
+
+function buildPublishMessage(gigRoomId, status) {
+    return {
+        roomId: gigRoomId,
+        message: "_This gig has been " + status + "_"
+    };
+}
