@@ -52,14 +52,11 @@ export const approval = function(payload) {
 };
 
 function buildPublishMessage (payload) {
-    const authSet = UserProfile.getAuthSet();
     const publishPayload = {};
 
     publishPayload["message"] = "Approval for " + payload.user.name + " for task " +
         payload.taskName + " has been " + payload.status;
     publishPayload["roomId"] = payload.roomId;
-    publishPayload["XAuthToken"] = authSet.token;
-    publishPayload["XUserId"] = authSet.userId;
 
     return publishPayload;
 };

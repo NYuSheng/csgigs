@@ -84,8 +84,6 @@ class GigDetailsStep extends React.Component {
         })
     }
 
-
-
     deselectAdmin(admin) {
         const selectedAdmins = this.state.selectedAdmins;
         const adminsAfterRemoval = selectedAdmins.filter(selectedAdmin => selectedAdmin["_id"] !== admin["_id"]);
@@ -101,11 +99,10 @@ class GigDetailsStep extends React.Component {
 
     validateNumber(event) {
         const budget = event.target.value;
-        this.setState({budget: budget});
-        budget > 0 ?
-            this.setState({budgetState: "success"})
-            :
-            this.setState({budgetState: "error"})
+        this.setState({
+            budget: budget,
+            budgetState: budget > 0 ? "success" : "error"
+        });
     }
 
     validateName(event) {

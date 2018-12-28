@@ -12,10 +12,10 @@ exports.create_gig = asyncMiddleware(async (req, res, next) => {
     photo: req.body.photo,
     points_budget: req.body.points_budget,
     status: "Draft",
-    user_admins: req.body.user_admins.map(admin => admin.name),
+    user_admins: req.body.user_admins.map(admin => admin._id),
     //Possible required fields in creation
     user_participants: [],
-    user_attendees: []
+    // user_attendees: []
   });
   try {
     const gig_created = await gig.save();
@@ -26,28 +26,12 @@ exports.create_gig = asyncMiddleware(async (req, res, next) => {
       });
     }
 
-    const authSet = {
-      XAuthToken: req.body.XAuthToken,
-      XUserId: req.body.XUserId
-    };
-
-    //publish_bot with broadcast_test channel
-    // const {
-    //   CSGIGS_ROCKET_BOT_USER: botUserId,
-    //   CSGIGS_ROCKET_BOT_PASSWORD: botXAuthToken,
-    //   CSGIGS_ROCKET_BROADCAST_CHANNEL: roomId
-    // } = process.env;
-
-    // //publish_bot with broadcast_test channel
-    // const authSet_bot = {
-    //   XAuthToken: botXAuthToken,
-    //   XUserId: botUserId
-    // };
-    const authSet_bot = {
-      XAuthToken: "VynD2oNIieXVkn_nkqBSq1DKv5_5LhC1-ZKrz9q-bwl",
-      XUserId: "Zjh2Hmnsbwq5MGMv8"
-    };
-    const roomId = "2EvneDEerT9jGLYYf";
+        //publish_bot with broadcast_test channel
+        const authSet_bot = {
+            'x-auth-token': 'VynD2oNIieXVkn_nkqBSq1DKv5_5LhC1-ZKrz9q-bwl',
+            'x-user-id': 'Zjh2Hmnsbwq5MGMv8'
+        }
+        const roomId = "2EvneDEerT9jGLYYf";
 
     const gig_id_and_name = {
       _id: gig_created._id,
@@ -59,7 +43,7 @@ exports.create_gig = asyncMiddleware(async (req, res, next) => {
     );
 
     const created_group = await rc_controller.create_group(
-      authSet,
+      req.headers,
       members,
       gig_created.name
     );
@@ -67,7 +51,7 @@ exports.create_gig = asyncMiddleware(async (req, res, next) => {
       const gig_owners = req.body.user_admins
         .filter(admin => admin.name !== req.body.user)
         .map(admin => admin._id);
-      rc_controller.add_owners_to_group(created_group._id, gig_owners, authSet);
+      rc_controller.add_owners_to_group(created_group._id, gig_owners, req.headers);
       Gig.findByIdAndUpdate(
         gig_created._id,
         { rc_channel_id: created_group },
