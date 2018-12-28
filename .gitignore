@@ -10,3 +10,4 @@ client/src/assets/scss/material-dashboard-pro-react.css
 server/config.js
 
 .env
+logs

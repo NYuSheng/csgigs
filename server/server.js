@@ -1,4 +1,5 @@
 require("dotenv").config();
+const LogConfig = require("./log-config");
 const express = require("express");
 const path = require("path");
 const bodyParser = require("body-parser");
@@ -33,6 +34,5 @@ app.get("/admin-ui/*", function(req, res) {
 const appPort = 5000;
 
 app.listen(appPort, () => {
-  // eslint-disable-next-line no-console
-  console.log("Server is up and running on port number " + appPort);
+  LogConfig.info("Server is up and running on port number " + appPort);
 });
