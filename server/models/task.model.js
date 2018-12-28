@@ -6,7 +6,7 @@ let TaskSchema = new Schema({
     task_name:{type:String, required:true},
     task_category:{type:String, required:true},
     task_description:{type:String},
-    users_assigned: [{type: mongoose.Schema.Types.ObjectId}],
+    users_assigned: [{type:String}],
     appliedAt:{type:Date, default: Date.now},
     completeAt:{type:Date}
 });

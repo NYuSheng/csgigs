@@ -103,7 +103,7 @@ exports.get_user_all_gigs = asyncMiddleware(async (req, res, next) => {
     let status = (req.query.status).split(",");
     const matchCriteria =
         {
-            "user_admins": {"$in": [ObjectID(req.params.user_id)]},
+            "user_admins": {"$in": [req.params.user_id]},
             "status": {"$in": status}
         };
     return Gig.find(matchCriteria).exec().then((gigs) => {
@@ -155,7 +155,7 @@ exports.get_user_admins = asyncMiddleware(async (req, res, next) => {
 exports.add_user_admin = asyncMiddleware(async (req, res, next) => {
     return Gig.findOneAndUpdate(
         {"_id": new ObjectID(req.params.id)},
-        {$addToSet: {"user_admins": new ObjectID(req.body.user_id)}}, //addToSet ensures no duplicate names in array
+        {$addToSet: {"user_admins": req.body.user_id}}, //addToSet ensures no duplicate names in array
         {"new": true},
         function (err, gig) {
             if (err || gig == null) {
@@ -175,7 +175,7 @@ exports.add_user_admin = asyncMiddleware(async (req, res, next) => {
 exports.delete_user_admin = asyncMiddleware(async (req, res, next) => {
     return Gig.findOneAndUpdate(
         {"_id": new ObjectID(req.params.id)},
-        {$pullAll: {"user_admins": [new ObjectID(req.body.user_id)]}}, //remove all instances of the user admin
+        {$pullAll: {"user_admins": [req.body.user_id]}}, //remove all instances of the user admin
         {"new": true}, // return updated new array
         function (err, gig) {
             if (err || gig == null) {
@@ -227,7 +227,7 @@ exports.get_user_participants = asyncMiddleware(async (req, res, next) => {
 exports.add_user_participant = asyncMiddleware(async (req, res, next) => {
     return Gig.findOneAndUpdate(
         {"_id": new ObjectID(req.params.id)},
-        {$addToSet: {"user_participants": ObjectID(req.body.user_id)}}, //addToSet ensures no duplicate names in array
+        {$addToSet: {"user_participants": req.body.user_id}}, //addToSet ensures no duplicate names in array
         {"new": true},
         function (err, gig) {
             if (err || gig == null) {
@@ -247,7 +247,7 @@ exports.add_user_participant = asyncMiddleware(async (req, res, next) => {
 exports.delete_user_participant = asyncMiddleware(async (req, res, next) => {
     return Gig.findOneAndUpdate(
         {"_id": new ObjectID(req.params.id)},
-        {$pullAll: {"user_participants": [new ObjectID(req.body.user_id)]}}, //remove all instances of the user admin
+        {$pullAll: {"user_participants": [req.body.user_id]}}, //remove all instances of the user admin
         {"new": true}, // return updated new array
         function (err, gig) {
             if (err || gig == null) {

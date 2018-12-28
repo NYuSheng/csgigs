@@ -4,7 +4,7 @@ const ObjectID = require('mongodb').ObjectID;
 exports.assign_points = function (req, res) {
     let points_assigned = new Point(
         {
-            user_id: ObjectID(req.params.user_id),
+            user_id: req.params.user_id,
             gig_id: ObjectID(req.body.gig_id),
             points:req.body.points
         }
