@@ -117,6 +117,13 @@ exports.get_user_all_gigs = asyncMiddleware(async (req, res, next) => {
         });
 });
 
+exports.update_gig = function (req, res, next) {
+    Gig.findByIdAndUpdate(req.params.id, {$set: req.body}, function (err, gig) {
+        if (err) return next(err);
+        res.send("Gig updated.");
+    });
+};
+
 exports.gigs_by_status = function (req, res) {
     return Gig.find({status: req.params.status}).exec().then((gigs_retrieved) => {
         if (gigs_retrieved.length === 0) {

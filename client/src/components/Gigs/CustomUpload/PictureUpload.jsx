@@ -23,7 +23,7 @@ class PictureUpload extends React.Component {
     resetPhoto(photo){
         this.setState({
             file: null,
-            imagePreviewUrl: photo
+            imagePreviewUrl: photo ? photo : defaultImage
         })
     }
 

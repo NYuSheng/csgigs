@@ -51,3 +51,40 @@ export const getUserGigs = function (loadingCallback, gigsCallback) {
         loadingCallback(false);
     });
 };
+
+export const getUserGig = function (gigId, gigsCallback) {
+    const user = UserProfile.getUser();
+    fetch(`/admin-ui/api/gigs/${user.me._id}/${gigId}`, {
+        method: 'GET',
+        headers: {'Content-Type': 'application/json'}
+    }).then(data => {
+        if (data.status !== 200) {
+            data.json().then(json => {
+                NotificationManager.error(json.error.errmsg);
+            });
+        } else {
+            data.json().then(json => {
+                gigsCallback(json.gig);
+            });
+        }
+    });
+};
+
+export const update = function (gigId, payload, statusCallback) {
+    const user = UserProfile.getUser();
+    if (statusCallback) statusCallback("loading");
+    fetch(`/admin-ui/api/gigs/${user.me._id}/${gigId}`, {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(payload)
+    }).then(data => {
+        if (data.status !== 200) {
+            data.json().then(json => {
+                NotificationManager.error(json.error.errmsg);
+            });
+            if (statusCallback) statusCallback("working");
+        } else {
+            if (statusCallback) statusCallback("success");
+        }
+    });
+};

@@ -19,10 +19,9 @@ import GridItem from "components/Grid/GridItem";
 import Button from "components/CustomButtons/Button";
 import CustomInput from "components/Gigs/CustomInput/CustomInput";
 import PictureUpload from "components/Gigs/CustomUpload/PictureUpload";
-import UserProfile from "components/Gigs/Authentication/UserProfile";
+import {update} from "components/Gigs/API/Gigs/Gigs";
 
 // dependencies
-import {NotificationManager} from "react-notifications";
 import Loader from 'react-loader-spinner';
 
 // style sheets
@@ -43,6 +42,12 @@ class GigDetails extends React.Component {
         this.upload = React.createRef();
     }
 
+    setStatusState(status) {
+        this.setState({
+            status: status
+        })
+    }
+
     componentWillMount() {
         const {gig} = this.props;
         if (gig.photo) {
@@ -55,6 +60,10 @@ class GigDetails extends React.Component {
                 description: gig.description
             })
         }
+    }
+
+    componentWillReceiveProps() {
+        this.resetState();
     }
 
     onChangeGigImage(file) {
@@ -71,7 +80,6 @@ class GigDetails extends React.Component {
 
     closeModal() {
         const {hidePopup} = this.props;
-        this.resetState();
         hidePopup("gigDetails");
     }
 
@@ -96,38 +104,13 @@ class GigDetails extends React.Component {
     }
 
     confirmGigDetailsEdit() {
-        const user = UserProfile.getUser();
-        const {gig, editDetailsAction} = this.props;
-        this.setState({
-            status: "loading"
-        });
-        let payload = this.buildPayLoad();
-
-        fetch(`/admin-ui/api/gigs/${user.me.username}/${gig._id}`, {
-            method: 'PUT',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(payload)
-        }).then(data => {
-            if (data.status !== 200) {
-                data.json().then(json => {
-                    NotificationManager.error(json.error.errmsg);
-                });
-                this.setState({
-                    status: "working"
-                });
-            } else {
-                this.setState({
-                    status: "success"
-                });
-                editDetailsAction(payload);
-            }
-        });
+        const {gig} = this.props;
+        update(gig._id, this.buildPayLoad(), this.setStatusState.bind(this));
     }
 
     buildPayLoad() {
         const {photo, description} = this.state;
-
-        var payload = {};
+        const payload = {};
         payload["photo"] = photo;
         payload["description"] = description;
         return payload;
