@@ -1,14 +1,11 @@
 const httpMocks = require("node-mocks-http");
 const gigController = require("../controllers/gig.controller");
+const rcController = require("../controllers/rc.controller");
 const mongoose = require("mongoose");
 const test_util = require("../utils/test.util");
 const mockRes = require("jest-mock-express").response;
 
 const GigsMock = require("../models/gig.model");
-
-jest
-  .spyOn(GigsMock.prototype, "save")
-  .mockImplementationOnce(() => Promise.resolve(null));
 
 const createRequest = () => {
   return {
@@ -28,13 +25,33 @@ describe("Gig Controller Tests", () => {
   });
 
   it("should return an error if unable to create a gig", async () => {
-    GigsMock.save = async () => Promise.resolve(null);
-
+    jest
+      .spyOn(GigsMock.prototype, "save")
+      .mockImplementationOnce(() => Promise.resolve(null));
     await gigController.create_gig(createRequest(), res);
 
     expect(res.status).toHaveBeenCalledWith(400);
     expect(res.send).toHaveBeenCalledWith({
       error: "Error encountered while creating gig: testgig"
+    });
+  });
+
+  it("should return an error if unable create a rc group", async () => {
+    jest
+      .spyOn(GigsMock.prototype, "save")
+      .mockImplementationOnce(() =>
+        Promise.resolve({ _id: "1", name: "test", user_admins: [] })
+      );
+
+    jest
+      .spyOn(rcController, "create_group")
+      .mockImplementationOnce(() => Promise.resolve(null));
+
+    await gigController.create_gig(createRequest(), res);
+
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.send).toHaveBeenCalledWith({
+      error: "Unable to create group test in RC"
     });
   });
 });

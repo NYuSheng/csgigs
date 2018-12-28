@@ -14,7 +14,7 @@ exports.create_gig = asyncMiddleware(async (req, res, next) => {
     status: "Draft",
     user_admins: req.body.user_admins.map(admin => admin._id),
     //Possible required fields in creation
-    user_participants: [],
+    user_participants: []
     // user_attendees: []
   });
   try {
@@ -26,12 +26,12 @@ exports.create_gig = asyncMiddleware(async (req, res, next) => {
       });
     }
 
-        //publish_bot with broadcast_test channel
-        const authSet_bot = {
-            'x-auth-token': 'VynD2oNIieXVkn_nkqBSq1DKv5_5LhC1-ZKrz9q-bwl',
-            'x-user-id': 'Zjh2Hmnsbwq5MGMv8'
-        }
-        const roomId = "2EvneDEerT9jGLYYf";
+    //publish_bot with broadcast_test channel
+    const authSet_bot = {
+      "x-auth-token": "VynD2oNIieXVkn_nkqBSq1DKv5_5LhC1-ZKrz9q-bwl",
+      "x-user-id": "Zjh2Hmnsbwq5MGMv8"
+    };
+    const roomId = "2EvneDEerT9jGLYYf";
 
     const gig_id_and_name = {
       _id: gig_created._id,
@@ -47,22 +47,27 @@ exports.create_gig = asyncMiddleware(async (req, res, next) => {
       members,
       gig_created.name
     );
-    if (created_group) {
-      const gig_owners = req.body.user_admins
-        .filter(admin => admin.name !== req.body.user)
-        .map(admin => admin._id);
-      rc_controller.add_owners_to_group(created_group._id, gig_owners, req.headers);
-      Gig.findByIdAndUpdate(
-        gig_created._id,
-        { rc_channel_id: created_group },
-        function(err) {
-          if (err) return next(err);
-        }
-      );
-      const message =
-        "Please reply 'Attend' for event: *" + gig_created.name + "*";
-      rc_controller.publish_broadcast_message(roomId, message, authSet_bot);
+    if (!created_group) {
+      throw `Unable to create group ${gig_created.name} in RC`;
     }
+    const gig_owners = req.body.user_admins
+      .filter(admin => admin.name !== req.body.user)
+      .map(admin => admin._id);
+    rc_controller.add_owners_to_group(
+      created_group._id,
+      gig_owners,
+      req.headers
+    );
+    Gig.findByIdAndUpdate(
+      gig_created._id,
+      { rc_channel_id: created_group },
+      function(err) {
+        if (err) return next(err);
+      }
+    );
+    const message =
+      "Please reply 'Attend' for event: *" + gig_created.name + "*";
+    rc_controller.publish_broadcast_message(roomId, message, authSet_bot);
 
     res.status(200).send({
       gig: gig_id_and_name
