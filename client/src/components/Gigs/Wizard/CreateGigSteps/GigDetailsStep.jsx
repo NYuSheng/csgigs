@@ -46,7 +46,8 @@ class GigDetailsStep extends React.Component {
             selectedAdmins: [],
             adminState: "",
             budget: 0,
-            budgetState: ""
+            budgetState: "",
+            errorMessage: ""
         };
     }
 
@@ -83,6 +84,8 @@ class GigDetailsStep extends React.Component {
         })
     }
 
+
+
     deselectAdmin(admin) {
         const selectedAdmins = this.state.selectedAdmins;
         const adminsAfterRemoval = selectedAdmins.filter(selectedAdmin => selectedAdmin["_id"] !== admin["_id"]);
@@ -108,10 +111,17 @@ class GigDetailsStep extends React.Component {
     validateName(event) {
         const name = event.target.value;
         this.setState({name: name});
-        name ?
-            this.setState({nameState: "success"})
+        const reg = /^\w+$/;
+        reg.test(name) ?
+            this.setState({
+                errorMessage: "",
+                nameState: "success"
+            })
             :
-            this.setState({nameState: "error"})
+            this.setState({
+                errorMessage: "Special characters in gig name: " + name,
+                nameState: "error"
+            });
     }
 
     isValidated() {
@@ -123,7 +133,10 @@ class GigDetailsStep extends React.Component {
             return true;
         } else {
             if (this.state.nameState !== "success") {
-                this.setState({nameState: "error"});
+                this.setState({
+                    nameState: "error",
+                    errorMessage: "Field should not be empty."
+                });
             }
             if (this.state.budgetState !== "success") {
                 this.setState({budgetState: "error"});
@@ -138,7 +151,7 @@ class GigDetailsStep extends React.Component {
 
     render() {
         const {classes} = this.props;
-        const {nameState, adminState, budgetState, selectedAdmins} = this.state;
+        const {nameState, adminState, budgetState, selectedAdmins, errorMessage} = this.state;
 
         return (
             <GridContainer justify="center">
@@ -147,11 +160,7 @@ class GigDetailsStep extends React.Component {
                     <CustomInput
                         success={nameState === "success"}
                         error={nameState === "error"}
-                        labelText={
-                            <span>
-                                Gig Name <small>(required)</small>
-                            </span>
-                        }
+                        labelText={errorMessage}
                         id="gigname"
                         formControlProps={{
                             fullWidth: true
