@@ -1,5 +1,5 @@
 //@ts-check
-
+const LogConfig = require("../log-config");
 const Gig = require("../models/gig.model");
 const asyncMiddleware = require("../utils/asyncMiddleware");
 const ObjectID = require("mongodb").ObjectID;
@@ -54,13 +54,14 @@ exports.create_gig = asyncMiddleware(async (req, res, next) => {
       name: gig_created.name
     };
 
-    gig_created.user_admins = gig_created.user_admins.filter(
+    const members = gig_created.user_admins.filter(
       admin => admin !== req.body.user
     );
 
     const created_group = await rc_controller.create_group(
-      gig_created,
-      authSet
+      authSet,
+      members,
+      gig_created.name
     );
     if (created_group) {
       const gig_owners = req.body.user_admins
@@ -70,7 +71,7 @@ exports.create_gig = asyncMiddleware(async (req, res, next) => {
       Gig.findByIdAndUpdate(
         gig_created._id,
         { rc_channel_id: created_group },
-        function(err, gig) {
+        function(err) {
           if (err) return next(err);
         }
       );
@@ -83,7 +84,7 @@ exports.create_gig = asyncMiddleware(async (req, res, next) => {
       gig: gig_id_and_name
     });
   } catch (error) {
-    console.log(error);
+    LogConfig.error(JSON.stringify(error));
     res.status(500).send({ error });
   }
 });
@@ -195,7 +196,7 @@ exports.add_user_admin = asyncMiddleware(async (req, res, next) => {
     { new: true },
     function(err, gig) {
       if (err || gig == null) {
-        console.log(err);
+        LogConfig.error(JSON.stringify(err));
         return res.status(400).send({
           error: "Cannot find gig of name " + req.params.name
         });
@@ -215,7 +216,7 @@ exports.delete_user_admin = asyncMiddleware(async (req, res, next) => {
     { new: true }, // return updated new array
     function(err, gig) {
       if (err || gig == null) {
-        console.log(err);
+        LogConfig.error(JSON.stringify(err));
         return res.status(400).send({
           error: "Cannot find admin of id " + req.body.user_id
         });
@@ -268,7 +269,7 @@ exports.add_user_participant = asyncMiddleware(async (req, res, next) => {
     { new: true },
     function(err, gig) {
       if (err || gig == null) {
-        console.log(err);
+        LogConfig.error(JSON.stringify(err));
         return res.status(400).send({
           error: "Cannot find Gig of id " + req.params.id
         });
@@ -288,8 +289,8 @@ exports.delete_user_participant = asyncMiddleware(async (req, res, next) => {
     { new: true }, // return updated new array
     function(err, gig) {
       if (err || gig == null) {
-        console.log(err);
-        console.log(gig);
+        LogConfig.error(JSON.stringify(err));
+        LogConfig.error(gig);
         return res.status(400).send({
           error: "Cannot find participant of id " + req.body.user_id
         });
