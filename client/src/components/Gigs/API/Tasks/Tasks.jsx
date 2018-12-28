@@ -52,14 +52,33 @@ export const add = function(gigRoomId, gigId, state, statusCallback) {
         } else {
             data.json().then(json => {
                 const task = json.task;
-                //gig.tasks.push(task);
-                publishMessage(buildPublishMessage(gigRoomId, task));
+                publishMessage(buildTaskPublishMessage(gigRoomId, task));
             });
             if (statusCallback) statusCallback("success");
         }
     });
 };
-function buildPublishMessage (gigRoomId, task) {
+
+export const remove = function(gigRoomId, taskId, taskName, statusCallback) {
+    if (statusCallback) statusCallback("loading");
+    fetch(`/admin-ui/api/tasks/removeTask/${taskId}`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'}
+    }).then(data => {
+        if (data.status !== 200) {
+            data.json().then(json => {
+                NotificationManager.error(json.error.errmsg);
+            });
+            if (statusCallback) statusCallback("working");
+        } else {
+            // publish message to remove task
+
+            if (statusCallback) statusCallback("success");
+        }
+    });
+};
+
+function buildTaskPublishMessage (gigRoomId, task) {
     const authSet = UserProfile.getAuthSet();
     const publishPayload = {};
 

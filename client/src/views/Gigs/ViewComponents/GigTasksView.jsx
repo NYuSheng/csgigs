@@ -6,6 +6,7 @@ import Tasks from "components/Gigs/Tasks/Tasks";
 import AddTask from "components/Gigs/PopupModals/Dialog/AddTask";
 import EditTask from "components/Gigs/PopupModals/Dialog/EditTask";
 import AssignUsers from "components/Gigs/PopupModals/Dialog/AssignUsers";
+import RemoveTask from "components/Gigs/PopupModals/Dialog/RemoveTask";
 import {retreive} from "components/Gigs/API/Tasks/Tasks";
 
 class GigTasksView extends React.Component {
@@ -17,7 +18,8 @@ class GigTasksView extends React.Component {
             tasks: [],
             addTaskModalOpen: false,
             editTaskModalOpen: false,
-            assignUsersModalOpen: false
+            assignUsersModalOpen: false,
+            removeTaskModalOpen: false
         };
     }
 
@@ -39,7 +41,9 @@ class GigTasksView extends React.Component {
 
     isAnyPopupClicked(prevState) {
         return this.state.addTaskModalOpen !== prevState.addTaskModalOpen ||
-            this.state.editTaskModalOpen !== prevState.editTaskModalOpen;
+            this.state.editTaskModalOpen !== prevState.editTaskModalOpen ||
+            this.state.assignUsersModalOpen !== prevState.assignUsersModalOpen ||
+            this.state.removeTaskModalOpen !== prevState.removeTaskModalOpen;
     }
 
     setTasksState(tasks) {
@@ -77,7 +81,7 @@ class GigTasksView extends React.Component {
                                 tasksIndexes={tasksIndexesArray}
                                 tasks={organizedContent[key]}
                                 editTask={this.openEditTaskPopup.bind(this)}
-                                // removeTask={this.removeTask.bind(this)}
+                                removeTask={this.openRemoveTaskPopup.bind(this)}
                                 assignUsers={this.openAssignUsersPopup.bind(this)}
                             />
                         )
@@ -87,6 +91,13 @@ class GigTasksView extends React.Component {
         }
 
         return toReturn;
+    }
+
+    openRemoveTaskPopup(task) {
+        this.setState({
+            selectedTask: task,
+            removeTaskModalOpen: true
+        })
     }
 
     openAssignUsersPopup(task){
@@ -118,7 +129,8 @@ class GigTasksView extends React.Component {
     render() {
         const {gigId, gigRoomId} = this.props;
         const {
-            addTaskModalOpen, editTaskModalOpen, assignUsersModalOpen,
+            addTaskModalOpen, editTaskModalOpen,
+            assignUsersModalOpen, removeTaskModalOpen,
             tasks, selectedTask
         } = this.state;
 
@@ -133,10 +145,11 @@ class GigTasksView extends React.Component {
                           hideTask={this.hidePopup.bind(this)}
                           task={selectedTask}
                 />
-                {/*<RemoveTask hideTask={this.hidePopup.bind(this)}*/}
-                            {/*task={task}*/}
-                            {/*gig={gig}*/}
-                {/*/>*/}
+                <RemoveTask modalOpen={removeTaskModalOpen}
+                            hideTask={this.hidePopup.bind(this)}
+                            task={selectedTask}
+                            gigRoomId={gigRoomId}
+                />
                 <AssignUsers modalOpen={assignUsersModalOpen}
                              hideTask={this.hidePopup.bind(this)}
                              task={selectedTask}
