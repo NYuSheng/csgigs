@@ -254,7 +254,7 @@ exports.get_user_participants = asyncMiddleware(async (req, res, next) => {
         });
       }
       res.status(200).send({
-        gig: gig_retrieved[0]
+        user_participants: gig_retrieved[0].user_participants
       });
     })
     .catch(err => {
