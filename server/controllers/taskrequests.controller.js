@@ -13,6 +13,7 @@ exports.get_requests_by_id = function (req, res) {
         };
 
     return Task_Requests.aggregate(aggregation_with_users(match_criteria)).exec().then((task_requests) => {
+        console.log(task_requests);
         res.status(200).send({
             task_requests: task_requests
         });
@@ -52,8 +53,8 @@ function aggregation_with_users(match_criteria) {
         {
             "$lookup": {
                 "from": "users",
-                "localField": "user",
-                "foreignField": "name",
+                "localField": "user_id",
+                "foreignField": "_id",
                 "as": "userObject"
             }
         },

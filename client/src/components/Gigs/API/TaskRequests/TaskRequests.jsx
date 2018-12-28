@@ -16,11 +16,9 @@ export const listen = function(task) {
                 });
             } else {
                 data.json().then(json => {
-                    if (task.mounted) {
-                        task.setState({
-                            approvals: json.task_requests
-                        })
-                    }
+                    task.setState({
+                        approvals: json.task_requests
+                    })
                 });
             }
         });
@@ -40,7 +38,7 @@ export const approval = function(payload) {
             if (payload.status === "Approved") {
                 payload.assignedUsers.push(payload.user);
                 const updateTaskPayload = {
-                    users_assigned: payload.assignedUsers.map(user => user.name)
+                    users_assigned: payload.assignedUsers.map(user => user._id)
                 };
                 update(payload.taskId, updateTaskPayload, null);
             }

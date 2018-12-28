@@ -50,18 +50,15 @@ class AssignUsers extends React.Component {
         listen(this);
     }
 
-    componentDidMount() {
-        const {task} = this.props;
-        this.mounted = true;
-        this.setState({
-            taskId: task["_id"],
-            assignedUsers: task.users_assigned,
-            status: "working"
-        })
-    }
-
-    componentWillUnmount() {
-        this.mounted = false;
+    componentDidUpdate(prevProps, prevState) {
+        if (this.props.task !== prevProps.task) {
+            const {task} = this.props;
+            this.setState({
+                taskId: task._id,
+                assignedUsers: task.users_assigned,
+                status: "working"
+            })
+        }
     }
 
     setupAssignedUsersTableCells(user) {
@@ -100,7 +97,7 @@ class AssignUsers extends React.Component {
     }
 
     approveRequest(user,taskRequestId) {
-        const {task, gigChannelId} = this.props;
+        const {task, gigRoomId} = this.props;
         const {taskId, assignedUsers} = this.state;
         const payload = {
             taskRequestId : taskRequestId,
@@ -109,19 +106,19 @@ class AssignUsers extends React.Component {
             assignedUsers: assignedUsers,
             status: "Approved",
             user: user,
-            roomId: gigChannelId
+            roomId: gigRoomId
         };
         approval(payload);
     }
 
     rejectRequest(user, taskRequestId) {
-        const {task, gigChannelId} = this.props;
+        const {task, gigRoomId} = this.props;
         const payload = {
             taskRequestId : taskRequestId,
             taskName: task.task_name,
             status: "Rejected",
             user: user,
-            roomId: gigChannelId
+            roomId: gigRoomId
         };
         approval(payload);
     }
@@ -174,12 +171,12 @@ class AssignUsers extends React.Component {
     }
 
     render() {
-        const {classes, fullScreen} = this.props;
+        const {classes, fullScreen, modalOpen} = this.props;
         const {status} = this.state;
 
         return (
             <Dialog
-                open={true}
+                open={modalOpen}
                 fullScreen={fullScreen}
                 TransitionComponent={Transition}
                 keepMounted

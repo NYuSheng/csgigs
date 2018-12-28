@@ -5,6 +5,7 @@ import CustomTabs from "components/Gigs/CustomTabs/CustomTabs";
 import Tasks from "components/Gigs/Tasks/Tasks";
 import AddTask from "components/Gigs/PopupModals/Dialog/AddTask";
 import EditTask from "components/Gigs/PopupModals/Dialog/EditTask";
+import AssignUsers from "components/Gigs/PopupModals/Dialog/AssignUsers";
 import {retreive} from "components/Gigs/API/Tasks/Tasks";
 
 class GigTasksView extends React.Component {
@@ -15,7 +16,8 @@ class GigTasksView extends React.Component {
             selectedTask: null,
             tasks: [],
             addTaskModalOpen: false,
-            editTaskModalOpen: false
+            editTaskModalOpen: false,
+            assignUsersModalOpen: false
         };
     }
 
@@ -45,8 +47,6 @@ class GigTasksView extends React.Component {
             tasks: tasks
         })
     }
-
-
 
     organizeTabContent(tasks) {
         var toReturn = [];
@@ -78,7 +78,7 @@ class GigTasksView extends React.Component {
                                 tasks={organizedContent[key]}
                                 editTask={this.openEditTaskPopup.bind(this)}
                                 // removeTask={this.removeTask.bind(this)}
-                                // assignUsers={this.assignUsers.bind(this)}
+                                assignUsers={this.openAssignUsersPopup.bind(this)}
                             />
                         )
                     });
@@ -87,6 +87,13 @@ class GigTasksView extends React.Component {
         }
 
         return toReturn;
+    }
+
+    openAssignUsersPopup(task){
+        this.setState({
+            selectedTask: task,
+            assignUsersModalOpen: true
+        })
     }
 
     openEditTaskPopup(task) {
@@ -111,8 +118,8 @@ class GigTasksView extends React.Component {
     render() {
         const {gigId, gigRoomId} = this.props;
         const {
-            addTaskModalOpen, editTaskModalOpen, tasks,
-            selectedTask
+            addTaskModalOpen, editTaskModalOpen, assignUsersModalOpen,
+            tasks, selectedTask
         } = this.state;
 
         return (
@@ -130,10 +137,11 @@ class GigTasksView extends React.Component {
                             {/*task={task}*/}
                             {/*gig={gig}*/}
                 {/*/>*/}
-                {/*<AssignUsers hideTask={this.hidePopup.bind(this)}*/}
-                             {/*task={task}*/}
-                             {/*gigChannelId={this.state.gig.rc_channel_id._id}*/}
-                {/*/>*/}
+                <AssignUsers modalOpen={assignUsersModalOpen}
+                             hideTask={this.hidePopup.bind(this)}
+                             task={selectedTask}
+                             gigRoomId={gigRoomId}
+                />
                 <CustomTabs
                     title="Tasks:"
                     headerColor="teal"
