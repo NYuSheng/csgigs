@@ -161,6 +161,28 @@ describe("Gig Controller Tests", () => {
       error: "Unable to publish broadcast message for test"
     });
   });
+
+  it("should successfully create gigs", async () => {
+    jest
+      .spyOn(GigsMock, "findByIdAndUpdate")
+      .mockImplementationOnce(() => Promise.resolve());
+
+    const user_admins = createUsers(["bob"]);
+    createMongoSaveMock(user_admins);
+    // RC API create group
+    global.fetch.mockResponseOnce(JSON.stringify(createGroupResponse()));
+    // RC API make user as group owner
+    global.fetch.mockResponseOnce(JSON.stringify({ success: true }));
+    // RC API to post message
+    global.fetch.mockResponseOnce(JSON.stringify({ success: true }));
+
+    await gigController.create_gig(createRequest(user_admins), res);
+
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.send).toHaveBeenCalledWith({
+      gig: { _id: "1", name: "test" }
+    });
+  });
 });
 
 xdescribe("Gig Controller Tests", () => {
