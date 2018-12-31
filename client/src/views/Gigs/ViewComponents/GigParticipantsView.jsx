@@ -48,8 +48,6 @@ class GigParticipantsView extends React.Component {
     this.setState({
       participants: participants
     });
-    // console.log("STATE");
-    // console.log(this.state.participants);
   }
 
   setupTableCells(participant) {
@@ -75,26 +73,26 @@ class GigParticipantsView extends React.Component {
   }
 
   render() {
-    const { classes } = this.props;
+    const { classes, gigId } = this.props;
     const { modalOpen, participants } = this.state;
-
     return (
       <div>
         <EditGigParticipants
           modalOpen={modalOpen}
           hidePopup={this.hidePopup.bind(this)}
           participants={participants}
+          gigId={gigId}
         />
         <Card>
-          <CardHeader color="brown" stats icon>
+          <CardHeader color="brown" icon>
             <GridContainer style={{ width: "100%", margin: 0 }}>
               <GridItem xs={9} sm={9} md={9} lg={9} style={{ paddingLeft: 0 }}>
                 <CardIcon color="brown">
                   <Participants />
                 </CardIcon>
                 <h4
+                  style={{ flexWrap: "wrap" }}
                   className={classes.cardCategory}
-                  style={{ fontSize: 20, textAlign: "left", paddingTop: 20 }}
                 >
                   Gig Participant(s)
                 </h4>
@@ -113,7 +111,7 @@ class GigParticipantsView extends React.Component {
                   onClick={this.openPopup.bind(this)}
                   variant="contained"
                   size="small"
-                  style={{ height: "100%", padding: 0 }}
+                  style={{ height: "80%", padding: 0 }}
                 >
                   <div className={classes.muiButtonText}>Edit</div>
                   <Edit
