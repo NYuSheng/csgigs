@@ -6,6 +6,16 @@ const mockRes = require("jest-mock-express").response;
 
 const GigsMock = require("../models/gig.model");
 
+const createMongoSaveMock = user_admins => {
+  jest.spyOn(GigsMock.prototype, "save").mockImplementationOnce(() =>
+    Promise.resolve({
+      _id: "1",
+      name: "test",
+      user_admins
+    })
+  );
+};
+
 const createGroupResponse = () => {
   return {
     group: {
@@ -65,13 +75,7 @@ describe("Gig Controller Tests", () => {
   });
 
   it("should return an error if unable create a rc group", async () => {
-    jest.spyOn(GigsMock.prototype, "save").mockImplementationOnce(() =>
-      Promise.resolve({
-        _id: "1",
-        name: "test",
-        user_admins: createUsers(["bob"])
-      })
-    );
+    createMongoSaveMock(createUsers(["bob"]));
 
     global.fetch.mockResponse(JSON.stringify({ success: false }));
 
@@ -84,13 +88,7 @@ describe("Gig Controller Tests", () => {
   });
 
   it("should return an error if there were no group owners specified", async () => {
-    jest.spyOn(GigsMock.prototype, "save").mockImplementationOnce(() =>
-      Promise.resolve({
-        _id: "1",
-        name: "test",
-        user_admins: createUsers(["bob", "frank", "jill"])
-      })
-    );
+    createMongoSaveMock(createUsers(["bob", "frank", "jill"]));
 
     global.fetch.mockResponse(JSON.stringify({ success: true }));
 
@@ -104,13 +102,7 @@ describe("Gig Controller Tests", () => {
 
   it("should return an error if unable add a user as an owner of a group", async () => {
     const user_admins = createUsers(["bob", "frank", "jill"]);
-    jest.spyOn(GigsMock.prototype, "save").mockImplementationOnce(() =>
-      Promise.resolve({
-        _id: "1",
-        name: "test",
-        user_admins
-      })
-    );
+    createMongoSaveMock(user_admins);
 
     global.fetch.mockResponseOnce(JSON.stringify(createGroupResponse()));
 
@@ -124,6 +116,27 @@ describe("Gig Controller Tests", () => {
     expect(res.status).toHaveBeenCalledWith(500);
     expect(res.send).toHaveBeenCalledWith({
       error: "Unable to add user frank as an owner of group testgig"
+    });
+  });
+
+  fit("should return an error if adding the channel ID to the gig in mongo", async () => {
+    const user_admins = createUsers(["bob"]);
+    createMongoSaveMock(user_admins);
+
+    jest
+      .spyOn(GigsMock, "findByIdAndUpdate")
+      .mockImplementationOnce(() => Promise.reject("Could not find it"));
+
+    global.fetch.mockResponseOnce(JSON.stringify(createGroupResponse()));
+    global.fetch.mockResponseOnce(JSON.stringify({ success: true }));
+
+    await gigController.create_gig(createRequest(user_admins), res, x =>
+      Promise.resolve(x)
+    );
+
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.send).toHaveBeenCalledWith({
+      error: "Could not find it"
     });
   });
 });

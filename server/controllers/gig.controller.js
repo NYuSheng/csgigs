@@ -69,13 +69,10 @@ exports.create_gig = asyncMiddleware(async (req, res, next) => {
       throw `Unable to add user ${user.name} as an owner of group ${gig.name}`;
     }
 
-    Gig.findByIdAndUpdate(
-      gig_created._id,
-      { rc_channel_id: created_group },
-      function(err) {
-        if (err) return next(err);
-      }
-    );
+    await Gig.findByIdAndUpdate(gig_created._id, {
+      rc_channel_id: created_group
+    });
+
     const message =
       "Please reply 'Attend' for event: *" + gig_created.name + "*";
     rc_controller.publish_broadcast_message(roomId, message, authSet_bot);
