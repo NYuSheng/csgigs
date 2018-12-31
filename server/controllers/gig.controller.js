@@ -220,23 +220,31 @@ exports.get_user_participants = asyncMiddleware(async (req, res, next) => {
 });
 
 exports.add_user_participant = asyncMiddleware(async (req, res, next) => {
-  return Gig.findOneAndUpdate(
-    { _id: new ObjectID(req.params.id) },
-    { $addToSet: { user_participants: req.body.user_id } }, //addToSet ensures no duplicate names in array
-    { new: true },
-    function(err, gig) {
-      if (err || gig == null) {
-        LogConfig.error(JSON.stringify(err));
-        return res.status(400).send({
-          error: "Cannot find Gig of id " + req.params.id
-        });
-      } else {
-        res.status(200).send({
-          gig: gig
-        });
-      }
+  try {
+    const gig = await Gig.findOneAndUpdate(
+      { name: req.body.gig_name },
+      { $addToSet: { user_participants: req.body.user_id } }, //addToSet ensures no duplicate names in array
+      { new: true }
+    );
+
+    if (gig == null) {
+      throw "Cannot find Gig of id " + req.body.gig_name;
     }
-  );
+
+    const room_id = gig.rc_channel_id._id;
+    const user_id = req.body.user_id;
+    const authSet_bot = {
+      "x-auth-token": "XO4_kYKgMjEA926toCPSppXxU9_RoipVZ_KDvTxHuqp",
+      "x-user-id": "Zjh2Hmnsbwq5MGMv8"
+    };
+    await rc_controller.add_user_participant(room_id, user_id, authSet_bot);
+    res.status(200).send({
+      gig: gig
+    });
+  } catch (error) {
+    LogConfig.error(JSON.stringify(error));
+    res.status(500).send({ error });
+  }
 });
 
 exports.delete_user_participant = asyncMiddleware(async (req, res, next) => {

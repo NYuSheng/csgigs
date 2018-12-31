@@ -130,6 +130,24 @@ exports.publish_broadcast_message = function(room_id, message, auth_set) {
     });
 };
 
+exports.add_user_participant = async function(room_id, user_id, auth_set) {
+  const headers = get_headers(auth_set);
+  const body = {
+    roomId: room_id,
+    userId: user_id
+  };
+
+  const response = await fetch("https://csgigs.com/api/v1/groups.invite", {
+    method: "POST",
+    headers: headers,
+    body: JSON.stringify(body)
+  });
+  const data = await response.json();
+  if (!data.success) {
+    throw "Unable to add user into rocket chat group";
+  }
+};
+
 function rc_set_group_type(headers, body, res) {
   fetch("https://csgigs.com/api/v1/groups.setType", {
     method: "POST",
