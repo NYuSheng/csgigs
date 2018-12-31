@@ -1,6 +1,5 @@
 const httpMocks = require("node-mocks-http");
 const gigController = require("../controllers/gig.controller");
-const rcController = require("../controllers/rc.controller");
 const mongoose = require("mongoose");
 const test_util = require("../utils/test.util");
 const mockRes = require("jest-mock-express").response;
@@ -9,6 +8,7 @@ const GigsMock = require("../models/gig.model");
 
 const createRequest = () => {
   return {
+    headers: {},
     body: {
       name: "testgig",
       user_admins: [],
@@ -43,9 +43,7 @@ describe("Gig Controller Tests", () => {
         Promise.resolve({ _id: "1", name: "test", user_admins: [] })
       );
 
-    jest
-      .spyOn(rcController, "create_group")
-      .mockImplementationOnce(() => Promise.resolve(null));
+    global.fetch.mockResponse(JSON.stringify({ success: false }));
 
     await gigController.create_gig(createRequest(), res);
 
@@ -67,7 +65,7 @@ xdescribe("Gig Controller Tests", () => {
 
   describe("Create Gig", () => {
     test("with required parameters should return created gig, empty admin/participant/attendee array, status 200", () => {
-      var body = {
+      const body = {
         name: "ポケモンサファリ＠台南",
         points_budget: 100,
         status: "NOT STARTED"

@@ -10,6 +10,19 @@
       "name": "Launch Admin Server",
       "program": "${workspaceFolder}/server/server.js",
       "env": { "NODE_ENV": "development" }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Jest All Admin Server",
+      "cwd": "${workspaceFolder}/server",
+      "program": "${workspaceFolder}/server/node_modules/.bin/jest",
+      "args": ["--runInBand", "--detectOpenHandles"],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "windows": {
+        "program": "${workspaceFolder}/server/node_modules/jest/bin/jest"
+      }
     }
   ]
 }
