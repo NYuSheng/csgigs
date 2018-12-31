@@ -18,6 +18,10 @@ exports.create_gig = asyncMiddleware(async (req, res, next) => {
     // user_attendees: []
   });
   try {
+    if (!gig.user_admins.length) {
+      throw `No owner specified for ${gig.name}`;
+    }
+
     const gig_created = await gig.save();
 
     if (gig_created === null) {
@@ -53,7 +57,7 @@ exports.create_gig = asyncMiddleware(async (req, res, next) => {
     const gig_owners = req.body.user_admins
       .filter(admin => admin.name !== req.body.user)
       .map(admin => admin._id);
-    rc_controller.add_owners_to_group(
+    await rc_controller.add_owners_to_group(
       created_group._id,
       gig_owners,
       req.headers
@@ -176,46 +180,6 @@ exports.get_user_admins = asyncMiddleware(async (req, res, next) => {
     .catch(err => {
       res.status(400).send({ error: err });
     });
-});
-
-exports.add_user_admin = asyncMiddleware(async (req, res, next) => {
-  return Gig.findOneAndUpdate(
-    { _id: new ObjectID(req.params.id) },
-    { $addToSet: { user_admins: req.body.user_id } }, //addToSet ensures no duplicate names in array
-    { new: true },
-    function(err, gig) {
-      if (err || gig == null) {
-        LogConfig.error(JSON.stringify(err));
-        return res.status(400).send({
-          error: "Cannot find gig of name " + req.params.name
-        });
-      } else {
-        res.status(200).send({
-          gig: gig
-        });
-      }
-    }
-  );
-});
-
-exports.delete_user_admin = asyncMiddleware(async (req, res, next) => {
-  return Gig.findOneAndUpdate(
-    { _id: new ObjectID(req.params.id) },
-    { $pullAll: { user_admins: [req.body.user_id] } }, //remove all instances of the user admin
-    { new: true }, // return updated new array
-    function(err, gig) {
-      if (err || gig == null) {
-        LogConfig.error(JSON.stringify(err));
-        return res.status(400).send({
-          error: "Cannot find admin of id " + req.body.user_id
-        });
-      } else {
-        res.status(200).send({
-          gig: gig
-        });
-      }
-    }
-  );
 });
 
 function gig_aggregation_with_user_admin(matchCriteria) {

@@ -6,21 +6,49 @@ const mockRes = require("jest-mock-express").response;
 
 const GigsMock = require("../models/gig.model");
 
-const createRequest = () => {
+const createGroupResponse = () => {
+  return {
+    group: {
+      _id: "NtR6RQ7NvzA9ejecX",
+      name: "testing",
+      t: "p",
+      usernames: ["tester"],
+      msgs: 0,
+      u: {
+        _id: "aobEdbYhXfu5hkeqG",
+        username: "tester"
+      },
+      ts: "2016-12-09T16:53:06.761Z",
+      ro: false,
+      sysMes: true,
+      _updatedAt: "2016-12-09T16:53:06.761Z"
+    },
+    success: true
+  };
+};
+
+const createRequest = user_admins => {
   return {
     headers: {},
     body: {
       name: "testgig",
-      user_admins: [],
+      user_admins: user_admins || [],
       points_budget: 500
     }
   };
+};
+
+const createUsers = names => {
+  return names.map((name, i) => {
+    return { _id: `id${++i}`, name };
+  });
 };
 
 describe("Gig Controller Tests", () => {
   let res;
   beforeEach(() => {
     res = mockRes();
+    global.fetch.resetMocks();
     jest.clearAllMocks();
   });
 
@@ -28,7 +56,7 @@ describe("Gig Controller Tests", () => {
     jest
       .spyOn(GigsMock.prototype, "save")
       .mockImplementationOnce(() => Promise.resolve(null));
-    await gigController.create_gig(createRequest(), res);
+    await gigController.create_gig(createRequest(["bob"]), res);
 
     expect(res.status).toHaveBeenCalledWith(400);
     expect(res.send).toHaveBeenCalledWith({
@@ -37,19 +65,64 @@ describe("Gig Controller Tests", () => {
   });
 
   it("should return an error if unable create a rc group", async () => {
-    jest
-      .spyOn(GigsMock.prototype, "save")
-      .mockImplementationOnce(() =>
-        Promise.resolve({ _id: "1", name: "test", user_admins: [] })
-      );
+    jest.spyOn(GigsMock.prototype, "save").mockImplementationOnce(() =>
+      Promise.resolve({
+        _id: "1",
+        name: "test",
+        user_admins: createUsers(["bob"])
+      })
+    );
 
     global.fetch.mockResponse(JSON.stringify({ success: false }));
+
+    await gigController.create_gig(createRequest(["bob"]), res);
+
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.send).toHaveBeenCalledWith({
+      error: "Unable to create group test in RC"
+    });
+  });
+
+  it("should return an error if there were no group owners specified", async () => {
+    jest.spyOn(GigsMock.prototype, "save").mockImplementationOnce(() =>
+      Promise.resolve({
+        _id: "1",
+        name: "test",
+        user_admins: createUsers(["bob", "frank", "jill"])
+      })
+    );
+
+    global.fetch.mockResponse(JSON.stringify({ success: true }));
 
     await gigController.create_gig(createRequest(), res);
 
     expect(res.status).toHaveBeenCalledWith(500);
     expect(res.send).toHaveBeenCalledWith({
-      error: "Unable to create group test in RC"
+      error: "No owner specified for testgig"
+    });
+  });
+
+  xit("should return an error if unable add a user as an owner of a group", async () => {
+    jest.spyOn(GigsMock.prototype, "save").mockImplementationOnce(() =>
+      Promise.resolve({
+        _id: "1",
+        name: "test",
+        user_admins: createUsers(["bob", "frank", "jill"])
+      })
+    );
+
+    global.fetch.mockResponseOnce(JSON.stringify(createGroupResponse()));
+
+    // for each user
+    global.fetch.mockResponseOnce(JSON.stringify({ success: true }));
+    global.fetch.mockResponseOnce(JSON.stringify({ success: false }));
+    global.fetch.mockResponseOnce(JSON.stringify({ success: true }));
+
+    await gigController.create_gig(createRequest(), res);
+
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.send).toHaveBeenCalledWith({
+      error: "Unable to add users..."
     });
   });
 });
