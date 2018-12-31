@@ -75,7 +75,14 @@ exports.create_gig = asyncMiddleware(async (req, res, next) => {
 
     const message =
       "Please reply 'Attend' for event: *" + gig_created.name + "*";
-    rc_controller.publish_broadcast_message(roomId, message, authSet_bot);
+    const broadcastMessage = await rc_controller.publish_broadcast_message(
+      roomId,
+      message,
+      authSet_bot
+    );
+    if (!broadcastMessage) {
+      throw `Unable to publish broadcast message for ${gig_created.name}`;
+    }
 
     res.status(200).send({
       gig: gig_id_and_name

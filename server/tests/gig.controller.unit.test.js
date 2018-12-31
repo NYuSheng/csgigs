@@ -119,7 +119,7 @@ describe("Gig Controller Tests", () => {
     });
   });
 
-  fit("should return an error if adding the channel ID to the gig in mongo", async () => {
+  it("should return an error if adding the channel ID to the gig in mongo", async () => {
     const user_admins = createUsers(["bob"]);
     createMongoSaveMock(user_admins);
 
@@ -137,6 +137,28 @@ describe("Gig Controller Tests", () => {
     expect(res.status).toHaveBeenCalledWith(500);
     expect(res.send).toHaveBeenCalledWith({
       error: "Could not find it"
+    });
+  });
+
+  it("should return error message if publish broadcast messsage fails", async () => {
+    jest
+      .spyOn(GigsMock, "findByIdAndUpdate")
+      .mockImplementationOnce(() => Promise.resolve());
+
+    const user_admins = createUsers(["bob"]);
+    createMongoSaveMock(user_admins);
+    // RC API create group
+    global.fetch.mockResponseOnce(JSON.stringify(createGroupResponse()));
+    // RC API make user as group owner
+    global.fetch.mockResponseOnce(JSON.stringify({ success: true }));
+    // RC API to post message
+    global.fetch.mockResponseOnce(JSON.stringify({ success: false }));
+
+    await gigController.create_gig(createRequest(user_admins), res);
+
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.send).toHaveBeenCalledWith({
+      error: "Unable to publish broadcast message for test"
     });
   });
 });
