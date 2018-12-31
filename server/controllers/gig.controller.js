@@ -57,11 +57,18 @@ exports.create_gig = asyncMiddleware(async (req, res, next) => {
     const gig_owners = req.body.user_admins
       .filter(admin => admin.name !== req.body.user)
       .map(admin => admin._id);
-    await rc_controller.add_owners_to_group(
+
+    const addOwners = await rc_controller.add_owners_to_group(
       created_group._id,
       gig_owners,
       req.headers
     );
+
+    if (!addOwners.success) {
+      const user = req.body.user_admins.find(x => x._id === addOwners.userId);
+      throw `Unable to add user ${user.name} as an owner of group ${gig.name}`;
+    }
+
     Gig.findByIdAndUpdate(
       gig_created._id,
       { rc_channel_id: created_group },

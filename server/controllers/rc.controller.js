@@ -59,7 +59,9 @@ exports.add_owners_to_group = async function(groupId, gigOwners, authSet) {
     const call = rc_add_owner_to_group(headers, body);
     calls.push(call);
   }
-  return Promise.all(calls);
+  return Promise.all(calls)
+    .then(() => Promise.resolve({ success: true }))
+    .catch(error => Promise.resolve(error));
 };
 
 exports.set_group_type = function(req, res) {
@@ -156,9 +158,13 @@ async function rc_add_owner_to_group(headers, body) {
   });
   const data = await response.json();
   if (!data.success) {
-    throw `Unable to add user ${body.userId} to room ${body.roomId}`;
+    throw {
+      success: false,
+      userId: body.userId,
+      roomId: body.roomId
+    };
   }
-  return true;
+  return { success: true };
 }
 
 function rc_set_read_only_channel(headers, body, res) {

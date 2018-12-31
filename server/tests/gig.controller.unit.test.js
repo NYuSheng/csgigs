@@ -102,12 +102,13 @@ describe("Gig Controller Tests", () => {
     });
   });
 
-  xit("should return an error if unable add a user as an owner of a group", async () => {
+  it("should return an error if unable add a user as an owner of a group", async () => {
+    const user_admins = createUsers(["bob", "frank", "jill"]);
     jest.spyOn(GigsMock.prototype, "save").mockImplementationOnce(() =>
       Promise.resolve({
         _id: "1",
         name: "test",
-        user_admins: createUsers(["bob", "frank", "jill"])
+        user_admins
       })
     );
 
@@ -118,11 +119,11 @@ describe("Gig Controller Tests", () => {
     global.fetch.mockResponseOnce(JSON.stringify({ success: false }));
     global.fetch.mockResponseOnce(JSON.stringify({ success: true }));
 
-    await gigController.create_gig(createRequest(), res);
+    await gigController.create_gig(createRequest(user_admins), res);
 
     expect(res.status).toHaveBeenCalledWith(500);
     expect(res.send).toHaveBeenCalledWith({
-      error: "Unable to add users..."
+      error: "Unable to add user frank as an owner of group testgig"
     });
   });
 });
