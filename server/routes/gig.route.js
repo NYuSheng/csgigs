@@ -5,7 +5,7 @@ const gig_controller = require("../controllers/gig.controller");
 router.get("/:id/getUserAdmins", gig_controller.get_user_admins); //gig id
 
 router.get("/:id/getUserParticipants", gig_controller.get_user_participants);
-router.post("/addUserParticipant", gig_controller.add_user_participant);
+router.post("/add_user_participant", gig_controller.add_user_participant);
 router.post(
   "/:id/deleteUserParticipant",
   gig_controller.delete_user_participant
