@@ -5,9 +5,30 @@ const asyncMiddleware = require("../utils/asyncMiddleware");
 const ObjectID = require("mongodb").ObjectID;
 const rc_controller = require("../controllers/rc.controller");
 
+const trySaveOrThrow = async gig => {
+  let saved;
+  const defaultErrorMessage =
+    "Error encountered while creating gig: " + gig.name;
+  try {
+    saved = await gig.save();
+  } catch (ex) {
+    LogConfig.error(JSON.stringify(ex));
+    const { error } = ex;
+    let message;
+    if (error.code === 11000) {
+      message = `The gig ${gig.name} already exists. Please try another name.`;
+    } else {
+      message = defaultErrorMessage;
+    }
+    throw message;
+  }
+  if (!saved) throw defaultErrorMessage;
+  return saved;
+};
+
 exports.create_gig = asyncMiddleware(async (req, res, next) => {
   const gig = new Gig({
-    name: req.body.name,
+    name: req.body.name.trim(),
     description: req.body.description,
     photo: req.body.photo,
     points_budget: req.body.points_budget,
@@ -22,13 +43,7 @@ exports.create_gig = asyncMiddleware(async (req, res, next) => {
       throw `No owner specified for ${gig.name}`;
     }
 
-    const gig_created = await gig.save();
-
-    if (gig_created === null) {
-      return res.status(400).send({
-        error: "Error encountered while creating gig: " + req.body.name
-      });
-    }
+    const gig_created = await trySaveOrThrow(gig);
 
     //publish_bot with broadcast_test channel
     const authSet_bot = {

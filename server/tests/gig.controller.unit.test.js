@@ -16,6 +16,24 @@ const createMongoSaveMock = user_admins => {
   );
 };
 
+const createMongoFindByIdAndUpdateMock = () => {
+  jest
+    .spyOn(GigsMock, "findByIdAndUpdate")
+    .mockImplementationOnce(() => Promise.resolve());
+};
+
+const createMongoSaveResolveWith = result => {
+  jest
+    .spyOn(GigsMock.prototype, "save")
+    .mockImplementationOnce(() => Promise.resolve(result));
+};
+
+const createMongoSaveRejectWith = result => {
+  jest
+    .spyOn(GigsMock.prototype, "save")
+    .mockImplementationOnce(() => Promise.reject(result));
+};
+
 const createGroupResponse = () => {
   return {
     group: {
@@ -48,6 +66,13 @@ const createRequest = user_admins => {
   };
 };
 
+const createRequestWithBody = body => {
+  return {
+    headers: {},
+    body
+  };
+};
+
 const createUsers = names => {
   return names.map((name, i) => {
     return { _id: `id${++i}`, name };
@@ -69,9 +94,28 @@ describe("Gig Controller", () => {
         .mockImplementationOnce(() => Promise.resolve(null));
       await gigController.create_gig(createRequest(["bob"]), res);
 
-      expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.status).toHaveBeenCalledWith(500);
       expect(res.send).toHaveBeenCalledWith({
         error: "Error encountered while creating gig: testgig"
+      });
+    });
+
+    it("should return an error if the gig already exists", async () => {
+      createMongoSaveRejectWith({
+        error: {
+          driver: true,
+          name: "MongoError",
+          index: 0,
+          code: 11000,
+          errmsg:
+            'E11000 duplicate key error collection: csgigs-admin.gigs index: name_1 dup key: { : "RowanTest1" }'
+        }
+      });
+      await gigController.create_gig(createRequest(["bob"]), res);
+
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.send).toHaveBeenCalledWith({
+        error: "The gig testgig already exists. Please try another name."
       });
     });
 
@@ -166,9 +210,7 @@ describe("Gig Controller", () => {
 
   describe("create gig: success", () => {
     it("should successfully create gigs", async () => {
-      jest
-        .spyOn(GigsMock, "findByIdAndUpdate")
-        .mockImplementationOnce(() => Promise.resolve());
+      createMongoFindByIdAndUpdateMock();
 
       const user_admins = createUsers(["bob"]);
       createMongoSaveMock(user_admins);
@@ -185,6 +227,38 @@ describe("Gig Controller", () => {
       expect(res.send).toHaveBeenCalledWith({
         gig: { _id: "1", name: "test" }
       });
+    });
+
+    xit("created gig should be returned with expected properties", async () => {
+      const user_admins = createUsers(["bob"]);
+      const body = {
+        name: "ポケモンサファリ＠台南",
+        points_budget: 100,
+        status: "NOT STARTED",
+        user_admins
+      };
+
+      createMongoFindByIdAndUpdateMock();
+      createMongoSaveResolveWith({ name: body.name, user_admins });
+      // RC API create group
+      global.fetch.mockResponseOnce(JSON.stringify(createGroupResponse()));
+      // RC API make user as group owner
+      global.fetch.mockResponseOnce(JSON.stringify({ success: true }));
+      // RC API to post message
+      global.fetch.mockResponseOnce(JSON.stringify({ success: true }));
+      // const request = test_util.createHttpMockRequest(body, {}, "POST");
+
+      // const response = httpMocks.createResponse();
+
+      await gigController.create_gig(createRequestWithBody(body), res);
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.send).toHaveBeenCalledWith({
+        gig: { _id: "1", name: "ポケモンサファリ＠台南", user_admins }
+      });
+      // expect(responseData.gig.name).toBe("ポケモンサファリ＠台南");
+      // expect(responseData.gig.user_admins.length).toBe(0);
+      // expect(responseData.gig.user_participants.length).toBe(0);
+      // expect(responseData.gig.user_attendees.length).toBe(0);
     });
   });
 });
