@@ -1,5 +1,6 @@
 const fetch = require("node-fetch");
 const api = require("../utils/api");
+const LogConfig = require("../log-config");
 
 exports.rc_user_login = function(body, res) {
   fetch("https://csgigs.com/api/v1/login", {
@@ -50,6 +51,7 @@ exports.add_owners_to_group = async function(groupId, gigOwners, authSet) {
   const headers = get_headers(authSet);
   const calls = [];
   if (!gigOwners.length) {
+    LogConfig.info("No users to add as the owner. Ignoring.");
     return Promise.resolve();
   }
   for (let gigOwner of gigOwners) {
