@@ -14,7 +14,9 @@ router.post(
 
 router.post("/create", gig_controller.create_gig);
 router.get("/get_name_by_id/:id", gig_controller.get_gig_name);
+router.get("/get_all_gigs", gig_controller.get_all_gigs_by_statuses);
 router.get("/:user_id", gig_controller.get_user_all_gigs);
+
 router.get("/:user_id/:id", gig_controller.get_gig_by_id);
 router.put("/:user_id/:id", gig_controller.update_gig);
 
