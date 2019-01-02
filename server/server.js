@@ -39,7 +39,11 @@ function validateEnvironmentVariables() {
 async function bootstrapApp() {
   const app = express();
 
-  LogConfig.info("Attempting to login as the API bot user...");
+  LogConfig.info(
+    `Attempting to login as the API bot user '${
+      process.env.CSGIGS_ROCKET_API_USER
+    }'...`
+  );
   app.locals.apiAuth = await api.loginAsBot();
   LogConfig.info("Logged in as API bot user and have auth details...");
 
