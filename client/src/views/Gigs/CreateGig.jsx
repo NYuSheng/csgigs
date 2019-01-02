@@ -7,9 +7,7 @@ import GridItem from "components/Grid/GridItem";
 import CreateAGig from "components/Gigs/PopupModals/SweetAlert/CreateAGig";
 import {CreateGigSteps} from "components/Gigs/Wizard/CreateGigSteps/CompiledGigSteps";
 import UserProfile from "components/Gigs/Authentication/UserProfile";
-
-// dependencies
-import {NotificationManager} from "react-notifications";
+import {create} from "components/Gigs/API/Gigs/Gigs";
 
 class CreateGig extends React.Component {
 
@@ -21,7 +19,7 @@ class CreateGig extends React.Component {
     }
 
     componentDidMount() {
-        var authenticated = UserProfile.authenticate();
+        const authenticated = UserProfile.authenticate();
         if (!authenticated) {
             const {history} = this.props;
             history.push({
@@ -31,30 +29,7 @@ class CreateGig extends React.Component {
     }
 
     finishButtonClick(step) {
-        const gigCreatorUsername = UserProfile.getUser();
-        step.selectedAdmins.push(gigCreatorUsername.me);
-        fetch('/admin-ui/api/gigs/create', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({
-                name: step.name,
-                description: step.gigDescription,
-                points_budget: step.budget,
-                status: "Draft",
-                user_admins: step.selectedAdmins.map(admin => admin.username),
-                photo: step.gigImage
-            })
-        }).then(data => {
-            if (data.status !== 200) {
-                data.json().then(json =>{
-                    NotificationManager.error(json.error.errmsg);
-                });
-            } else {
-                data.json().then(json =>{
-                    this.createGigSuccess(json.gig);
-                });
-            }
-        });
+        create(step, this.createGigSuccess.bind(this));
     }
 
     createGigSuccess(gig) {

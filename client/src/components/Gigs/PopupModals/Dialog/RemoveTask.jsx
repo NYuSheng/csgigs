@@ -18,10 +18,10 @@ import Warning from "@material-ui/icons/ErrorOutline";
 import GridContainer from "components/Grid/GridContainer";
 import GridItem from "components/Grid/GridItem";
 import Button from "components/CustomButtons/Button";
+import {remove} from "components/Gigs/API/Tasks/Tasks";
 
 // dependencies
 import Loader from 'react-loader-spinner';
-import {NotificationManager} from "react-notifications";
 
 // style sheets
 import notificationsStyle from "assets/jss/material-dashboard-pro-react/views/notificationsStyle.jsx";
@@ -34,58 +34,30 @@ class RemoveTask extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            taskId: "",
             status: ""
         };
     }
 
-    componentDidMount() {
-        const {task} = this.props;
-        this.setState({
-            taskId: task._id,
-            status: "working"
-        })
-    }
-
-    taskRemoveAction() {
-        const {gig} = this.props;
-        const {taskId} = this.state;
-        const tasks = gig.tasks;
-        for (var i = tasks.length - 1; i >= 0; --i) {
-            if (tasks[i]._id === taskId) {
-                tasks.splice(i, 1);
-            }
+    componentDidUpdate(prevProps, prevState) {
+        if (this.props.task !== prevProps.task) {
+            this.setState({
+                status: "working"
+            })
         }
     }
 
     confirmTaskRemove() {
-        const {taskId, status} = this.state;
+        const {gigRoomId, task} = this.props;
+        const {status} = this.state;
         if (status !== "success") {
-            this.setState({
-                status: "loading"
-            });
-
-            fetch(`/admin-ui/api/tasks/removeTask/${taskId}`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'}
-            }).then(data => {
-                if (data.status !== 200) {
-                    data.json().then(json => {
-                        NotificationManager.error(json.error.errmsg);
-                    });
-                    this.setState({
-                        status: "working"
-                    });
-                } else {
-                    data.json().then(json => {
-                        this.taskRemoveAction();
-                    });
-                    this.setState({
-                        status: "success"
-                    });
-                }
-            });
+            remove(gigRoomId, task._id, task.task_name, this.setStatusState.bind(this))
         }
+    }
+
+    setStatusState(status) {
+        this.setState({
+            status: status
+        })
     }
 
     closeModal() {
@@ -94,12 +66,12 @@ class RemoveTask extends React.Component {
     }
 
     render() {
-        const {classes, fullScreen, task} = this.props;
+        const {classes, fullScreen, task, modalOpen} = this.props;
         const {status} = this.state;
 
         return (
             <Dialog
-                open={true}
+                open={modalOpen}
                 fullScreen={fullScreen}
                 TransitionComponent={Transition}
                 keepMounted
@@ -153,7 +125,7 @@ class RemoveTask extends React.Component {
                                 borderBottom: "1px solid grey",
                                 fontSize: 13
                             }}>
-                                Task Name: {task.task_name}
+                                Task Name: {task ? task.task_name : null}
                             </p>
                         </GridItem>
                         <GridItem xs={12} sm={12} md={12} lg={12} style={{textAlign: "center"}}>

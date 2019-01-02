@@ -1,10 +1,6 @@
 const User = require('../models/user.model');
 const fetch = require('node-fetch');
-
-//Simple version, without validation or sanitation
-exports.test = function (req, res) {
-    res.send('Greetings from the Test controller!');
-};
+const rc_controller = require('../controllers/rc.controller');
 
 exports.user_create = function (req, res, next) {
     let user = new User(
@@ -31,60 +27,11 @@ exports.user_login = function (req, res, next) {
         password: req.body.password
     }
 
-    var userName = req.body.username;
-    var password = req.body.password;
-    // User.findOne({username: userName}, function (err, users) {
-    //     if (err) return next(err);
-    //
-    //     var role = users.role;
-    //
-    //     if (role != "admin"){
-    //         res.send("Incorrect username/password");
-    //         return;
-    //     }
-    //
-    //     res.send(users);
-    // });
-    fetch('https://csgigs.com/api/v1/login', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(loginDetails)
-    }).then(loginoutput => loginoutput.json()).then(data => {
-        if (data.status !== "success") {
-            res.status(400).send({
-                error: 'Incorrect username/password'
-            });
-        } else {
-            res.status(200).send({
-                user: data.data
-            });
-        }
-    })
-};
-
-exports.user_login2 = function (req, res, next) {
-    return User.findOne({username:req.body.username}).exec().then((user_retrieved) => {
-        if(user_retrieved === null){
-            return res.status(400).send({
-                error: 'Cannot Find User ' + req.body.name
-            });
-        }
-        var role = user_retrieved.role;
-        if(role !=="admin"){
-            return res.status(400).send({
-                error: 'User is not an Admin. '
-            });
-        }
-        res.status(200).send({
-            adminuser: user_retrieved
-        });
-    }).catch(err=>{
-        res.status(400).send({error: err});
-    })
+    rc_controller.rc_user_login(loginDetails, res);
 };
 
 exports.get_user_by_prefix = function (req, res, next) {
-    return User.find({name: { $regex: '.*' + req.body.name + '.*' }}).exec().then((users_retrieved) => {
+    return User.find({name: { $regex: '.*' + req.body.name + '.*', $options: "i" }}).exec().then((users_retrieved) => {
         res.status(200).send({
             users: users_retrieved
         });

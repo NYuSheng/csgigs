@@ -1,25 +1,22 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
+const gig_controller = require("../controllers/gig.controller");
 
-// Require the controllers WHICH WE DID NOT CREATE YET!!
-const gig_controller = require('../controllers/gig.controller');
+router.get("/:id/getUserAdmins", gig_controller.get_user_admins); //gig id
 
+router.get("/:id/getUserParticipants", gig_controller.get_user_participants);
+router.post("/add_user_participant", gig_controller.add_user_participant);
+router.post(
+  "/:id/deleteUserParticipant",
+  gig_controller.delete_user_participant
+);
 
-// a simple test url to check that all of our files are communicating correctly.
-router.get('/:username', gig_controller.gigs_details);
-// router.post('/create', gig_controller.gig_create);
-router.post('/create', gig_controller.gig_create_temp);
-router.post('/cancel/:name', gig_controller.gig_cancel);
-router.get('/getGigs/:name', gig_controller.gig_details);
+router.post("/create", gig_controller.create_gig);
+router.get("/get_name_by_id/:id", gig_controller.get_gig_name);
+router.get("/:user_id", gig_controller.get_user_all_gigs);
+router.get("/:user_id/:id", gig_controller.get_gig_by_id);
+router.put("/:user_id/:id", gig_controller.update_gig);
 
-//update routes
-router.put('/update/:id', gig_controller.gig_update);
-router.put('/addAdmin/:name/:admin_username', gig_controller.gig_add_user_admin);
-router.put('/addParticipant/:name/:participant_username', gig_controller.gig_add_user_participant);
-router.put('/addAttendee/:name/:attendee_username', gig_controller.gig_add_user_attendee);
-
-router.put('/deleteAdmin/:name/:admin_username', gig_controller.gig_delete_user_admin);
-
-router.post('/getGigsByStatus/:status', gig_controller.gigs_by_status);
+router.post("/getGigsByStatus/:status", gig_controller.gigs_by_status);
 
 module.exports = router;

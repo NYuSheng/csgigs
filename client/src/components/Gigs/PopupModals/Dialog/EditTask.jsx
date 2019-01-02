@@ -18,10 +18,10 @@ import GridContainer from "components/Grid/GridContainer";
 import GridItem from "components/Grid/GridItem";
 import CustomInput from "components/Gigs/CustomInput/CustomInput";
 import Button from "components/CustomButtons/Button";
+import {update} from "components/Gigs/API/Tasks/Tasks";
 
 // dependencies
 import Loader from 'react-loader-spinner';
-import {NotificationManager} from "react-notifications";
 
 // style sheets
 import notificationsStyle from "assets/jss/material-dashboard-pro-react/views/notificationsStyle.jsx";
@@ -43,25 +43,36 @@ class EditTask extends React.Component {
         };
     }
 
-    componentDidMount() {
+    resetEditTaskState() {
         const {task} = this.props;
-        this.setState({
-            taskName: task.task_name,
-            taskNameState: "success",
-            taskDescription: task.task_description,
-            taskCategory: task.task_category,
-            taskCategoryState: "success",
-            status: "working",
-            modalOpen: true
-        })
+        if (task) {
+            this.setState({
+                taskName: task.task_name,
+                taskNameState: "success",
+                taskDescription: task.task_description,
+                taskCategory: task.task_category,
+                taskCategoryState: "success",
+                status: "working",
+            })
+        }
     }
 
-    onChangeTaskCategory = event => {
+    componentWillReceiveProps() {
+        this.resetEditTaskState();
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (this.props.task !== prevProps.task) {
+            this.resetEditTaskState();
+        }
+    }
+
+    onChangeTaskCategory(event) {
         const category = event.target.value;
         this.setState({
-            taskCategory: category
+            taskCategory: category,
+            taskCategoryState: category ? "success" : "error"
         });
-        this.validateTaskCategory(category)
     };
 
     onChangeTaskDescription(event) {
@@ -70,24 +81,12 @@ class EditTask extends React.Component {
         })
     }
 
-    validateTaskCategory(category) {
-        category ?
-            this.setState({taskCategoryState: "success"})
-            :
-            this.setState({taskCategoryState: "error"})
-    }
-
     onChangeTaskName(event) {
         const name = event.target.value;
-        this.setState({taskName: name});
-        this.validateTaskName(name);
-    }
-
-    validateTaskName(name) {
-        name ?
-            this.setState({taskNameState: "success"})
-            :
-            this.setState({taskNameState: "error"})
+        this.setState({
+            taskName: name,
+            taskNameState: name ? "success" : "error"
+        });
     }
 
     isValidated() {
@@ -105,48 +104,20 @@ class EditTask extends React.Component {
         return false;
     }
 
-    taskEditAction() {
-        const {editTaskAction, task} = this.props;
-        const {taskName, taskDescription, taskCategory} = this.state;
-
-        var payload = {};
-        payload["id"] = task._id;
-        payload["taskName"] = taskName;
-        payload["taskDescription"] = taskDescription;
-        payload["taskCategory"] = taskCategory;
-        editTaskAction(payload);
-    }
-
     confirmTaskEdit() {
         const {task} = this.props;
         const {status} = this.state;
         if (status !== "success") {
             if (this.isValidated()) {
-                this.setState({
-                    status: "loading"
-                });
-
-                fetch(`/admin-ui/api/tasks/updateTask/${task._id}`, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(this.buildPayLoad())
-                }).then(data => {
-                    if (data.status !== 200) {
-                        data.json().then(json =>{
-                            NotificationManager.error(json.error.errmsg);
-                        });
-                        this.setState({
-                            status: "working"
-                        });
-                    } else {
-                        this.taskEditAction();
-                        this.setState({
-                            status: "success"
-                        });
-                    }
-                });
+                update(task._id, this.buildPayLoad(), this.setStatusState.bind(this));
             }
         }
+    }
+
+    setStatusState(status) {
+        this.setState({
+            status: status
+        })
     }
 
     closeModal() {
@@ -155,12 +126,15 @@ class EditTask extends React.Component {
     }
 
     render() {
-        const {classes, fullScreen, task} = this.props;
-        const {taskNameState, taskCategoryState, status} = this.state;
+        const {classes, fullScreen, modalOpen} = this.props;
+        const {
+            taskName, taskDescription, taskCategory,
+            taskNameState, taskCategoryState, status
+        } = this.state;
 
         return (
             <Dialog
-                open={true}
+                open={modalOpen}
                 fullScreen={fullScreen}
                 TransitionComponent={Transition}
                 keepMounted
@@ -251,7 +225,7 @@ class EditTask extends React.Component {
                                                     fullWidth: true
                                                 }}
                                                 inputProps={{
-                                                    defaultValue: task.task_name,
+                                                    value: taskName,
                                                     onChange: event => this.onChangeTaskName(event)
                                                 }}
                                                 inputType="text"
@@ -269,7 +243,7 @@ class EditTask extends React.Component {
                                                     fullWidth: true
                                                 }}
                                                 inputProps={{
-                                                    defaultValue: task.task_description,
+                                                    value: taskDescription,
                                                     multiline: true,
                                                     onChange: event => this.onChangeTaskDescription(event)
                                                 }}
@@ -290,7 +264,7 @@ class EditTask extends React.Component {
                                                     fullWidth: true
                                                 }}
                                                 inputProps={{
-                                                    defaultValue: task.task_category,
+                                                    value: taskCategory,
                                                     onChange: event => this.onChangeTaskCategory(event)
                                                 }}
                                                 inputType="text"

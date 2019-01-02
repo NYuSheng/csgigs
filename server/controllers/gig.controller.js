@@ -1,277 +1,290 @@
+//@ts-check
+const LogConfig = require("../log-config");
 const Gig = require("../models/gig.model");
 const asyncMiddleware = require("../utils/asyncMiddleware");
+const ObjectID = require("mongodb").ObjectID;
+const rc_controller = require("../controllers/rc.controller");
 
-exports.test = asyncMiddleware(async (req, res) => {
-  res.send("Greetings from the Gig controller!");
-});
-
-exports.gig_create = asyncMiddleware(async (req, res, next) => {
-  let gig = new Gig(
-    {
-      name: req.body.name,
-      points_budget: req.body.points_budget,
-      status: "Draft",
-      user_admins: req.body.user_admins,
-
-      //Possible required fields in creation
-      users_participants: [],
-      users_attendees: []
-    }
-  );
-
-  return gig.save().then(gigCreated => {
-
-    return Gig
-      .aggregate([
-        { $match: { name: req.body.name } },
-        {
-          $lookup: {
-            from: "tasks",
-            localField: "name",
-            foreignField: "gig_name",
-            as: "tasks"
-          }
-        }
-      ])
-      // .populate('user_participants')
-      .exec().then((gigs_retrieved) => {
-        if (gigs_retrieved.length === 0) {
-          return res.status(400).send({
-            error: "Cannot find any GIGs: " + req.body.name
-          });
-        }
-        res.status(200).send({
-          gig: gigs_retrieved[0]
-        });
-      }).catch(err => {
-        res.status(400).send({ error: err });
-      });
-  }).catch(err => {
-    console.log(err);
-    res.status(400).send({ error: err });
+exports.create_gig = asyncMiddleware(async (req, res, next) => {
+  const gig = new Gig({
+    name: req.body.name,
+    description: req.body.description,
+    photo: req.body.photo,
+    points_budget: req.body.points_budget,
+    status: "Draft",
+    user_admins: req.body.user_admins.map(admin => admin._id),
+    //Possible required fields in creation
+    user_participants: []
+    // user_attendees: []
   });
-});
-
-exports.gig_create_temp = asyncMiddleware(async (req, res, next) => {
-  let gig = new Gig(
-    {
-      name: req.body.name,
-      description: req.body.description,
-      photo: req.body.photo,
-      points_budget: req.body.points_budget,
-      status: "Draft",
-      user_admins: req.body.user_admins,
-      //Possible required fields in creation
-      user_participants: [],
-      user_attendees: []
+  try {
+    if (!gig.user_admins.length) {
+      throw `No owner specified for ${gig.name}`;
     }
-  );
 
-  return gig.save().then(gigCreated => {
-    var matchCriteria = { "$match": { "name": req.body.name } };
+    const gig_created = await gig.save();
 
-    return Gig
-      .aggregate(aggregation_with_tasks_and_users(matchCriteria))
-      .exec().then((gigs_retrieved) => {
-        if (gigs_retrieved.length === 0) {
-          return res.status(400).send({
-            error: "Cannot find any GIGs: " + req.body.name
-          });
-        }
-        res.status(200).send({
-          gig: gigs_retrieved[0]
-        });
-      }).catch(err => {
-        res.status(400).send({ error: err });
+    if (gig_created === null) {
+      return res.status(400).send({
+        error: "Error encountered while creating gig: " + req.body.name
       });
-  }).catch(err => {
-    console.log(err);
-    res.status(400).send({ error: err });
-  });
-});
+    }
 
-exports.gigs_details = asyncMiddleware(async (req, res, next) => {
-  let status = (req.query.status).split(",");
+    //publish_bot with broadcast_test channel
+    const authSet_bot = {
+      "x-auth-token": "VynD2oNIieXVkn_nkqBSq1DKv5_5LhC1-ZKrz9q-bwl",
+      "x-user-id": "Zjh2Hmnsbwq5MGMv8"
+    };
+    const roomId = "2EvneDEerT9jGLYYf";
 
-  var matchCriteria =
-    {
-      "$match":
-        {
-          "user_admins": { "$in": [req.params.username] },
-          "status": { "$in": status }
-        }
+    const gig_id_and_name = {
+      _id: gig_created._id,
+      name: gig_created.name
     };
 
-  return Gig.aggregate(aggregation_with_tasks_and_users(matchCriteria)).exec().then((gigs) => {
-    res.status(200).send({
-      "gigs": gigs
+    const members = gig_created.user_admins.filter(
+      admin => admin !== req.body.user
+    );
+
+    const created_group = await rc_controller.create_group(
+      req.headers,
+      members,
+      gig_created.name
+    );
+    if (!created_group) {
+      throw `Unable to create group ${gig_created.name} in RC`;
+    }
+    const gig_owners = req.body.user_admins
+      .filter(admin => admin.name !== req.body.user)
+      .map(admin => admin._id);
+
+    const addOwners = await rc_controller.add_owners_to_group(
+      created_group._id,
+      gig_owners,
+      req.headers
+    );
+
+    if (!addOwners.success) {
+      const user = req.body.user_admins.find(x => x._id === addOwners.userId);
+      throw `Unable to add user ${user.name} as an owner of group ${gig.name}`;
+    }
+
+    await Gig.findByIdAndUpdate(gig_created._id, {
+      rc_channel_id: created_group
     });
-  }).catch(err => {
-    console.log(err);
-    res.status(500).send({ error: err });
-  });
+
+    const message =
+      "Please reply 'Attend' for event: *" + gig_created.name + "*";
+    const broadcastMessage = await rc_controller.publish_broadcast_message(
+      roomId,
+      message,
+      authSet_bot
+    );
+    if (!broadcastMessage) {
+      throw `Unable to publish broadcast message for ${gig_created.name}`;
+    }
+
+    res.status(200).send({
+      gig: gig_id_and_name
+    });
+  } catch (error) {
+    LogConfig.error(JSON.stringify(error));
+    res.status(500).send({ error });
+  }
 });
 
-exports.gig_details = asyncMiddleware(async (req, res, next) => {
-  var matchCriteria = { "$match": { "name": req.params.name } };
-
-  return Gig.aggregate(aggregation_with_tasks_and_users(matchCriteria))
-    .exec().then((gig_retrieved) => {
-      if (gig_retrieved === null) {
+exports.get_gig_by_id = asyncMiddleware(async (req, res, next) => {
+  return Gig.find({ _id: ObjectID(req.params.id) })
+    .exec()
+    .then(gig => {
+      if (gig == null) {
         return res.status(400).send({
-          error: "Cannot find gig of name " + req.params.name
+          error: "Cannot find Gig with id: " + req.params.id
         });
       }
       res.status(200).send({
-        gig: gig_retrieved[0]
+        gig: gig[0]
       });
-
-    }).catch(err => {
+    })
+    .catch(err => {
       res.status(400).send({ error: err });
     });
 });
 
-exports.gig_update = function(req, res, next) {
+exports.get_gig_name = asyncMiddleware(async (req, res, next) => {
+  return Gig.find({ _id: ObjectID(req.params.id) })
+    .exec()
+    .then(gig => {
+      if (gig == null) {
+        return res.status(400).send({
+          error: "Cannot find Gig with id: " + req.params.id
+        });
+      }
+      res.status(200).send({
+        gig_name: gig[0].name
+      });
+    })
+    .catch(err => {
+      res.status(400).send({ error: err });
+    });
+});
+
+exports.get_user_all_gigs = asyncMiddleware(async (req, res, next) => {
+  let status = req.query.status.split(",");
+  const matchCriteria = {
+    user_admins: { $in: [req.params.user_id] },
+    status: { $in: status }
+  };
+  return Gig.find(matchCriteria)
+    .exec()
+    .then(gigs => {
+      res.status(200).send({
+        gigs: gigs
+      });
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).send({ error: err });
+    });
+});
+
+exports.update_gig = function(req, res, next) {
   Gig.findByIdAndUpdate(req.params.id, { $set: req.body }, function(err, gig) {
     if (err) return next(err);
     res.send("Gig updated.");
   });
 };
 
-exports.gig_cancel = function(req, res, next) {
-  Gig.findByIdAndUpdate(req.params.name, { "status": "Cancelled" }, function(err, gig) {
-    if (err) return next(err);
-    res.send("Gig cancelled.");
-  });
-};
-
-exports.gig_add_user_admin = function(req, res, next) {
-  return Gig.findOneAndUpdate(
-    { name: req.params.name },
-    { $addToSet: { "user_admins": req.params.admin_username } }, //addToSet ensures no duplicate names in array
-    { "new": true },
-    function(err, gig) {
-      if (err || gig == null) {
-        console.log(err);
-        return res.status(400).send({
-          error: "Cannot find gig of name " + req.params.name
-        });
-      } else {
-        res.status(200).send({
-          gig: gig
-        });
-
-      }
-    });
-};
-
-exports.gig_delete_user_admin = function(req, res, next) {
-  return Gig.findOneAndUpdate(
-    { name: req.params.name },
-    { $pullAll: { "user_admins": [req.params.admin_username] } }, //remove all instances of the user admin
-    { "new": true }, // return updated new array
-    function(err, gig) {
-      if (err || gig == null) {
-        console.log(err);
-        return res.status(400).send({
-          error: "Cannot find gig of name " + req.params.name
-        });
-      } else {
-        res.status(200).send({
-          gig: gig
-        });
-      }
-    });
-};
-
-exports.gig_add_user_participant = function(req, res, next) {
-  return Gig.findOneAndUpdate(
-    { name: req.params.name },
-    { $addToSet: { "user_participants": req.params.participant_username } }, //addToSet ensures no duplicate names in array
-    { "new": true },
-    function(err, gig) {
-      if (err || gig == null) {
-        return res.status(400).send({
-          error: "Cannot find gig of name " + req.params.name
-        });
-      } else {
-        res.status(200).send({
-          gig: gig
-        });
-      }
-    });
-};
-
-exports.gig_add_user_attendee = function(req, res, next) {
-  return Gig.findOneAndUpdate(
-    { name: req.params.name },
-    { $addToSet: { "user_attendees": req.params.attendee_username } }, //addToSet ensures no duplicate names in array
-    { "new": true },
-    function(err, gig) {
-      if (err || gig == null) {
-        return res.status(400).send({
-          error: "Cannot find gig of name " + req.params.name
-        });
-      } else {
-        res.status(200).send({
-          gig: gig
-        });
-      }
-    });
-};
-
 exports.gigs_by_status = function(req, res) {
-  return Gig.find({ status: req.params.status }).exec().then((gigs_retrieved) => {
-    if (gigs_retrieved.length === 0) {
-      return res.status(400).send({
-        error: "Cannot find any GIGs under status: " + req.params.status
+  return Gig.find({ status: req.params.status })
+    .exec()
+    .then(gigs_retrieved => {
+      if (gigs_retrieved.length === 0) {
+        return res.status(400).send({
+          error: "Cannot find any GIGs under status: " + req.params.status
+        });
+      }
+      res.status(200).send({
+        gigs: gigs_retrieved
       });
-    }
-    res.status(200).send({
-      gigs: gigs_retrieved
+    })
+    .catch(err => {
+      res.status(400).send({ error: err });
     });
-  }).catch(err => {
-    res.status(400).send({ error: err });
-  });
 };
 
-function aggregation_with_tasks_and_users(matchCriteria) {
+exports.get_user_admins = asyncMiddleware(async (req, res, next) => {
+  const matchCriteria = { $match: { _id: new ObjectID(req.params.id) } };
+  return Gig.aggregate(gig_aggregation_with_user_admin(matchCriteria))
+    .exec()
+    .then(gig_retrieved => {
+      if (gig_retrieved === null) {
+        return res.status(400).send({
+          error: "Cannot find gig of id " + req.params.id
+        });
+      }
+
+      res.status(200).send({
+        user_admins: gig_retrieved[0].user_admins
+      });
+    })
+    .catch(err => {
+      res.status(400).send({ error: err });
+    });
+});
+
+function gig_aggregation_with_user_admin(matchCriteria) {
   return [
     matchCriteria,
     {
-      '$lookup': {
-        'from': 'tasks',
-        'localField': 'name',
-        'foreignField': 'gig_name',
-        'as': 'tasks'
-      }
-    },
-    {"$unwind": "$user_admins"},
-    {
-      "$lookup": {
-        "from": "users",
-        "localField": "user_admins",
-        "foreignField": "username",
-        "as": "userObjects"
-      }
-    },
-    {"$unwind": "$userObjects"},
-    {
-      "$group": {
-        "_id": "$_id",
-        "rc_channel_id": {"$first": "$rc_channel_id"},
-        "user_participants": {"$first": "$user_participants"},
-        "user_admins": {"$push": "$userObjects"},
-        "user_attendees": {"$first": "$user_attendees"},
-        "name": {"$first": "$name"},
-        "description": {"$first": "$description"},
-        "photo": {"$first": "$photo"},
-        "points_budget": {"$first": "$points_budget"},
-        "status": {"$first": "$status"},
-        "createdAt": {"$first": "$createdAt"},
-        "__v": {"$first": "$__v"},
-        "tasks": {"$first": "$tasks"}
+      $lookup: {
+        from: "users",
+        localField: "user_admins",
+        foreignField: "_id",
+        as: "user_admins"
       }
     }
-  ]
+  ];
+}
+
+exports.get_user_participants = asyncMiddleware(async (req, res, next) => {
+  const matchCriteria = { $match: { _id: new ObjectID(req.params.id) } };
+  return Gig.aggregate(gig_aggregation_with_user_participant(matchCriteria))
+    .exec()
+    .then(gig_retrieved => {
+      if (gig_retrieved === null) {
+        return res.status(400).send({
+          error: "Cannot find Gig of id " + req.params.id
+        });
+      }
+      res.status(200).send({
+        user_participants: gig_retrieved[0].user_participants
+      });
+    })
+    .catch(err => {
+      res.status(400).send({ error: err });
+    });
+});
+
+exports.add_user_participant = asyncMiddleware(async (req, res, next) => {
+  try {
+    const gig = await Gig.findOneAndUpdate(
+      { name: req.body.gig_name },
+      { $addToSet: { user_participants: req.body.user_id } }, //addToSet ensures no duplicate names in array
+      { new: true }
+    );
+
+    if (gig == null) {
+      throw "Cannot find Gig of id " + req.body.gig_name;
+    }
+
+    const room_id = gig.rc_channel_id._id;
+    const user_id = req.body.user_id;
+    const authSet_bot = {
+      "x-auth-token": "XO4_kYKgMjEA926toCPSppXxU9_RoipVZ_KDvTxHuqp",
+      "x-user-id": "Zjh2Hmnsbwq5MGMv8"
+    };
+    await rc_controller.add_user_participant(room_id, user_id, authSet_bot);
+    res.status(200).send({
+      gig: gig
+    });
+  } catch (error) {
+    LogConfig.error(JSON.stringify(error));
+    res.status(500).send({ error });
+  }
+});
+
+exports.delete_user_participant = asyncMiddleware(async (req, res, next) => {
+  return Gig.findOneAndUpdate(
+    { _id: new ObjectID(req.params.id) },
+    { $pullAll: { user_participants: [req.body.user_id] } }, //remove all instances of the user admin
+    { new: true }, // return updated new array
+    function(err, gig) {
+      if (err || gig == null) {
+        LogConfig.error(JSON.stringify(err));
+        LogConfig.error(gig);
+        return res.status(400).send({
+          error: "Cannot find participant of id " + req.body.user_id
+        });
+      } else {
+        res.status(200).send({
+          gig: gig
+        });
+      }
+    }
+  );
+});
+
+function gig_aggregation_with_user_participant(matchCriteria) {
+  return [
+    matchCriteria,
+    {
+      $lookup: {
+        from: "users",
+        localField: "user_participants",
+        foreignField: "_id",
+        as: "user_participants"
+      }
+    }
+  ];
 }

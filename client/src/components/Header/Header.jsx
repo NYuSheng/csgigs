@@ -26,7 +26,7 @@ import headerStyle from "assets/jss/material-dashboard-pro-react/components/head
 
 function Header({...props}) {
     function makeBrand() {
-        var name;
+        var name = "";
         for (var i = 0; i < props.routes.length; i++) {
             if (name) {
                 break;
@@ -49,7 +49,10 @@ function Header({...props}) {
                             strict: false
                         });
                         if (match) {
-                            name = match.params.gigId;
+                            // const response = await fetch(`/admin-ui/api/gigs/get_name_by_id/${match.params.gigId}`);
+                            // const json = await response.json();
+                            // name = json.name;
+                            name = props.history.location.headername;
                         }
                     }
                 }

@@ -11,6 +11,7 @@ import withMobileDialog from '@material-ui/core/withMobileDialog';
 // @material-ui/icons
 import Close from "@material-ui/icons/Close";
 import Danger from "@material-ui/icons/Warning";
+import Success from "@material-ui/icons/CheckCircle";
 
 // core components
 import GridContainer from "components/Grid/GridContainer";
@@ -18,9 +19,11 @@ import GridItem from "components/Grid/GridItem";
 import Button from "components/CustomButtons/Button";
 import Card from "components/Card/Card";
 import CardBody from "components/Card/CardBody";
-import Actions from "components/Gigs/Actions/Actions";
+import {cancel, complete} from "components/Gigs/API/Gigs/Gigs";
+import {setRoomTypeToPublic} from "components/Gigs/API/RocketChat/RocketChat";
 
 // dependencies
+import Loader from 'react-loader-spinner';
 
 // style sheets
 import notificationsStyle from "assets/jss/material-dashboard-pro-react/views/notificationsStyle.jsx";
@@ -33,32 +36,24 @@ class GigActions extends React.Component {
     constructor(props){
         super(props);
         this.state = {
-            modalState: "",
+            action: "",
+            status: "",
             publishState: false,
             cancelState: false
         };
     }
 
     componentWillMount() {
-        const {gig} = this.props;
-        if (gig.rc_channel_id) {
-            this.setState({
-                publishState: true
-            })
-        }
-        if (gig.status === "Cancelled") {
-            this.setState({
-                cancelState: true
-            })
-        }
-        this.setState({
-            modalState: "working"
-        })
+        this.resetState();
     }
 
     componentWillReceiveProps(){
+        this.resetState();
+    }
+
+    resetState() {
         const {gig} = this.props;
-        if (gig.rc_channel_id) {
+        if (gig.status !== "Draft") {
             this.setState({
                 publishState: true
             })
@@ -68,29 +63,53 @@ class GigActions extends React.Component {
                 cancelState: true
             })
         }
+        this.setStatusState("working");
     }
 
     closeModal() {
         const {hidePopup} = this.props;
-        this.resetCancelGigAction();
         hidePopup("gigActions");
     }
 
-    cancelGigAction() {
+    setStatusState(status) {
         this.setState({
-            modalState: "cancelling"
+            status: status
         })
     }
 
-    resetCancelGigAction() {
+    setActionState(action) {
         this.setState({
-            modalState: "working"
+            action: action
         })
+    }
+
+    publishGig() {
+        this.setActionState("published");
+        const {gig} = this.props;
+        setRoomTypeToPublic(gig._id, gig.rc_channel_id._id, this.setStatusState.bind(this))
+    }
+
+    cancelGig() {
+        this.setActionState("cancelled");
+        const {gig} = this.props;
+        const cancelPayload = {
+            status: "Cancelled"
+        };
+        cancel(gig._id, gig.rc_channel_id._id, cancelPayload, this.setStatusState.bind(this));
+    }
+
+    completeGig() {
+        this.setActionState("completed");
+        const {gig} = this.props;
+        const completePayload = {
+            status: "Completed"
+        };
+        complete(gig._id, gig.rc_channel_id._id, completePayload, this.setStatusState.bind(this));
     }
 
     render() {
-        const {classes, modalOpen, gig, channelUpdate, cancelGig, completeGig, fullScreen} = this.props;
-        const {modalState, publishState, cancelState} = this.state;
+        const {classes, modalOpen, gig, fullScreen} = this.props;
+        const {status, publishState, cancelState, action} = this.state;
 
         return (
             <Dialog
@@ -137,9 +156,25 @@ class GigActions extends React.Component {
                     className={classes.modalBody}
                     style={{paddingBottom: 35, paddingTop: 0, minWidth: 326.4}}
                 >
+                    <GridContainer justify="center">
                     {
-                        (modalState === "cancelling") ? (
-                            <GridContainer justify="center">
+                        status === "loading" ?
+                            (
+                                <GridItem xs={10} sm={10} md={10} lg={10} style={{textAlign: "center"}}>
+                                    <div style={{paddingTop: 25}}>
+                                        <Loader
+                                            type="ThreeDots"
+                                            color="black"
+                                            height="100"
+                                            width="100"
+                                        />
+                                    </div>
+                                </GridItem>
+                            ) : null
+                    }
+                    {
+                        (status === "cancelling") ? (
+                            <React.Fragment>
                                 <GridItem xs={10} sm={10} md={10} lg={10} style={{paddingTop: 30, paddingBottom: 30}}>
                                     <p style={{textAlign: "justify"}}>
                                         Are you sure you want to cancel this gig?
@@ -149,30 +184,30 @@ class GigActions extends React.Component {
                                 <GridItem xs={10} sm={10} md={10} lg={10} style={{textAlign: "center"}}>
                                     <Button className={classes.marginRight}
                                             color="danger"
-                                            onClick={() => {Actions.cancel(gig, cancelGig, this.resetCancelGigAction.bind(this))}}
+                                            onClick={() => {this.cancelGig()}}
                                     >
                                         Yes
                                     </Button>
                                     <Button className={classes.marginRight}
                                             color="success"
                                             onClick={() => {
-                                                this.resetCancelGigAction()
+                                                this.setStatusState("working")
                                             }}
                                     >
                                         No
                                     </Button>
                                 </GridItem>
-                            </GridContainer>
+                            </React.Fragment>
                         ) : null
                     }
                     {
-                        (modalState === "working") ? (
-                            <GridContainer justify="center">
+                        (status === "working") ? (
+                            <React.Fragment>
                                 <GridItem xs={10} sm={10} md={10} lg={10} style={{paddingTop: 10}}>
                                     <Card style={{marginTop: 0, marginBottom: 10}}>
                                         <CardBody>
                                             <Button className={classes.marginRight}
-                                                    onClick={() => {Actions.publish(gig, channelUpdate)}}
+                                                    onClick={() => {this.publishGig()}}
                                                     color="warning"
                                                     disabled={publishState}
                                                     style={{width: "100%"}}
@@ -182,16 +217,16 @@ class GigActions extends React.Component {
                                         </CardBody>
                                     </Card>
                                     <p style={{textAlign: "justify", paddingBottom: 9, borderBottom: "1px solid grey", fontSize: 13}}>
-                                        Publishing the gig allows you to create a channel in Rocket Chat
+                                        Publishing the gig sets the status to "Active", making the Rocket Chat group public.
                                     </p>
                                 </GridItem>
                                 <GridItem xs={10} sm={10} md={10} lg={10}>
                                     <Card style={{marginTop: 0, marginBottom: 10}}>
                                         <CardBody>
                                             <Button className={classes.marginRight}
-                                                    onClick={() => {Actions.complete(gig, completeGig)}}
+                                                    onClick={() => {this.completeGig()}}
                                                     color="success"
-                                                    disabled={!publishState || gig.status === "Completed"}
+                                                    disabled={!publishState || gig.status === "Completed" || gig.status === "Cancelled"}
                                                     style={{width: "100%"}}
                                             >
                                                 Complete
@@ -199,7 +234,7 @@ class GigActions extends React.Component {
                                         </CardBody>
                                     </Card>
                                     <p style={{textAlign: "justify", paddingBottom: 9, borderBottom: "1px solid grey", fontSize: 13}}>
-                                        Completing the gig wraps up the gig and distributes the Brownie points as allocated
+                                        Completing the gig sets the status to "Completed".
                                     </p>
                                 </GridItem>
                                 <GridItem xs={10} sm={10} md={10} lg={10}>
@@ -211,7 +246,7 @@ class GigActions extends React.Component {
                                     >
                                         <CardBody>
                                             <Button className={classes.marginRight}
-                                                    onClick={() => {this.cancelGigAction()}}
+                                                    onClick={() => {this.setStatusState("cancelling")}}
                                                     color="danger"
                                                     disabled={cancelState}
                                                     style={{width: "100%"}}
@@ -227,11 +262,24 @@ class GigActions extends React.Component {
                                         </p>
                                     </div>
                                 </GridItem>
-                            </GridContainer>
+                            </React.Fragment>
                         ) : null
                     }
+                    {
+                        status === "success" ? (
+                            <GridItem xs={10} sm={10} md={10} lg={10} style={{textAlign: "center"}}>
+                                <div style={{paddingTop: 25}}>
+                                    <Success className={classes.icon}
+                                             style={{height: 100, width: 100, fill: "green"}}/>
+                                    <h4 className={classes.modalTitle} style={{fontWeight: "bold"}}>
+                                        Gig has been {action}
+                                    </h4>
+                                </div>
+                            </GridItem>
+                        ) : null
+                    }
+                    </GridContainer>
                 </DialogContent>
-                {/*<DialogActions className={classes.modalFooter} style={{paddingTop: 15}}/>*/}
             </Dialog>
         );
     }

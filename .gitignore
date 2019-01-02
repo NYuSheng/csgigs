@@ -5,5 +5,9 @@ server/public
 .idea
 .idea/workspace.xml
 client/build
+client/src/assets/scss/material-dashboard-pro-react.css
+.npmrc
+server/config.js
 
-
+.env
+logs
