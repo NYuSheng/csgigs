@@ -90,8 +90,7 @@ exports.create_gig = asyncMiddleware(async (req, res, next) => {
       rc_channel_id: created_group
     });
 
-    const message =
-      "Please reply 'Attend' for event: *" + gig_created.name + "*";
+    const message = `Please reply 'Attend' for event: **${gig_created.name}**`;
     const broadcastMessage = await rc_controller.publishBroadcastMessage(
       authSetBot,
       roomId,
