@@ -13,7 +13,6 @@ exports.get_requests_by_id = function(req, res) {
   return Task_Request.aggregate(aggregation_with_users(match_criteria))
     .exec()
     .then(task_requests => {
-      console.log(task_requests);
       res.status(200).send({
         task_requests: task_requests
       });

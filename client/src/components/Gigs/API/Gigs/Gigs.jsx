@@ -89,6 +89,23 @@ export const getUserGig = function(gigId, gigsCallback) {
   });
 };
 
+export const getGigUsers = function(gigId, callback) {
+  fetch(`/admin-ui/api/gigs/${gigId}/getUsers`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" }
+  }).then(data => {
+    if (data.status !== 200) {
+      data.json().then(json => {
+        NotificationManager.error(json.error.errmsg);
+      });
+    } else {
+      data.json().then(json => {
+        callback(json.user_result);
+      });
+    }
+  });
+};
+
 export const update = function(gigId, payload, statusCallback) {
   const user = UserProfile.getUser();
   if (statusCallback) statusCallback("loading");

@@ -3,78 +3,92 @@ import React from "react";
 // @material-ui/core components
 import TableCell from "@material-ui/core/TableCell";
 
+import Accept from "@material-ui/icons/Done";
+
 // core components
 import CustomInput from "components/Gigs/CustomInput/CustomInput";
+import Button from "components/CustomButtons/Button";
+
+// dependencies
+import Loader from "react-loader-spinner";
 
 class EditableTableCell extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      value: 0,
+      status: ""
+    };
+  }
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            cellValueState: ""
-        };
-    }
+  componentDidMount() {
+    const { cellValue } = this.props;
+    this.setState({
+      value: cellValue,
+      status: "success"
+    });
+  }
 
-    componentDidMount() {
-        this.clearState();
-    }
+  setStatusState(status) {
+    this.setState({
+      status: status
+    });
+  }
 
-    clearState() {
-        this.setState({
-            cellValueState: "success"
-        })
-    }
+  async onChangeCellValue(event) {
+    const { validateFunction } = this.props;
+    const cellValue = event.target.value;
+    await this.setState({
+      value: cellValue
+    });
+    const isValidated = validateFunction();
+    this.setState({
+      status: isValidated ? "success" : "error"
+    });
+  }
 
-    onChangeCellValue(event) {
-        const {inputRefId, reRenderAllEditableCells} = this.props;
-        const cellValue = event.target.value;
-        if (cellValue) {
-            this.validateCellValue(cellValue);
-            if (reRenderAllEditableCells) {
-                reRenderAllEditableCells(inputRefId);
-            }
-        }
-    }
+  validateValue() {
+    const value = parseInt(this.state.value, 10);
+    return (
+      this.state.status.match("error|loading") || isNaN(value) || value < 0
+    );
+  }
 
-    validateCellValue(cellValue) {
-        const {editValidation, inputRefId} = this.props;
-        if (editValidation(parseInt(cellValue, 10), inputRefId)) {
-            this.setState({
-                cellValueState: "success"
-            })
-        } else {
-            this.setState({
-                cellValueState: "error"
-            })
-        }
-    }
+  render() {
+    const { classes, assignPointsFunction } = this.props;
+    const tableCellClasses = classes.tableCell;
 
-    render() {
-        const {classes, cellValue} = this.props;
-        const tableCellClasses = classes.tableCell;
+    const { status, value } = this.state;
 
-        const {cellValueState} = this.state;
-
-        return (
-            <TableCell colSpan="1" className={tableCellClasses}>
-                <CustomInput
-                    success={cellValueState === "success"}
-                    error={cellValueState === "error"}
-                    labelText={
-                        <span>
-                                    Brownie Points
-                                </span>
-                    }
-                    inputProps={{
-                        style: {width: 100},
-                        value: cellValue,
-                        onChange: event => this.onChangeCellValue(event)
-                    }}
-                    inputType="number"
-                />
-            </TableCell>
-        )
-    }
+    return (
+      <TableCell colSpan="1" className={tableCellClasses}>
+        <CustomInput
+          success={status === "success"}
+          error={status === "error"}
+          labelText={status === "error" ? "Invalid" : null}
+          inputProps={{
+            style: { width: 50 },
+            value: value,
+            onChange: event => this.onChangeCellValue(event)
+          }}
+          inputType="number"
+        />
+        <Button
+          simple
+          justIcon
+          color="success"
+          onClick={() => assignPointsFunction(this)}
+          disabled={this.validateValue()}
+        >
+          {status === "loading" ? (
+            <Loader type="ThreeDots" color="black" />
+          ) : (
+            <Accept className={classes.buttonIcon} fontSize="small" />
+          )}
+        </Button>
+      </TableCell>
+    );
+  }
 }
 
-export default (EditableTableCell);
+export default EditableTableCell;
