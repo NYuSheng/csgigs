@@ -1,9 +1,9 @@
-const env = process.env.NODE_ENV; // 'development' or 'production'
+const env = process.env.NODE_ENV; // 'development' or 'production' or 'test'
 const development = {
   db: {
-    // host: 'test1:test123@ds031895.mlab.com',
+    // host: "test1:test123@ds031895.mlab.com",
     // port: 31895,
-    // name: 'projectgigstest'
+    // name: "projectgigstest"
     host: "localhost",
     port: 27017,
     name: "test"
@@ -28,7 +28,8 @@ const production = {
 
 const config = {
   development,
-  production
+  production,
+  test
 };
 
 module.exports = config[env];
