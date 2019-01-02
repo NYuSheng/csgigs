@@ -5,6 +5,10 @@ const asyncMiddleware = require("../utils/asyncMiddleware");
 const ObjectID = require("mongodb").ObjectID;
 const rc_controller = require("../controllers/rc.controller");
 
+const getCachedApiAuth = request => request.app.locals.apiAuth;
+const getCachedBroadcastRoomId = request =>
+  request.app.locals.broadcastChannelName;
+
 const trySaveOrThrow = async gig => {
   let saved;
   const defaultErrorMessage =
@@ -45,12 +49,16 @@ exports.create_gig = asyncMiddleware(async (req, res, next) => {
 
     const gig_created = await trySaveOrThrow(gig);
 
+    const { authToken: apiAuthToken, userId: apiUserId } = getCachedApiAuth(
+      req
+    );
+
     //publish_bot with broadcast_test channel
     const authSet_bot = {
-      "x-auth-token": "VynD2oNIieXVkn_nkqBSq1DKv5_5LhC1-ZKrz9q-bwl",
-      "x-user-id": "Zjh2Hmnsbwq5MGMv8"
+      "x-auth-token": apiAuthToken,
+      "x-user-id": apiUserId
     };
-    const roomId = "2EvneDEerT9jGLYYf";
+    const roomId = getCachedBroadcastRoomId(req);
 
     const gig_id_and_name = {
       _id: gig_created._id,

@@ -6,6 +6,10 @@ const mockRes = require("jest-mock-express").response;
 
 const GigsMock = require("../models/gig.model");
 
+const app = {
+  locals: { apiAuth: {} }
+};
+
 const createMongoSaveMock = user_admins => {
   jest.spyOn(GigsMock.prototype, "save").mockImplementationOnce(() =>
     Promise.resolve({
@@ -57,6 +61,7 @@ const createGroupResponse = () => {
 
 const createRequest = user_admins => {
   return {
+    app,
     headers: {},
     body: {
       name: "testgig",
@@ -68,6 +73,7 @@ const createRequest = user_admins => {
 
 const createRequestWithBody = body => {
   return {
+    app,
     headers: {},
     body
   };
