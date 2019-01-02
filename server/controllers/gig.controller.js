@@ -109,21 +109,18 @@ exports.create_gig = asyncMiddleware(async (req, res, next) => {
 });
 
 exports.get_gig_by_id = asyncMiddleware(async (req, res, next) => {
-  return Gig.find({ _id: ObjectID(req.params.id) })
-    .exec()
-    .then(gig => {
-      if (gig == null) {
-        return res.status(400).send({
-          error: "Cannot find Gig with id: " + req.params.id
-        });
-      }
-      res.status(200).send({
-        gig: gig[0]
-      });
-    })
-    .catch(err => {
-      res.status(400).send({ error: err });
+  try {
+    const result = await Gig.find({ _id: ObjectID(req.params.id) });
+    if (result.length === 0) {
+      throw "error: Cannot find Gig with id: " + req.params.id;
+    }
+    res.status(200).send({
+      gig: result[0]
     });
+  } catch (error) {
+    LogConfig.error(JSON.stringify(error));
+    res.status(500).send({ error });
+  }
 });
 
 exports.get_gig_name = asyncMiddleware(async (req, res, next) => {
