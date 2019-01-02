@@ -130,7 +130,7 @@ exports.add_user_participant = async function(authSetBot, roomId, userId) {
     userId
   };
 
-  await api.post(
+  return await api.post(
     "groups.invite",
     authSetBot.authToken,
     authSetBot.userId,

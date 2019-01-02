@@ -294,10 +294,16 @@ exports.add_user_participant = asyncMiddleware(async (req, res, next) => {
     const user_id = req.body.user_id;
     const authSetBot = getCachedApiAuth(req);
 
-    await rc_controller.add_user_participant(authSetBot, room_id, user_id);
-    res.status(200).send({
-      gig: gig
-    });
+    const result = await rc_controller.add_user_participant(
+      authSetBot,
+      room_id,
+      user_id
+    );
+
+    if (!result.success) {
+      throw `Unable to add user ${user_id} to room ${room_id}`;
+    }
+    res.status(200).send(gig);
   } catch (error) {
     LogConfig.error(JSON.stringify(error));
     res.status(500).send({ error });
