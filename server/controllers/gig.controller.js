@@ -168,6 +168,24 @@ exports.get_user_all_gigs = asyncMiddleware(async (req, res, next) => {
     });
 });
 
+exports.get_all_gigs_by_statuses = asyncMiddleware(async (req, res, next) => {
+  let status = req.query.status.split(",");
+  const matchCriteria = {
+    status: { $in: status }
+  };
+  return Gig.find(matchCriteria)
+    .exec()
+    .then(gigs => {
+      res.status(200).send({
+        gigs: gigs
+      });
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).send({ error: err });
+    });
+});
+
 exports.update_gig = function(req, res, next) {
   Gig.findByIdAndUpdate(req.params.id, { $set: req.body }, function(err, gig) {
     if (err) return next(err);
