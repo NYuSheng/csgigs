@@ -226,6 +226,27 @@ exports.get_user_participants = asyncMiddleware(async (req, res, next) => {
     });
 });
 
+exports.get_users = asyncMiddleware(async (req, res, next) => {
+  const matchCriteria = { $match: { _id: new ObjectID(req.params.id) } };
+  return Gig.aggregate(gig_aggregation_with_users(matchCriteria))
+    .exec()
+    .then(gig_retrieved => {
+      if (gig_retrieved === null) {
+        return res.status(400).send({
+          error: "Cannot find Gig of id " + req.params.id
+        });
+      }
+      const user_admins = gig_retrieved[0].user_admins;
+      const user_participants = gig_retrieved[0].user_participants;
+      res.status(200).send({
+        user_result: user_admins.concat(user_participants)
+      });
+    })
+    .catch(err => {
+      res.status(400).send({ error: err });
+    });
+});
+
 exports.add_user_participant = asyncMiddleware(async (req, res, next) => {
   try {
     const gig = await Gig.findOneAndUpdate(
@@ -284,6 +305,28 @@ function gig_aggregation_with_user_participant(matchCriteria) {
         localField: "user_participants",
         foreignField: "_id",
         as: "user_participants"
+      }
+    }
+  ];
+}
+
+function gig_aggregation_with_users(matchCriteria) {
+  return [
+    matchCriteria,
+    {
+      $lookup: {
+        from: "users",
+        localField: "user_participants",
+        foreignField: "_id",
+        as: "user_participants"
+      }
+    },
+    {
+      $lookup: {
+        from: "users",
+        localField: "user_admins",
+        foreignField: "_id",
+        as: "user_admins"
       }
     }
   ];
