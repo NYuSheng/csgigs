@@ -281,11 +281,9 @@ exports.add_user_participant = asyncMiddleware(async (req, res, next) => {
 
     const room_id = gig.rc_channel_id._id;
     const user_id = req.body.user_id;
-    const authSet_bot = {
-      "x-auth-token": "XO4_kYKgMjEA926toCPSppXxU9_RoipVZ_KDvTxHuqp",
-      "x-user-id": "Zjh2Hmnsbwq5MGMv8"
-    };
-    await rc_controller.add_user_participant(room_id, user_id, authSet_bot);
+    const authSetBot = getCachedApiAuth(req);
+
+    await rc_controller.add_user_participant(room_id, user_id, authSetBot);
     res.status(200).send({
       gig: gig
     });

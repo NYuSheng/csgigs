@@ -1,4 +1,5 @@
 const fetch = require("node-fetch");
+const api = require("../utils/api");
 
 exports.rc_user_login = function(body, res) {
   fetch("https://csgigs.com/api/v1/login", {
@@ -128,22 +129,18 @@ exports.publish_broadcast_message = async function(room_id, message, auth_set) {
   return data.success;
 };
 
-exports.add_user_participant = async function(room_id, user_id, auth_set) {
-  const headers = get_headers(auth_set);
-  const body = {
-    roomId: room_id,
-    userId: user_id
+exports.add_user_participant = async function(roomId, userId, authSetBot) {
+  const payload = {
+    roomId,
+    userId
   };
 
-  const response = await fetch("https://csgigs.com/api/v1/groups.invite", {
-    method: "POST",
-    headers: headers,
-    body: JSON.stringify(body)
-  });
-  const data = await response.json();
-  if (!data.success) {
-    throw "Unable to add user into rocket chat group";
-  }
+  await api.post(
+    "groups.invite",
+    authSetBot.authToken,
+    authSetBot.userId,
+    payload
+  );
 };
 
 function rc_set_group_type(headers, body, res) {
