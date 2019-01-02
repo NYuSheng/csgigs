@@ -48,16 +48,10 @@ exports.create_gig = asyncMiddleware(async (req, res, next) => {
     }
 
     const gig_created = await trySaveOrThrow(gig);
-
-    const { authToken: apiAuthToken, userId: apiUserId } = getCachedApiAuth(
-      req
-    );
+    const authSetBot = getCachedApiAuth(req);
 
     //publish_bot with broadcast_test channel
-    const authSet_bot = {
-      "x-auth-token": apiAuthToken,
-      "x-user-id": apiUserId
-    };
+
     const roomId = getCachedBroadcastRoomId(req);
 
     const gig_id_and_name = {
@@ -70,7 +64,7 @@ exports.create_gig = asyncMiddleware(async (req, res, next) => {
       .map(admin => admin.name);
 
     const created_group = await rc_controller.create_group(
-      req.headers,
+      authSetBot,
       gig_created.name,
       members
     );
@@ -82,9 +76,9 @@ exports.create_gig = asyncMiddleware(async (req, res, next) => {
       .map(admin => admin._id);
 
     const addOwners = await rc_controller.add_owners_to_group(
-      created_group._id,
+      authSetBot,
       gig_owners,
-      req.headers
+      created_group._id
     );
 
     if (!addOwners.success) {
@@ -98,10 +92,10 @@ exports.create_gig = asyncMiddleware(async (req, res, next) => {
 
     const message =
       "Please reply 'Attend' for event: *" + gig_created.name + "*";
-    const broadcastMessage = await rc_controller.publish_broadcast_message(
+    const broadcastMessage = await rc_controller.publishBroadcastMessage(
+      authSetBot,
       roomId,
-      message,
-      authSet_bot
+      message
     );
     if (!broadcastMessage) {
       throw `Unable to publish broadcast message for ${gig_created.name}`;
@@ -283,7 +277,7 @@ exports.add_user_participant = asyncMiddleware(async (req, res, next) => {
     const user_id = req.body.user_id;
     const authSetBot = getCachedApiAuth(req);
 
-    await rc_controller.add_user_participant(room_id, user_id, authSetBot);
+    await rc_controller.add_user_participant(authSetBot, room_id, user_id);
     res.status(200).send({
       gig: gig
     });

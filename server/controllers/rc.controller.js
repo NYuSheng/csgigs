@@ -32,34 +32,28 @@ exports.set_read_only_channel = function(req, res, next) {
   rc_set_read_only_channel(headers, body, res);
 };
 
-exports.create_group = async function(auth_set, name, members) {
-  const body = {
-    name,
-    members
-  };
-  const headers = get_headers(auth_set);
-  const response = await fetch("https://csgigs.com/api/v1/groups.create", {
-    method: "POST",
-    headers: headers,
-    body: JSON.stringify(body)
-  });
-  const data = await response.json();
-  return data.success ? data.group : null;
+exports.create_group = async function(authSetBot, name, members) {
+  const result = await api.post(
+    "groups.create",
+    authSetBot.authToken,
+    authSetBot.userId,
+    {
+      name,
+      members
+    }
+  );
+
+  return result.group ? result.group : null;
 };
 
-exports.add_owners_to_group = async function(groupId, gigOwners, authSet) {
-  const headers = get_headers(authSet);
+exports.add_owners_to_group = async function(authSetBot, gigOwners, groupId) {
   const calls = [];
   if (!gigOwners.length) {
     LogConfig.info("No users to add as the owner. Ignoring.");
     return Promise.resolve();
   }
   for (let gigOwner of gigOwners) {
-    const body = {
-      roomId: groupId,
-      userId: gigOwner
-    };
-    const call = rc_add_owner_to_group(headers, body);
+    const call = addOwnerToGroup(authSetBot, gigOwner, groupId);
     calls.push(call);
   }
   return Promise.all(calls)
@@ -114,24 +108,23 @@ function rc_publish_message(headers, body, res) {
     });
 }
 
-exports.publish_broadcast_message = async function(room_id, message, auth_set) {
-  const headers = get_headers(auth_set);
-  const body = {
-    roomId: room_id,
-    text: message
+exports.publishBroadcastMessage = async function(authSetBot, roomId, text) {
+  const payload = {
+    roomId,
+    text
   };
 
-  const response = await fetch("https://csgigs.com/api/v1/chat.postMessage", {
-    method: "POST",
-    headers: headers,
-    body: JSON.stringify(body)
-  });
+  const result = await api.post(
+    "chat.postMessage",
+    authSetBot.authToken,
+    authSetBot.userId,
+    payload
+  );
 
-  const data = await response.json();
-  return data.success;
+  return result.success;
 };
 
-exports.add_user_participant = async function(roomId, userId, authSetBot) {
+exports.add_user_participant = async function(authSetBot, roomId, userId) {
   const payload = {
     roomId,
     userId
@@ -165,21 +158,24 @@ function rc_set_group_type(headers, body, res) {
     });
 }
 
-async function rc_add_owner_to_group(headers, body) {
-  const response = await fetch("https://csgigs.com/api/v1/groups.addOwner", {
-    method: "POST",
-    headers: headers,
-    body: JSON.stringify(body)
-  });
-  const data = await response.json();
-  if (!data.success) {
+async function addOwnerToGroup(authSetBot, userId, roomId) {
+  const result = await api.post(
+    "groups.addOwner",
+    authSetBot.authToken,
+    authSetBot.userId,
+    {
+      userId,
+      roomId
+    }
+  );
+
+  if (!result.success) {
     throw {
       success: false,
-      userId: body.userId,
-      roomId: body.roomId
+      userId,
+      roomId
     };
   }
-  return { success: true };
 }
 
 function rc_set_read_only_channel(headers, body, res) {
