@@ -12,7 +12,9 @@
   "scripts": {
     "precommit": "pretty-quick --staged",
     "dev": "cross-env NODE_ENV=development nodemon server.js",
-    "test": "jest unit --detectOpenHandles --forceExit"
+    "test": "cross-env NODE_ENV=test npm run unit && npm run integration",
+    "unit": "jest unit --detectOpenHandles --forceExit",
+    "integration": "jest integration --detectOpenHandles --forceExit"
   },
   "dependencies": {
     "body-parser": "^1.18.2",
