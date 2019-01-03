@@ -25,7 +25,7 @@ exports.get_requests_by_id = function(req, res) {
 exports.create_task_request = function(req, res) {
   let task_request = new Task_Request({
     task_id: req.body.task_id,
-    user_name: req.body.user_name
+    user_id: req.body.user_id
   });
 
   return task_request
