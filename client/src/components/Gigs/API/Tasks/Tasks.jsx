@@ -77,28 +77,20 @@ export const remove = function(gigRoomId, taskId, taskName, statusCallback) {
   });
 };
 
-function buildTaskPublishMessage(gigRoomId, task) {
-  const publishPayload = {};
+function buildTaskPublishMessage(roomId, task) {
+  const message = `New Task!
+**${task.task_name}** (${task._id})
+Description: ${task.task_description}
+Reply "volunteer" to volunteer for this task.`;
 
-  publishPayload["message"] =
-    "" +
-    "*New Task!*\nTask Id: " +
-    task._id +
-    "\nTask Name: " +
-    task.task_name +
-    "\n Task Description: " +
-    task.task_description +
-    "\nReply to volunteer for this task.";
-  publishPayload["roomId"] = gigRoomId;
-
-  return publishPayload;
+  return { message, roomId };
 }
 
 function buildTaskPayload(gigId, state) {
-  var payload = {};
-  payload["gig_id"] = gigId;
-  payload["task_name"] = state.taskName;
-  payload["task_category"] = state.taskCategory;
-  payload["task_description"] = state.taskDescription;
-  return payload;
+  return {
+    gig_id: gigId,
+    task_name: state.taskName,
+    task_category: state.taskCategory,
+    task_description: state.taskDescription
+  };
 }
