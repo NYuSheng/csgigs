@@ -36,7 +36,8 @@ exports.get_user_by_prefix = asyncMiddleware(async function(req, res, next) {
     const users = users_retrieved.map(x => {
       return {
         _id: x._id,
-        name: x.name
+        name: x.name,
+        username: x.username
       };
     });
 
