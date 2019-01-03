@@ -59,7 +59,7 @@ exports.create_gig = asyncMiddleware(async (req, res, next) => {
       name: gig_created.name
     };
 
-    const members = req.body.user_admins.map(admin => admin.name);
+    const members = req.body.user_admins.map(admin => admin.username);
 
     const created_group = await rc_controller.create_group(
       authSetBot,
