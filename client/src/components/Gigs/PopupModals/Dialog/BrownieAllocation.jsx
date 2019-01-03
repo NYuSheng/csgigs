@@ -43,9 +43,9 @@ class BrownieAllocation extends React.Component {
     this.cells = {};
   }
 
-  componentDidUpdate(prevProps, prevState) {
+  async componentDidUpdate(prevProps, prevState) {
     if (this.props.modalOpen !== prevProps.modalOpen) {
-      this.setState({
+      await this.setState({
         userAllocations: this.props.userAllocations
       });
 

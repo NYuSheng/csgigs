@@ -29,6 +29,8 @@ class EditableTableCell extends React.Component {
     });
   }
 
+  componentWillUnmount() {}
+
   setStatusState(status) {
     this.setState({
       status: status
@@ -48,9 +50,13 @@ class EditableTableCell extends React.Component {
   }
 
   validateValue() {
-    const value = parseInt(this.state.value, 10);
+    const { status, value } = this.state;
+    const cellValue = parseInt(value, 10);
     return (
-      this.state.status.match("error|loading") || isNaN(value) || value < 0
+      status === "error" ||
+      status === "loading" ||
+      isNaN(cellValue) ||
+      cellValue < 0
     );
   }
 

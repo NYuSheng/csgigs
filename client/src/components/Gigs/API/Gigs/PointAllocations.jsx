@@ -35,6 +35,7 @@ export const assignPointsToUser = function(
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(assignPointsPayload)
   }).then(data => {
+    statusCallback("success");
     if (data.status !== 200) {
       data.json().then(json => {
         NotificationManager.error(json.error.errmsg);
@@ -43,6 +44,5 @@ export const assignPointsToUser = function(
       NotificationManager.success("Points allocated");
       callback(userId, points);
     }
-    statusCallback("done");
   });
 };
