@@ -6,6 +6,10 @@ const mockRes = require("jest-mock-express").response;
 
 const GigsMock = require("../models/gig.model");
 
+const app = {
+  locals: { apiAuth: {} }
+};
+
 const createMongoSaveMock = user_admins => {
   jest.spyOn(GigsMock.prototype, "save").mockImplementationOnce(() =>
     Promise.resolve({
@@ -14,6 +18,24 @@ const createMongoSaveMock = user_admins => {
       user_admins
     })
   );
+};
+
+const createMongoFindByIdAndUpdateMock = () => {
+  jest
+    .spyOn(GigsMock, "findByIdAndUpdate")
+    .mockImplementationOnce(() => Promise.resolve());
+};
+
+const createMongoSaveResolveWith = result => {
+  jest
+    .spyOn(GigsMock.prototype, "save")
+    .mockImplementationOnce(() => Promise.resolve(result));
+};
+
+const createMongoSaveRejectWith = result => {
+  jest
+    .spyOn(GigsMock.prototype, "save")
+    .mockImplementationOnce(() => Promise.reject(result));
 };
 
 const createGroupResponse = () => {
@@ -39,6 +61,7 @@ const createGroupResponse = () => {
 
 const createRequest = user_admins => {
   return {
+    app,
     headers: {},
     body: {
       name: "testgig",
@@ -48,13 +71,21 @@ const createRequest = user_admins => {
   };
 };
 
+const createRequestWithBody = body => {
+  return {
+    app,
+    headers: {},
+    body
+  };
+};
+
 const createUsers = names => {
   return names.map((name, i) => {
     return { _id: `id${++i}`, name };
   });
 };
 
-describe("Gig Controller Tests", () => {
+describe("Gig Controller", () => {
   let res;
   beforeEach(() => {
     res = mockRes();
@@ -62,274 +93,178 @@ describe("Gig Controller Tests", () => {
     jest.clearAllMocks();
   });
 
-  it("should return an error if unable to create a gig", async () => {
-    jest
-      .spyOn(GigsMock.prototype, "save")
-      .mockImplementationOnce(() => Promise.resolve(null));
-    await gigController.create_gig(createRequest(["bob"]), res);
+  describe("create gig: failure", () => {
+    it("should return an error if unable to create a gig", async () => {
+      jest
+        .spyOn(GigsMock.prototype, "save")
+        .mockImplementationOnce(() => Promise.resolve(null));
+      await gigController.create_gig(createRequest(["bob"]), res);
 
-    expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.send).toHaveBeenCalledWith({
-      error: "Error encountered while creating gig: testgig"
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.send).toHaveBeenCalledWith({
+        error: "Error encountered while creating gig: testgig"
+      });
+    });
+
+    it("should return an error if the gig already exists", async () => {
+      createMongoSaveRejectWith({
+        error: {
+          driver: true,
+          name: "MongoError",
+          index: 0,
+          code: 11000,
+          errmsg:
+            'E11000 duplicate key error collection: csgigs-admin.gigs index: name_1 dup key: { : "RowanTest1" }'
+        }
+      });
+      await gigController.create_gig(createRequest(["bob"]), res);
+
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.send).toHaveBeenCalledWith({
+        error: "The gig testgig already exists. Please try another name."
+      });
+    });
+
+    it("should return an error if unable create a rc group", async () => {
+      createMongoSaveMock(createUsers(["bob"]));
+
+      global.fetch.mockResponse(JSON.stringify({ success: false }));
+
+      await gigController.create_gig(createRequest(["bob"]), res);
+
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.send).toHaveBeenCalledWith({
+        error: "Unable to create group test in RC"
+      });
+    });
+
+    it("should return an error if there were no group owners specified", async () => {
+      createMongoSaveMock(createUsers(["bob", "frank", "jill"]));
+
+      global.fetch.mockResponse(JSON.stringify({ success: true }));
+
+      await gigController.create_gig(createRequest(), res);
+
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.send).toHaveBeenCalledWith({
+        error: "No owner specified for testgig"
+      });
+    });
+
+    it("should return an error if unable add a user as an owner of a group", async () => {
+      const user_admins = createUsers(["bob", "frank", "jill"]);
+      createMongoSaveMock(user_admins);
+
+      global.fetch.mockResponseOnce(JSON.stringify(createGroupResponse()));
+
+      // for each user
+      global.fetch.mockResponseOnce(JSON.stringify({ success: true }));
+      global.fetch.mockResponseOnce(JSON.stringify({ success: false }));
+      global.fetch.mockResponseOnce(JSON.stringify({ success: true }));
+
+      await gigController.create_gig(createRequest(user_admins), res);
+
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.send).toHaveBeenCalledWith({
+        error: "Unable to add user frank as an owner of group testgig"
+      });
+    });
+
+    it("should return an error if adding the channel ID to the gig in mongo", async () => {
+      const user_admins = createUsers(["bob"]);
+      createMongoSaveMock(user_admins);
+
+      jest
+        .spyOn(GigsMock, "findByIdAndUpdate")
+        .mockImplementationOnce(() => Promise.reject("Could not find it"));
+
+      global.fetch.mockResponseOnce(JSON.stringify(createGroupResponse()));
+      global.fetch.mockResponseOnce(JSON.stringify({ success: true }));
+
+      await gigController.create_gig(createRequest(user_admins), res, x =>
+        Promise.resolve(x)
+      );
+
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.send).toHaveBeenCalledWith({
+        error: "Could not find it"
+      });
+    });
+
+    it("should return error message if publish broadcast messsage fails", async () => {
+      jest
+        .spyOn(GigsMock, "findByIdAndUpdate")
+        .mockImplementationOnce(() => Promise.resolve());
+
+      const user_admins = createUsers(["bob"]);
+      createMongoSaveMock(user_admins);
+      // RC API create group
+      global.fetch.mockResponseOnce(JSON.stringify(createGroupResponse()));
+      // RC API make user as group owner
+      global.fetch.mockResponseOnce(JSON.stringify({ success: true }));
+      // RC API to post message
+      global.fetch.mockResponseOnce(JSON.stringify({ success: false }));
+
+      await gigController.create_gig(createRequest(user_admins), res);
+
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.send).toHaveBeenCalledWith({
+        error: "Unable to publish broadcast message for test"
+      });
     });
   });
 
-  it("should return an error if unable create a rc group", async () => {
-    createMongoSaveMock(createUsers(["bob"]));
+  describe("create gig: success", () => {
+    it("should successfully create gigs", async () => {
+      createMongoFindByIdAndUpdateMock();
 
-    global.fetch.mockResponse(JSON.stringify({ success: false }));
+      const user_admins = createUsers(["bob"]);
+      createMongoSaveMock(user_admins);
+      // RC API create group
+      global.fetch.mockResponseOnce(JSON.stringify(createGroupResponse()));
+      // RC API make user as group owner
+      global.fetch.mockResponseOnce(JSON.stringify({ success: true }));
+      // RC API to post message
+      global.fetch.mockResponseOnce(JSON.stringify({ success: true }));
 
-    await gigController.create_gig(createRequest(["bob"]), res);
+      await gigController.create_gig(createRequest(user_admins), res);
 
-    expect(res.status).toHaveBeenCalledWith(500);
-    expect(res.send).toHaveBeenCalledWith({
-      error: "Unable to create group test in RC"
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.send).toHaveBeenCalledWith({
+        gig: { _id: "1", name: "test" }
+      });
     });
-  });
 
-  it("should return an error if there were no group owners specified", async () => {
-    createMongoSaveMock(createUsers(["bob", "frank", "jill"]));
-
-    global.fetch.mockResponse(JSON.stringify({ success: true }));
-
-    await gigController.create_gig(createRequest(), res);
-
-    expect(res.status).toHaveBeenCalledWith(500);
-    expect(res.send).toHaveBeenCalledWith({
-      error: "No owner specified for testgig"
-    });
-  });
-
-  it("should return an error if unable add a user as an owner of a group", async () => {
-    const user_admins = createUsers(["bob", "frank", "jill"]);
-    createMongoSaveMock(user_admins);
-
-    global.fetch.mockResponseOnce(JSON.stringify(createGroupResponse()));
-
-    // for each user
-    global.fetch.mockResponseOnce(JSON.stringify({ success: true }));
-    global.fetch.mockResponseOnce(JSON.stringify({ success: false }));
-    global.fetch.mockResponseOnce(JSON.stringify({ success: true }));
-
-    await gigController.create_gig(createRequest(user_admins), res);
-
-    expect(res.status).toHaveBeenCalledWith(500);
-    expect(res.send).toHaveBeenCalledWith({
-      error: "Unable to add user frank as an owner of group testgig"
-    });
-  });
-
-  it("should return an error if adding the channel ID to the gig in mongo", async () => {
-    const user_admins = createUsers(["bob"]);
-    createMongoSaveMock(user_admins);
-
-    jest
-      .spyOn(GigsMock, "findByIdAndUpdate")
-      .mockImplementationOnce(() => Promise.reject("Could not find it"));
-
-    global.fetch.mockResponseOnce(JSON.stringify(createGroupResponse()));
-    global.fetch.mockResponseOnce(JSON.stringify({ success: true }));
-
-    await gigController.create_gig(createRequest(user_admins), res, x =>
-      Promise.resolve(x)
-    );
-
-    expect(res.status).toHaveBeenCalledWith(500);
-    expect(res.send).toHaveBeenCalledWith({
-      error: "Could not find it"
-    });
-  });
-
-  it("should return error message if publish broadcast messsage fails", async () => {
-    jest
-      .spyOn(GigsMock, "findByIdAndUpdate")
-      .mockImplementationOnce(() => Promise.resolve());
-
-    const user_admins = createUsers(["bob"]);
-    createMongoSaveMock(user_admins);
-    // RC API create group
-    global.fetch.mockResponseOnce(JSON.stringify(createGroupResponse()));
-    // RC API make user as group owner
-    global.fetch.mockResponseOnce(JSON.stringify({ success: true }));
-    // RC API to post message
-    global.fetch.mockResponseOnce(JSON.stringify({ success: false }));
-
-    await gigController.create_gig(createRequest(user_admins), res);
-
-    expect(res.status).toHaveBeenCalledWith(500);
-    expect(res.send).toHaveBeenCalledWith({
-      error: "Unable to publish broadcast message for test"
-    });
-  });
-
-  it("should successfully create gigs", async () => {
-    jest
-      .spyOn(GigsMock, "findByIdAndUpdate")
-      .mockImplementationOnce(() => Promise.resolve());
-
-    const user_admins = createUsers(["bob"]);
-    createMongoSaveMock(user_admins);
-    // RC API create group
-    global.fetch.mockResponseOnce(JSON.stringify(createGroupResponse()));
-    // RC API make user as group owner
-    global.fetch.mockResponseOnce(JSON.stringify({ success: true }));
-    // RC API to post message
-    global.fetch.mockResponseOnce(JSON.stringify({ success: true }));
-
-    await gigController.create_gig(createRequest(user_admins), res);
-
-    expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.send).toHaveBeenCalledWith({
-      gig: { _id: "1", name: "test" }
-    });
-  });
-});
-
-xdescribe("Gig Controller Tests", () => {
-  beforeAll(() => {
-    test_util.setup(mongoose);
-  });
-
-  afterAll(() => {
-    test_util.cleanUp(mongoose);
-  });
-
-  describe("Create Gig", () => {
-    test("with required parameters should return created gig, empty admin/participant/attendee array, status 200", () => {
+    xit("created gig should be returned with expected properties", async () => {
+      const user_admins = createUsers(["bob"]);
       const body = {
         name: "ポケモンサファリ＠台南",
         points_budget: 100,
-        status: "NOT STARTED"
-      };
-
-      const request = test_util.createHttpMockRequest(body, {}, "POST");
-
-      const response = httpMocks.createResponse();
-
-      return gig_controller.gig_create(request, response).then(() => {
-        const responseData = response._getData();
-        expect(response.statusCode).toBe(200);
-        expect(responseData.gig.name).toBe("ポケモンサファリ＠台南");
-        expect(responseData.gig.user_admins.length).toBe(0);
-        expect(responseData.gig.user_participants.length).toBe(0);
-        expect(responseData.gig.user_attendees.length).toBe(0);
-      });
-    });
-
-    //TBC
-    test("while specifying admins should return created gig, filled admin array, empty participant/attendee array, status 200", () => {
-      var body = {
-        name: "ジャンプフォース２０１８",
-        points_budget: 100,
         status: "NOT STARTED",
-        user_admins: ["brandon", "dewang", "kevin", "yusheng", "ernest"]
+        user_admins
       };
 
-      const request = test_util.createHttpMockRequest(body, {}, "POST");
+      createMongoFindByIdAndUpdateMock();
+      createMongoSaveResolveWith({ name: body.name, user_admins });
+      // RC API create group
+      global.fetch.mockResponseOnce(JSON.stringify(createGroupResponse()));
+      // RC API make user as group owner
+      global.fetch.mockResponseOnce(JSON.stringify({ success: true }));
+      // RC API to post message
+      global.fetch.mockResponseOnce(JSON.stringify({ success: true }));
+      // const request = test_util.createHttpMockRequest(body, {}, "POST");
 
-      const response = httpMocks.createResponse();
+      // const response = httpMocks.createResponse();
 
-      return gig_controller.gig_create(request, response).then(() => {
-        const responseData = response._getData();
-        expect(response.statusCode).toBe(200);
-        expect(responseData.gig.name).toBe("ジャンプフォース２０１８");
-        expect(responseData.gig.user_admins.length).toBe(5);
-        expect(responseData.gig.user_participants.length).toBe(0);
-        expect(responseData.gig.user_attendees.length).toBe(0);
+      await gigController.create_gig(createRequestWithBody(body), res);
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.send).toHaveBeenCalledWith({
+        gig: { _id: "1", name: "ポケモンサファリ＠台南", user_admins }
       });
-    });
-
-    //conflict
-    test("with a duplicate name should return status 400", () => {
-      var body = {
-        name: "ジャンプフォース２０１８",
-        points_budget: 150,
-        status: "NOT STARTED",
-        user_admins: ["brandon", "dewang", "kevin", "yusheng"]
-      };
-
-      const request = test_util.createHttpMockRequest(body, {}, "POST");
-
-      const response = httpMocks.createResponse();
-
-      return gig_controller.gig_create(request, response).then(() => {
-        const responseData = response._getData();
-        expect(response.statusCode).toBe(400);
-      });
-    });
-
-    //bad request
-    test("without all required parameters should return status 400", () => {
-      var body = {
-        name: "アホの森",
-        status: "NOT STARTED",
-        user_admins: ["ernest"]
-      };
-
-      const request = test_util.createHttpMockRequest(body, {}, "POST");
-
-      const response = httpMocks.createResponse();
-
-      return gig_controller.gig_create(request, response).then(() => {
-        const responseData = response._getData();
-        expect(response.statusCode).toBe(400);
-      });
-    });
-
-    //bad request (TBC)
-    xtest("while specifying invalid admins should return status 400", () => {});
-  });
-
-  describe("Retrieve All Gigs", () => {
-    test("should return array of gigs with status 200", () => {
-      const request = test_util.createHttpMockRequest({}, {}, "GET");
-
-      const response = httpMocks.createResponse();
-
-      return gig_controller.gigs_details(request, response).then(() => {
-        const responseData = response._getData();
-        //_getData is already formed as an object here.
-        expect(response.statusCode).toBe(200);
-        expect(responseData.gigs.length).toBeGreaterThanOrEqual(1);
-      });
+      // expect(responseData.gig.name).toBe("ポケモンサファリ＠台南");
+      // expect(responseData.gig.user_admins.length).toBe(0);
+      // expect(responseData.gig.user_participants.length).toBe(0);
+      // expect(responseData.gig.user_attendees.length).toBe(0);
     });
   });
-
-  describe("Retrieve Gig By Id", () => {
-    test("valid gig name should return gig with status 200", () => {
-      const request = test_util.createHttpMockRequest(
-        {},
-        { name: "ポケモンサファリ＠台南" },
-        "GET"
-      );
-      const response = httpMocks.createResponse();
-
-      return gig_controller.gig_details(request, response).then(() => {
-        const responseData = response._getData();
-        expect(response.statusCode).toBe(200);
-        expect(responseData.gig.name).toBe("ポケモンサファリ＠台南");
-        expect(responseData.gig.points_budget).toBe(100);
-      });
-    });
-
-    //bad request
-    test("invalid gig name should return status 400", () => {
-      const request = test_util.createHttpMockRequest({}, { name: "" }, "GET");
-      const response = httpMocks.createResponse();
-
-      return gig_controller.gig_details(request, response).then(() => {
-        console.log(response._getData());
-        expect(response.statusCode).toBe(400);
-      });
-    });
-  });
-
-  //testing function directly
-  //commented out until we've found a way to do unit testing for the db
-  //currently this test will fail once anyone tampers/edit the data in gigs collection
-  // test('retrieve all gigs', () =>{
-  //     return gig_controller.wew().then((result) =>{
-  //         expect(result).toHaveLength(2);
-  //     });
-  // });
 });

@@ -5,9 +5,34 @@ const asyncMiddleware = require("../utils/asyncMiddleware");
 const ObjectID = require("mongodb").ObjectID;
 const rc_controller = require("../controllers/rc.controller");
 
+const getCachedApiAuth = request => request.app.locals.apiAuth;
+const getCachedBroadcastRoomId = request =>
+  request.app.locals.broadcastChannelName;
+
+const trySaveOrThrow = async gig => {
+  let saved;
+  const defaultErrorMessage =
+    "Error encountered while creating gig: " + gig.name;
+  try {
+    saved = await gig.save();
+  } catch (ex) {
+    LogConfig.error(JSON.stringify(ex));
+    const { error } = ex;
+    let message;
+    if (error.code === 11000) {
+      message = `The gig ${gig.name} already exists. Please try another name.`;
+    } else {
+      message = defaultErrorMessage;
+    }
+    throw message;
+  }
+  if (!saved) throw defaultErrorMessage;
+  return saved;
+};
+
 exports.create_gig = asyncMiddleware(async (req, res, next) => {
   const gig = new Gig({
-    name: req.body.name,
+    name: req.body.name.trim(),
     description: req.body.description,
     photo: req.body.photo,
     points_budget: req.body.points_budget,
@@ -22,46 +47,38 @@ exports.create_gig = asyncMiddleware(async (req, res, next) => {
       throw `No owner specified for ${gig.name}`;
     }
 
-    const gig_created = await gig.save();
-
-    if (gig_created === null) {
-      return res.status(400).send({
-        error: "Error encountered while creating gig: " + req.body.name
-      });
-    }
+    const gig_created = await trySaveOrThrow(gig);
+    const authSetBot = getCachedApiAuth(req);
 
     //publish_bot with broadcast_test channel
-    const authSet_bot = {
-      "x-auth-token": "VynD2oNIieXVkn_nkqBSq1DKv5_5LhC1-ZKrz9q-bwl",
-      "x-user-id": "Zjh2Hmnsbwq5MGMv8"
-    };
-    const roomId = "2EvneDEerT9jGLYYf";
+
+    const roomId = getCachedBroadcastRoomId(req);
 
     const gig_id_and_name = {
       _id: gig_created._id,
       name: gig_created.name
     };
 
-    const members = gig_created.user_admins.filter(
-      admin => admin !== req.body.user
-    );
+    const members = req.body.user_admins
+      .filter(admin => admin._id !== req.body.user)
+      .map(admin => admin.name);
 
     const created_group = await rc_controller.create_group(
-      req.headers,
-      members,
-      gig_created.name
+      authSetBot,
+      gig_created.name,
+      members
     );
     if (!created_group) {
       throw `Unable to create group ${gig_created.name} in RC`;
     }
     const gig_owners = req.body.user_admins
-      .filter(admin => admin.name !== req.body.user)
+      .filter(admin => admin._id !== req.body.user)
       .map(admin => admin._id);
 
     const addOwners = await rc_controller.add_owners_to_group(
-      created_group._id,
+      authSetBot,
       gig_owners,
-      req.headers
+      created_group._id
     );
 
     if (!addOwners.success) {
@@ -73,12 +90,11 @@ exports.create_gig = asyncMiddleware(async (req, res, next) => {
       rc_channel_id: created_group
     });
 
-    const message =
-      "Please reply 'Attend' for event: *" + gig_created.name + "*";
-    const broadcastMessage = await rc_controller.publish_broadcast_message(
+    const message = `Please reply 'Attend' for event: **${gig_created.name}**`;
+    const broadcastMessage = await rc_controller.publishBroadcastMessage(
+      authSetBot,
       roomId,
-      message,
-      authSet_bot
+      message
     );
     if (!broadcastMessage) {
       throw `Unable to publish broadcast message for ${gig_created.name}`;
@@ -94,21 +110,18 @@ exports.create_gig = asyncMiddleware(async (req, res, next) => {
 });
 
 exports.get_gig_by_id = asyncMiddleware(async (req, res, next) => {
-  return Gig.find({ _id: ObjectID(req.params.id) })
-    .exec()
-    .then(gig => {
-      if (gig == null) {
-        return res.status(400).send({
-          error: "Cannot find Gig with id: " + req.params.id
-        });
-      }
-      res.status(200).send({
-        gig: gig[0]
-      });
-    })
-    .catch(err => {
-      res.status(400).send({ error: err });
+  try {
+    const result = await Gig.find({ _id: ObjectID(req.params.id) });
+    if (result.length === 0) {
+      throw "error: Cannot find Gig with id: " + req.params.id;
+    }
+    res.status(200).send({
+      gig: result[0]
     });
+  } catch (error) {
+    LogConfig.error(JSON.stringify(error));
+    res.status(500).send({ error });
+  }
 });
 
 exports.get_gig_name = asyncMiddleware(async (req, res, next) => {
@@ -133,6 +146,24 @@ exports.get_user_all_gigs = asyncMiddleware(async (req, res, next) => {
   let status = req.query.status.split(",");
   const matchCriteria = {
     user_admins: { $in: [req.params.user_id] },
+    status: { $in: status }
+  };
+  return Gig.find(matchCriteria)
+    .exec()
+    .then(gigs => {
+      res.status(200).send({
+        gigs: gigs
+      });
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).send({ error: err });
+    });
+});
+
+exports.get_all_gigs_by_statuses = asyncMiddleware(async (req, res, next) => {
+  let status = req.query.status.split(",");
+  const matchCriteria = {
     status: { $in: status }
   };
   return Gig.find(matchCriteria)
@@ -226,6 +257,27 @@ exports.get_user_participants = asyncMiddleware(async (req, res, next) => {
     });
 });
 
+exports.get_users = asyncMiddleware(async (req, res, next) => {
+  const matchCriteria = { $match: { _id: new ObjectID(req.params.id) } };
+  return Gig.aggregate(gig_aggregation_with_users(matchCriteria))
+    .exec()
+    .then(gig_retrieved => {
+      if (gig_retrieved === null) {
+        return res.status(400).send({
+          error: "Cannot find Gig of id " + req.params.id
+        });
+      }
+      const user_admins = gig_retrieved[0].user_admins;
+      const user_participants = gig_retrieved[0].user_participants;
+      res.status(200).send({
+        user_result: user_admins.concat(user_participants)
+      });
+    })
+    .catch(err => {
+      res.status(400).send({ error: err });
+    });
+});
+
 exports.add_user_participant = asyncMiddleware(async (req, res, next) => {
   try {
     const gig = await Gig.findOneAndUpdate(
@@ -240,14 +292,18 @@ exports.add_user_participant = asyncMiddleware(async (req, res, next) => {
 
     const room_id = gig.rc_channel_id._id;
     const user_id = req.body.user_id;
-    const authSet_bot = {
-      "x-auth-token": "XO4_kYKgMjEA926toCPSppXxU9_RoipVZ_KDvTxHuqp",
-      "x-user-id": "Zjh2Hmnsbwq5MGMv8"
-    };
-    await rc_controller.add_user_participant(room_id, user_id, authSet_bot);
-    res.status(200).send({
-      gig: gig
-    });
+    const authSetBot = getCachedApiAuth(req);
+
+    const result = await rc_controller.add_user_participant(
+      authSetBot,
+      room_id,
+      user_id
+    );
+
+    if (!result.success) {
+      throw `Unable to add user ${user_id} to room ${room_id}`;
+    }
+    res.status(200).send(gig);
   } catch (error) {
     LogConfig.error(JSON.stringify(error));
     res.status(500).send({ error });
@@ -284,6 +340,28 @@ function gig_aggregation_with_user_participant(matchCriteria) {
         localField: "user_participants",
         foreignField: "_id",
         as: "user_participants"
+      }
+    }
+  ];
+}
+
+function gig_aggregation_with_users(matchCriteria) {
+  return [
+    matchCriteria,
+    {
+      $lookup: {
+        from: "users",
+        localField: "user_participants",
+        foreignField: "_id",
+        as: "user_participants"
+      }
+    },
+    {
+      $lookup: {
+        from: "users",
+        localField: "user_admins",
+        foreignField: "_id",
+        as: "user_admins"
       }
     }
   ];

@@ -4,7 +4,6 @@ import React from "react";
 import withStyles from "@material-ui/core/styles/withStyles";
 
 // @material-ui/icons
-import BrowniePoints from "@material-ui/icons/AttachMoney";
 import Status from "@material-ui/icons/Timeline";
 import Chat from "@material-ui/icons/Chat";
 
@@ -12,22 +11,17 @@ import Chat from "@material-ui/icons/Chat";
 import Card from "components/Card/Card";
 import CardIcon from "components/Card/CardIcon";
 import CardHeader from "components/Card/CardHeader";
-import CardBody from "components/Card/CardBody";
 import CardFooter from "components/Card/CardFooter";
 import GridContainer from "components/Grid/GridContainer";
 import GridItem from "components/Grid/GridItem";
 import Button from "components/CustomButtons/Button";
 import GigActions from "components/Gigs/PopupModals/Dialog/GigActions";
 import GigDetails from "components/Gigs/PopupModals/Dialog/GigDetails";
-import BrownieAllocation from "components/Gigs/PopupModals/Dialog/BrownieAllocation";
 import UserProfile from "components/Gigs/Authentication/UserProfile";
 import GigAdminsView from "views/Gigs/ViewComponents/GigAdminsView";
 import GigTasksView from "views/Gigs/ViewComponents/GigTasksView";
 import GigParticipantsView from "views/Gigs/ViewComponents/GigParticipantsView";
 import { getUserGig } from "components/Gigs/API/Gigs/Gigs";
-
-// dependencies
-import CircularProgressbar from "react-circular-progressbar";
 
 // style sheets
 import {
@@ -35,6 +29,7 @@ import {
   roseColor
 } from "assets/jss/material-dashboard-pro-react.jsx";
 import "react-circular-progressbar/dist/styles.css";
+import GigBrownieView from "./ViewComponents/GigBrownieView";
 
 const style = {
   cardTitle,
@@ -84,7 +79,6 @@ class GigDashboard extends React.Component {
     super(props);
     this.state = {
       gig: null,
-      brownieAllocation: false,
       gigActionsModalOpen: false,
       gigDetailsModalOpen: false,
       Draft: "info",
@@ -147,42 +141,15 @@ class GigDashboard extends React.Component {
     });
   }
 
-  editBrownieAllocation() {
-    this.setState({
-      brownieAllocation: true
-    });
-  }
-
   hidePopup(popupState) {
     this.setState({
       [popupState + "ModalOpen"]: false
     });
   }
 
-  calculatePoints(gig) {
-    var tasksAllocations = 0;
-
-    if (gig.tasks) {
-      gig.tasks.forEach(function(task) {
-        tasksAllocations += task.points;
-      });
-    }
-
-    return tasksAllocations;
-  }
-
-  calculatePointsPercentage(gig) {
-    return (this.calculatePoints(gig) / gig.points_budget) * 100;
-  }
-
   render() {
     const { classes } = this.props;
-    const {
-      gig,
-      brownieAllocation,
-      gigActionsModalOpen,
-      gigDetailsModalOpen
-    } = this.state;
+    const { gig, gigActionsModalOpen, gigDetailsModalOpen } = this.state;
 
     if (gig) {
       return (
@@ -194,11 +161,6 @@ class GigDashboard extends React.Component {
           />
           <GigDetails
             modalOpen={gigDetailsModalOpen}
-            hidePopup={this.hidePopup.bind(this)}
-            gig={gig}
-          />
-          <BrownieAllocation
-            modalOpen={brownieAllocation}
             hidePopup={this.hidePopup.bind(this)}
             gig={gig}
           />
@@ -270,46 +232,11 @@ class GigDashboard extends React.Component {
               </GridContainer>
             </GridItem>
             <GridItem xs={12} sm={12} md={4} lg={4}>
-              <Card pricing>
-                <CardHeader color="warning" stats icon>
-                  <CardIcon color="warning">
-                    <BrowniePoints />
-                  </CardIcon>
-                </CardHeader>
-                <CardBody pricing>
-                  <CircularProgressbar
-                    className={classes.icon}
-                    percentage={this.calculatePointsPercentage(gig)}
-                    text={`${this.calculatePoints(gig)}/${gig.points_budget}`}
-                    strokeWidth={2}
-                    styles={{
-                      root: {},
-                      path: {
-                        stroke: "#ff9800",
-                        strokeLinecap: "butt",
-                        transition: "stroke-dashoffset 0.5s ease 0s"
-                      },
-                      trail: {
-                        stroke: "#d6d6d6"
-                      },
-                      text: {
-                        fill: "#ff9800",
-                        fontSize: "20px"
-                      }
-                    }}
-                  />
-                  <h6 className={classes.cardCategory}>
-                    Brownie Points Total Budget
-                  </h6>
-                  <Button
-                    round
-                    color="warning"
-                    onClick={this.editBrownieAllocation.bind(this)}
-                  >
-                    Edit Allocation
-                  </Button>
-                </CardBody>
-              </Card>
+              <GigBrownieView
+                gigBudget={gig.points_budget}
+                gigId={gig._id}
+                {...this.props}
+              />
             </GridItem>
             <GridItem xs={12} sm={12} md={4} lg={4}>
               <GigParticipantsView gigId={gig._id} {...this.props} />

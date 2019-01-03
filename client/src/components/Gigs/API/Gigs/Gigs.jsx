@@ -41,7 +41,20 @@ export const create = function(step, callback) {
 export const getUserGigs = function(loadingCallback, gigsCallback, status) {
   const user = UserProfile.getUser();
   loadingCallback(true);
-  fetch(`/admin-ui/api/gigs/${user.me._id}?status=${status}`, {
+
+  if (user.me.roles.includes("admin")) {
+    const url = `/admin-ui/api/gigs/get_all_gigs?status=${status}`;
+    getGigs(loadingCallback, gigsCallback, status, url);
+  } else {
+    const url = `/admin-ui/api/gigs/${user.me._id}?status=${status}`;
+    getGigs(loadingCallback, gigsCallback, status, url);
+  }
+};
+
+export const getGigs = function(loadingCallback, gigsCallback, status, url) {
+  const user = UserProfile.getUser();
+  console.log(url);
+  fetch(url, {
     method: "GET",
     headers: { "Content-Type": "application/json" }
   }).then(data => {
@@ -71,6 +84,23 @@ export const getUserGig = function(gigId, gigsCallback) {
     } else {
       data.json().then(json => {
         gigsCallback(json.gig);
+      });
+    }
+  });
+};
+
+export const getGigUsers = function(gigId, callback) {
+  fetch(`/admin-ui/api/gigs/${gigId}/getUsers`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" }
+  }).then(data => {
+    if (data.status !== 200) {
+      data.json().then(json => {
+        NotificationManager.error(json.error.errmsg);
+      });
+    } else {
+      data.json().then(json => {
+        callback(json.user_result);
       });
     }
   });
