@@ -48,7 +48,6 @@ function renderSuggestion({ suggestion, index, itemProps }) {
 //TODO Check if second filter working
 function processSuggestion(users) {
   const loggedInUser = UserProfile.getUser();
-  console.log(loggedInUser);
   const firstFilter = users.filter(user => user._id !== loggedInUser.userId);
   let count = 0;
   firstFilter.filter(user => {
