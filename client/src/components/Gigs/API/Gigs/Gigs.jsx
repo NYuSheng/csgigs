@@ -41,18 +41,17 @@ export const getUserGigs = function(loadingCallback, gigsCallback, status) {
   const user = UserProfile.getUser();
   loadingCallback(true);
 
-  if (user.me.roles.includes("admin")) {
-    const url = `/admin-ui/api/gigs/get_all_gigs?status=${status}`;
-    getGigs(loadingCallback, gigsCallback, status, url);
-  } else {
-    const url = `/admin-ui/api/gigs/${user.me._id}?status=${status}`;
-    getGigs(loadingCallback, gigsCallback, status, url);
-  }
+  // if (user.me.roles.includes("admin")) {
+  //   const url = `/admin-ui/api/gigs/get_all_gigs?status=${status}`;
+  //   getGigs(loadingCallback, gigsCallback, status, url);
+  // } else {
+  const url = `/admin-ui/api/gigs/${user.me._id}?status=${status}`;
+  getGigs(loadingCallback, gigsCallback, status, url);
+  // }
 };
 
 export const getGigs = function(loadingCallback, gigsCallback, status, url) {
   const user = UserProfile.getUser();
-  console.log(url);
   fetch(url, {
     method: "GET",
     headers: { "Content-Type": "application/json" }
