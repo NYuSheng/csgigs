@@ -69,7 +69,17 @@ exports.create_gig = asyncMiddleware(async (req, res) => {
       members
     );
     if (!created_group) {
-      throw `Unable to create group ${gig_created.name} in RC`;
+      const gig_deleted = await this.delete_gig(gig_created._id);
+      console.log(gig_deleted);
+      var errorMsg = "";
+      if (!gig_deleted._id) {
+        errorMsg =
+          `Unable to create group ${gig_created.name} in RC, ` +
+          `but record in MongoDB still persists. Please contact administrator to delete record.`;
+      } else {
+        errorMsg = `Unable to create group ${gig_created.name} in RC`;
+      }
+      throw errorMsg;
     }
     const gig_owners = req.body.user_admins.map(admin => admin._id);
 
