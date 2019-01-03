@@ -7,9 +7,6 @@ import {
 
 export const create = function(step, callback) {
   const gigCreator = UserProfile.getUser().me;
-
-  const { _id, name, username } = gigCreator;
-
   const authSet = UserProfile.getAuthSet();
   fetch("/admin-ui/api/gigs/create", {
     method: "POST",
@@ -164,6 +161,12 @@ export const complete = function(gigId, gigRoomId, payload, statusCallback) {
       if (statusCallback) statusCallback("success");
     }
   });
+};
+
+export const getGigName = async function(gigId) {
+  const response = await fetch(`/admin-ui/api/gigs/get_name_by_id/${gigId}`);
+  const json = await response.json();
+  return json.gig_name;
 };
 
 function buildPublishMessage(gigRoomId, status) {
