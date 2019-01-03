@@ -30,7 +30,7 @@ const trySaveOrThrow = async gig => {
   return saved;
 };
 
-exports.create_gig = asyncMiddleware(async (req, res, next) => {
+exports.create_gig = asyncMiddleware(async (req, res) => {
   const gig = new Gig({
     name: req.body.name.trim(),
     description: req.body.description,
@@ -86,7 +86,7 @@ exports.create_gig = asyncMiddleware(async (req, res, next) => {
       rc_channel_id: created_group
     });
 
-    const message = `Please reply 'Attend' for event: **${gig_created.name}**`;
+    const message = `Please reply 'attend' for event: **${gig_created.name}**`;
     const broadcastMessage = await rc_controller.publishBroadcastMessage(
       authSetBot,
       roomId,
@@ -105,7 +105,7 @@ exports.create_gig = asyncMiddleware(async (req, res, next) => {
   }
 });
 
-exports.get_gig_by_id = asyncMiddleware(async (req, res, next) => {
+exports.get_gig_by_id = asyncMiddleware(async (req, res) => {
   try {
     const result = await Gig.find({ _id: ObjectID(req.params.id) });
     if (result.length === 0) {
@@ -120,26 +120,23 @@ exports.get_gig_by_id = asyncMiddleware(async (req, res, next) => {
   }
 });
 
-exports.get_gig_name = asyncMiddleware(async (req, res, next) => {
-  return Gig.find({ _id: ObjectID(req.params.id) })
-    .exec()
-    .then(gig => {
-      if (gig == null) {
-        return res.status(400).send({
-          error: "Cannot find Gig with id: " + req.params.id
-        });
-      }
-      res.status(200).send({
-        gig_name: gig[0].name
-      });
-    })
-    .catch(err => {
-      res.status(400).send({ error: err });
+exports.get_gig_name = asyncMiddleware(async (req, res) => {
+  try {
+    const gig = await Gig.find({ _id: ObjectID(req.params.id) });
+    if (gig == null) {
+      throw "Cannot find Gig with id: " + req.params.id;
+    }
+    res.status(200).send({
+      gig_name: gig[0].name
     });
+  } catch (error) {
+    LogConfig.error(JSON.stringify(error));
+    res.status(500).send({ error });
+  }
 });
 
-exports.get_user_all_gigs = asyncMiddleware(async (req, res, next) => {
-  let status = req.query.status.split(",");
+exports.get_user_all_gigs = asyncMiddleware(async (req, res) => {
+  const status = req.query.status.split(",");
   const matchCriteria = {
     user_admins: { $in: [req.params.user_id] },
     status: { $in: status }
