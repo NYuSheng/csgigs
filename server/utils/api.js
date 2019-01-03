@@ -24,7 +24,7 @@ async function api(endPointUrl, method, authToken, userId, payload) {
   });
 
   const result = await response.json();
-  if (result.success !== true) {
+  if (result.success === false) {
     LogConfig.error(
       `API ${endPointUrl} did not return success: ${JSON.stringify(result)}`
     );

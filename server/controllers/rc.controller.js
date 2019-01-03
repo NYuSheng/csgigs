@@ -1,36 +1,46 @@
 const fetch = require("node-fetch");
 const api = require("../utils/api");
 const LogConfig = require("../log-config");
+const asyncMiddleware = require("../utils/asyncMiddleware");
 
-exports.rc_user_login = function(body, res) {
-  fetch("https://csgigs.com/api/v1/login", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body)
-  })
-    .then(loginoutput => loginoutput.json())
-    .then(data => {
-      if (data.status !== "success") {
-        res.status(400).send({
-          error: "Incorrect username/password"
-        });
-      } else {
-        res.status(200).send({
-          user: data.data
-        });
-      }
+const getCachedApiAuth = request => request.app.locals.apiAuth;
+
+exports.rc_user_login = async function(body, res) {
+  const data = await api.post("login", null, null, body);
+
+  if (data.status !== "success") {
+    LogConfig.stream.write("Failed login attempt");
+    return res.status(401).send({
+      error: "Incorrect username/password"
     });
+  }
+
+  res.status(200).send({
+    user: data.data
+  });
 };
 
-exports.set_read_only_channel = function(req, res, next) {
-  const body = {
-    roomId: req.body.roomId,
-    readOnly: req.body.readOnly
-  };
+exports.set_read_only_channel = asyncMiddleware(async function(req, res, next) {
+  const authSetBot = getCachedApiAuth(req);
 
-  const headers = get_headers(req.headers);
-  rc_set_read_only_channel(headers, body, res);
-};
+  const result = await api.post(
+    "channels.setReadOnly",
+    authSetBot.authToken,
+    authSetBot.userId,
+    {
+      roomId: req.body.roomId,
+      readOnly: req.body.readOnly
+    }
+  );
+
+  if (!result.success) {
+    return res.status(400).send({
+      error: "Unable to set channel to Read-Only"
+    });
+  }
+
+  res.sendStatus(200);
+});
 
 exports.create_group = async function(authSetBot, name, members) {
   const result = await api.post(
@@ -176,22 +186,4 @@ async function addOwnerToGroup(authSetBot, userId, roomId) {
       roomId
     };
   }
-}
-
-function rc_set_read_only_channel(headers, body, res) {
-  fetch("https://csgigs.com/api/v1/channels.setReadOnly", {
-    method: "POST",
-    headers: headers,
-    body: JSON.stringify(body)
-  })
-    .then(output => output.json())
-    .then(data => {
-      if (!data.success) {
-        res.status(400).send({
-          error: "Unable to set channel to Read-Only"
-        });
-      } else {
-        res.status(200).send();
-      }
-    });
 }
