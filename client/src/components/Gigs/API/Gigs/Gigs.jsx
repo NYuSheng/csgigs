@@ -17,7 +17,6 @@ export const create = function(step, callback) {
       "x-user-id": authSet.userId
     },
     body: JSON.stringify({
-      user: gigCreator.me._id,
       name: step.name,
       description: step.gigDescription,
       points_budget: step.budget,

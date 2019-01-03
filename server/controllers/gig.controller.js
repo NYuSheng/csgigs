@@ -59,9 +59,7 @@ exports.create_gig = asyncMiddleware(async (req, res, next) => {
       name: gig_created.name
     };
 
-    const members = req.body.user_admins
-      .filter(admin => admin._id !== req.body.user)
-      .map(admin => admin.name);
+    const members = req.body.user_admins.map(admin => admin.name);
 
     const created_group = await rc_controller.create_group(
       authSetBot,
@@ -71,9 +69,7 @@ exports.create_gig = asyncMiddleware(async (req, res, next) => {
     if (!created_group) {
       throw `Unable to create group ${gig_created.name} in RC`;
     }
-    const gig_owners = req.body.user_admins
-      .filter(admin => admin._id !== req.body.user)
-      .map(admin => admin._id);
+    const gig_owners = req.body.user_admins.map(admin => admin._id);
 
     const addOwners = await rc_controller.add_owners_to_group(
       authSetBot,
