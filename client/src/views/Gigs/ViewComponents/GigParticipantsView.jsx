@@ -86,7 +86,13 @@ class GigParticipantsView extends React.Component {
         <Card>
           <CardHeader color="brown" icon>
             <GridContainer style={{ width: "100%", margin: 0 }}>
-              <GridItem xs={9} sm={9} md={9} lg={9} style={{ paddingLeft: 0 }}>
+              <GridItem
+                xs={9}
+                sm={9}
+                md={9}
+                lg={9}
+                style={{ paddingLeft: 0, paddingRight: 10 }}
+              >
                 <CardIcon color="brown">
                   <Participants />
                 </CardIcon>
@@ -94,7 +100,7 @@ class GigParticipantsView extends React.Component {
                   style={{ flexWrap: "wrap" }}
                   className={classes.cardCategory}
                 >
-                  Gig Participant(s)
+                  Participant(s)
                 </h4>
               </GridItem>
               {/*<p className={classes.cardCategory} style={{fontSize: 20, marginTop: 15}}>Gig*/}

@@ -67,7 +67,11 @@ class EditableTableCell extends React.Component {
     const { status, value } = this.state;
 
     return (
-      <TableCell colSpan="1" className={tableCellClasses}>
+      <TableCell
+        colSpan="1"
+        className={tableCellClasses}
+        style={{ paddingRight: 0 }}
+      >
         <CustomInput
           success={status === "success"}
           error={status === "error"}

@@ -92,7 +92,7 @@ class GigAdminsView extends React.Component {
                 <CardIcon color="rose">
                   <People />
                 </CardIcon>
-                <h4 className={classes.cardCategory}>Gig Admin(s)</h4>
+                <h4 className={classes.cardCategory}>Admin(s)</h4>
               </GridItem>
               <GridItem
                 xs={3}
@@ -120,6 +120,7 @@ class GigAdminsView extends React.Component {
           </CardHeader>
           <CardBody>
             <Table
+              tableHeight="100px"
               tableData={admins}
               notFoundMessage="No admins found"
               setupTableCells={this.setupTableCells.bind(this)}
