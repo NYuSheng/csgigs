@@ -35,7 +35,7 @@ export const assignPointsToUser = function(
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(assignPointsPayload)
   }).then(data => {
-    statusCallback("done");
+    statusCallback("success");
     if (data.status !== 200) {
       data.json().then(json => {
         NotificationManager.error(json.error.errmsg);
