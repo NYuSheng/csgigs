@@ -36,6 +36,7 @@ exports.create_gig = asyncMiddleware(async (req, res) => {
     description: req.body.description,
     photo: req.body.photo,
     points_budget: req.body.points_budget,
+    createdBy: req.body.createdBy._id,
     status: "Draft",
     user_admins: req.body.user_admins.map(admin => admin._id),
     //Possible required fields in creation
@@ -59,6 +60,7 @@ exports.create_gig = asyncMiddleware(async (req, res) => {
       name: gig_created.name
     };
 
+    req.body.user_admins.push(req.body.createdBy);
     const members = req.body.user_admins.map(admin => admin.username);
 
     const created_group = await rc_controller.create_group(
@@ -138,7 +140,10 @@ exports.get_gig_name = asyncMiddleware(async (req, res) => {
 exports.get_user_all_gigs = asyncMiddleware(async (req, res) => {
   const status = req.query.status.split(",");
   const matchCriteria = {
-    user_admins: { $in: [req.params.user_id] },
+    $or: [
+      { user_admins: { $in: [req.params.user_id] } },
+      { createdBy: req.params.user_id }
+    ],
     status: { $in: status }
   };
   return Gig.find(matchCriteria)

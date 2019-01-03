@@ -11,7 +11,6 @@ export const create = function(step, callback) {
   const { _id, name, username } = gigCreator;
 
   const authSet = UserProfile.getAuthSet();
-  step.selectedAdmins.push({ _id, name, username });
   fetch("/admin-ui/api/gigs/create", {
     method: "POST",
     headers: {
@@ -24,6 +23,7 @@ export const create = function(step, callback) {
       description: step.gigDescription,
       points_budget: step.budget,
       status: "Draft",
+      createdBy: gigCreator,
       user_admins: step.selectedAdmins,
       photo: step.gigImage
     })
