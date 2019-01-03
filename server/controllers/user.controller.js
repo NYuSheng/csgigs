@@ -1,6 +1,9 @@
 const User = require("../models/user.model");
 const asyncMiddleware = require("../utils/asyncMiddleware");
 const rc_controller = require("../controllers/rc.controller");
+const api = require("../utils/api");
+
+const getCachedApiAuth = request => request.app.locals.apiAuth;
 
 exports.user_create = function(req, res, next) {
   let user = new User({
@@ -28,12 +31,44 @@ exports.user_login = function(req, res, next) {
   rc_controller.rc_user_login(loginDetails, res);
 };
 
-exports.get_user_by_prefix = asyncMiddleware(async function(req, res, next) {
+exports.get_user_by_prefix = asyncMiddleware(async function(req, res) {
   try {
-    const users_retrieved = await User.find({
-      name: { $regex: ".*" + req.body.name + ".*", $options: "i" }
-    });
-    const users = users_retrieved.map(x => {
+    const authSetBot = getCachedApiAuth(req);
+    const fields = { name: 1, username: 1 };
+    const query = {
+      active: true,
+      $and: [
+        {
+          type: "user"
+        },
+        {
+          roles: {
+            $nin: ["bot"]
+          }
+        }
+      ],
+      name: {
+        $regex: encodeURIComponent(req.body.name),
+        $options: "i"
+      }
+    };
+
+    const endPointUrl = api.url(
+      `users.list?fields=${JSON.stringify(fields)}&query=${JSON.stringify(
+        query
+      )}`
+    );
+    const usersRetrieved = await api.api(
+      endPointUrl,
+      "get",
+      authSetBot.authToken,
+      authSetBot.userId
+    );
+    if (!usersRetrieved.success) {
+      throw "Unable to get list of user from rocket chat";
+    }
+
+    const users = usersRetrieved.users.map(x => {
       return {
         _id: x._id,
         name: x.name,
@@ -45,6 +80,6 @@ exports.get_user_by_prefix = asyncMiddleware(async function(req, res, next) {
       users
     });
   } catch (error) {
-    res.status(400).send({ error });
+    res.status(500).send({ error });
   }
 });

@@ -82,4 +82,4 @@ async function loginAsBot() {
 //   return { message: message.msg };
 // }
 
-module.exports = { loginAsBot, get, post };
+module.exports = { loginAsBot, get, post, url, api };
