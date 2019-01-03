@@ -46,12 +46,9 @@ class AssignUsers extends React.Component {
       taskId: "",
       assignedUsers: [],
       status: "",
-      approvals: []
+      approvals: [],
+      listener: null
     };
-  }
-
-  taskRequestsListener() {
-    listen(this);
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -63,6 +60,20 @@ class AssignUsers extends React.Component {
         status: "working"
       });
     }
+
+    if (this.props.modalOpen !== prevProps.modalOpen) {
+      if (this.props.modalOpen) {
+        this.setState({
+          listener: setInterval(this.taskRequestsListener.bind(this), 10000)
+        });
+      } else {
+        clearInterval(this.state.listener);
+      }
+    }
+  }
+
+  taskRequestsListener() {
+    listen(this);
   }
 
   setupAssignedUsersTableCells(user) {
@@ -248,7 +259,6 @@ class AssignUsers extends React.Component {
           className={classes.modalBody}
           style={{ paddingBottom: 35, paddingTop: 0 }}
         >
-          {this.taskRequestsListener()}
           <GridContainer justify="center">
             <GridItem xs={10} sm={10} md={10} lg={10}>
               <p
