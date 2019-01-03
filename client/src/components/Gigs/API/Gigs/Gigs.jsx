@@ -6,9 +6,12 @@ import {
 } from "components/Gigs/API/RocketChat/RocketChat";
 
 export const create = function(step, callback) {
-  const gigCreator = UserProfile.getUser();
+  const gigCreator = UserProfile.getUser().me;
+
+  const { _id, name, username } = gigCreator;
+
   const authSet = UserProfile.getAuthSet();
-  step.selectedAdmins.push(gigCreator.me);
+  step.selectedAdmins.push({ _id, name, username });
   fetch("/admin-ui/api/gigs/create", {
     method: "POST",
     headers: {

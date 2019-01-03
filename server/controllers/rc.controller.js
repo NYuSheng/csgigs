@@ -1,4 +1,3 @@
-const fetch = require("node-fetch");
 const api = require("../utils/api");
 const LogConfig = require("../log-config");
 const asyncMiddleware = require("../utils/asyncMiddleware");
@@ -34,7 +33,7 @@ exports.set_read_only_channel = asyncMiddleware(async function(req, res, next) {
   );
 
   if (!result.success) {
-    return res.status(400).send({
+    return res.status(500).send({
       error: "Unable to set channel to Read-Only"
     });
   }
@@ -53,7 +52,7 @@ exports.create_group = async function(authSetBot, name, members) {
     }
   );
 
-  return result.group ? result.group : null;
+  return result.success && result.group ? result.group : null;
 };
 
 exports.add_owners_to_group = async function(authSetBot, gigOwners, groupId) {
@@ -71,102 +70,71 @@ exports.add_owners_to_group = async function(authSetBot, gigOwners, groupId) {
     .catch(error => Promise.resolve(error));
 };
 
-exports.set_group_type = function(req, res) {
-  const headers = get_headers(req.headers);
-  const body = {
-    roomId: req.body.roomId,
-    type: req.body.type
-  };
-  rc_set_group_type(headers, body, res);
-};
+exports.set_group_type = async function(req, res) {
+  const authSetBot = getCachedApiAuth(req);
+  const data = await api.post(
+    "groups.setType",
+    authSetBot.authToken,
+    authSetBot.userId,
+    {
+      roomId: req.body.roomId,
+      type: req.body.type
+    }
+  );
 
-function get_headers(input) {
-  return {
-    "Content-Type": "application/json",
-    "X-Auth-Token": input["x-auth-token"],
-    "X-User-Id": input["x-user-id"]
-  };
-}
-
-exports.publish_message = function(req, res) {
-  const headers = get_headers(req.headers);
-  const body = {
-    roomId: req.body.roomId,
-    text: req.body.message
-  };
-
-  rc_publish_message(headers, body, res);
-};
-
-function rc_publish_message(headers, body, res) {
-  fetch("https://csgigs.com/api/v1/chat.postMessage", {
-    method: "POST",
-    headers: headers,
-    body: JSON.stringify(body)
-  })
-    .then(output => output.json())
-    .then(data => {
-      if (!data.success) {
-        res.status(400).send({
-          error: "Unable to publish message to " + body.roomId
-        });
-      } else {
-        res.status(200).send({
-          message: data.message
-        });
-      }
+  if (!data.success) {
+    return res.status(500).send({
+      error: "Unable to set group to " + req.body.type
     });
-}
+  }
+
+  res.status(200).send({
+    group: data.group
+  });
+};
+
+exports.publish_message = async function(req, res) {
+  const authSetBot = getCachedApiAuth(req);
+  const data = await api.post(
+    "chat.postMessage",
+    authSetBot.authToken,
+    authSetBot.userId,
+    {
+      roomId: req.body.roomId,
+      text: req.body.message
+    }
+  );
+
+  if (!data.success) {
+    return res.status(500).send({
+      error: "Unable to publish message to " + req.body.roomId
+    });
+  }
+  res.status(200).send({
+    message: data.message
+  });
+};
 
 exports.publishBroadcastMessage = async function(authSetBot, roomId, text) {
-  const payload = {
-    roomId,
-    text
-  };
-
   const result = await api.post(
     "chat.postMessage",
     authSetBot.authToken,
     authSetBot.userId,
-    payload
+    {
+      roomId,
+      text
+    }
   );
 
   return result.success;
 };
 
-exports.add_user_participant = async function(authSetBot, roomId, userId) {
-  const payload = {
+exports.add_user_participant = function(authSetBot, roomId, userId) {
+  return api.post("groups.invite", authSetBot.authToken, authSetBot.userId, {
     roomId,
     userId
-  };
-
-  return await api.post(
-    "groups.invite",
-    authSetBot.authToken,
-    authSetBot.userId,
-    payload
-  );
+  });
 };
-
-function rc_set_group_type(headers, body, res) {
-  fetch("https://csgigs.com/api/v1/groups.setType", {
-    method: "POST",
-    headers: headers,
-    body: JSON.stringify(body)
-  })
-    .then(output => output.json())
-    .then(data => {
-      if (!data.success) {
-        res.status(400).send({
-          error: "Unable to set group to " + body.type
-        });
-      } else {
-        res.status(200).send({
-          group: data.group
-        });
-      }
-    });
-}
 
 async function addOwnerToGroup(authSetBot, userId, roomId) {
   const result = await api.post(
