@@ -136,6 +136,12 @@ exports.add_user_participant = function(authSetBot, roomId, userId) {
   });
 };
 
+exports.get_user_info = function(authSetBot, userId) {
+  return api.get("users.info", authSetBot.authToken, authSetBot.userId, {
+    userId
+  });
+};
+
 async function addOwnerToGroup(authSetBot, userId, roomId) {
   const result = await api.post(
     "groups.addOwner",
