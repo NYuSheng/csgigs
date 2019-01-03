@@ -51,7 +51,6 @@ export const getUserGigs = function(loadingCallback, gigsCallback, status) {
 };
 
 export const getGigs = function(loadingCallback, gigsCallback, status, url) {
-  const user = UserProfile.getUser();
   fetch(url, {
     method: "GET",
     headers: { "Content-Type": "application/json" }
