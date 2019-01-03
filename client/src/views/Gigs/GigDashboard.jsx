@@ -205,10 +205,9 @@ class GigDashboard extends React.Component {
                       <h3 className={classes.cardTitle}>
                         {gig.rc_channel_id ? (
                           <a
-                            href={
-                              "https://csgigs.com/channel/" +
-                              gig.rc_channel_id.name
-                            }
+                            href={`https://csgigs.com/channel/${
+                              gig.status === "Draft" ? "group" : "channel"
+                            }/${gig.rc_channel_id.name}`}
                             target="_blank"
                             rel="noopener noreferrer"
                           >
