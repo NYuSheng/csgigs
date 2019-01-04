@@ -27,7 +27,7 @@ export const create = function(step, callback) {
   }).then(data => {
     if (data.status !== 200) {
       data.json().then(json => {
-        NotificationManager.error(json.error.errmsg);
+        NotificationManager.error(json.error);
       });
     } else {
       data.json().then(json => {

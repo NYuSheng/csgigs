@@ -16,21 +16,23 @@ async function api(endPointUrl, method, authToken, userId, payload) {
     headers["X-Auth-Token"] = authToken;
     headers["X-User-Id"] = userId;
   }
+  try {
+    const response = await fetch(endPointUrl, {
+      method,
+      body: payload ? JSON.stringify(payload) : undefined,
+      headers
+    });
 
-  const response = await fetch(endPointUrl, {
-    method,
-    body: payload ? JSON.stringify(payload) : undefined,
-    headers
-  });
-
-  const result = await response.json();
-  if (result.success === false) {
-    LogConfig.error(
-      `API ${endPointUrl} did not return success: ${JSON.stringify(result)}`
-    );
+    const result = await response.json();
+    if (result.success === false) {
+      LogConfig.error(
+        `API ${endPointUrl} did not return success: ${JSON.stringify(result)}`
+      );
+    }
+    return result;
+  } catch (err) {
+    return JSON.stringify(err);
   }
-
-  return result;
 }
 
 function get(name, authToken, userId, payload) {
