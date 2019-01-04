@@ -70,16 +70,13 @@ exports.create_gig = asyncMiddleware(async (req, res) => {
     );
     if (!created_group) {
       const gig_deleted = await this.delete_gig(gig_created._id);
-      console.log(gig_deleted);
-      var errorMsg = "";
-      if (!gig_deleted._id) {
-        errorMsg =
-          `Unable to create group ${gig_created.name} in RC, ` +
-          `but record in MongoDB still persists. Please contact administrator to delete record.`;
+      if (gig_deleted._id) {
+        throw `Unable to create group ${gig_created.name} in RC`;
       } else {
-        errorMsg = `Unable to create group ${gig_created.name} in RC`;
+        throw `Unable to create group ${
+          gig_created.name
+        } in RC, but record in MongoDB still persists. Please contact administrator to delete record.`;
       }
-      throw errorMsg;
     }
     const gig_owners = req.body.user_admins.map(admin => admin._id);
 
@@ -119,7 +116,7 @@ exports.create_gig = asyncMiddleware(async (req, res) => {
 
 exports.get_gig_by_id = asyncMiddleware(async (req, res) => {
   try {
-    const result = await Gig.find({ _id: ObjectID(req.params.id) });
+    const result = await Gig.find({ _id: new ObjectID(req.params.id) });
     if (result.length === 0) {
       throw "error: Cannot find Gig with id: " + req.params.id;
     }
@@ -134,7 +131,7 @@ exports.get_gig_by_id = asyncMiddleware(async (req, res) => {
 
 exports.get_gig_name = asyncMiddleware(async (req, res) => {
   try {
-    const gig = await Gig.find({ _id: ObjectID(req.params.id) });
+    const gig = await Gig.find({ _id: new ObjectID(req.params.id) });
     if (gig == null) {
       throw "Cannot find Gig with id: " + req.params.id;
     }
@@ -163,13 +160,13 @@ exports.get_user_all_gigs = asyncMiddleware(async (req, res) => {
         gigs: gigs
       });
     })
-    .catch(err => {
-      console.log(err);
-      res.status(500).send({ error: err });
+    .catch(error => {
+      LogConfig.error(JSON.stringify(error));
+      res.status(500).send({ error });
     });
 });
 
-exports.get_all_gigs_by_statuses = asyncMiddleware(async (req, res, next) => {
+exports.get_all_gigs_by_statuses = asyncMiddleware(async (req, res) => {
   let status = req.query.status.split(",");
   const matchCriteria = {
     status: { $in: status }
@@ -181,9 +178,9 @@ exports.get_all_gigs_by_statuses = asyncMiddleware(async (req, res, next) => {
         gigs: gigs
       });
     })
-    .catch(err => {
-      console.log(err);
-      res.status(500).send({ error: err });
+    .catch(error => {
+      LogConfig.error(JSON.stringify(error));
+      res.status(500).send({ error });
     });
 });
 
