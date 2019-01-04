@@ -286,6 +286,11 @@ exports.get_users = asyncMiddleware(async (req, res) => {
 
 exports.add_user_participant = asyncMiddleware(async (req, res) => {
   try {
+
+    const validation_result = await user_validation(req.body.user_id, req.body.gig_name);
+    if (validation_result.length !== 0){
+      throw `User is already a participants.`;
+    }
     const authSetBot = getCachedApiAuth(req);
     const request_user = await User.find({ _id: req.body.user_id });
 
@@ -395,4 +400,16 @@ function gig_aggregation_with_users(matchCriteria) {
       }
     }
   ];
+}
+
+async function user_validation(user_id, gig_name) {
+    const matchCriteria =
+    {
+      $and:[
+          {$or:[{ user_admins: { $in: [user_id] } }, { user_participants: { $in: [user_id] } }]},
+          {name: gig_name}
+          ]
+    };
+    const validate_result = await Gig.find(matchCriteria);
+    return validate_result;
 }
