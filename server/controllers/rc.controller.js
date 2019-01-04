@@ -136,6 +136,35 @@ exports.add_user_participant = function(authSetBot, roomId, userId) {
   });
 };
 
+exports.kick_user = function(authSetBot, roomId, userId) {
+  return api.post("groups.kick", authSetBot.authToken, authSetBot.userId, {
+    roomId,
+    userId
+  });
+};
+
+exports.kick_user = async function(req, res) {
+  const authSetBot = getCachedApiAuth(req);
+  const data = await api.post(
+    "groups.kick",
+    authSetBot.authToken,
+    authSetBot.userId,
+    {
+      roomId: req.body.roomId,
+      userId: req.body.userId
+    }
+  );
+
+  if (!data.success) {
+    return res.status(500).send({
+      error: "Unable to kick " + req.body.userId
+    });
+  }
+  res.status(200).send({
+    success: data.success
+  });
+};
+
 exports.get_user_info = function(authSetBot, userId) {
   return api.get("users.info", authSetBot.authToken, authSetBot.userId, {
     userId
@@ -161,3 +190,25 @@ async function addOwnerToGroup(authSetBot, userId, roomId) {
     };
   }
 }
+
+exports.remove_owner_from_group = async function(req, res) {
+  const authSetBot = getCachedApiAuth(req);
+  const data = await api.post(
+    "groups.removeOwner",
+    authSetBot.authToken,
+    authSetBot.userId,
+    {
+      roomId: req.body.roomId,
+      userId: req.body.userId
+    }
+  );
+
+  if (!data.success) {
+    return res.status(500).send({
+      error: "Unable to remove " + req.body.userId + " as owner"
+    });
+  }
+  res.status(200).send({
+    success: data.success
+  });
+};

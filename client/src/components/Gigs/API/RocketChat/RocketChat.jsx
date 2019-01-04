@@ -15,7 +15,7 @@ export const publishMessage = function(payload) {
   }).then(data => {
     if (data.status !== 200) {
       data.json().then(json => {
-        NotificationManager.error(json.error);
+        NotificationManager.error(json.error.errmsg);
       });
     }
   });
@@ -39,7 +39,7 @@ export const setRoomToReadOnly = function(gigRoomId) {
   }).then(data => {
     if (data.status !== 200) {
       data.json().then(json => {
-        NotificationManager.error(json.error);
+        NotificationManager.error(json.error.errmsg);
       });
     }
   });
@@ -63,7 +63,7 @@ export const setRoomTypeToPublic = function(gigId, gigRoomId, statusCallback) {
   }).then(data => {
     if (data.status !== 200) {
       data.json().then(json => {
-        NotificationManager.error(json.error);
+        NotificationManager.error(json.error.errmsg);
       });
     } else {
       data.json().then(json => {
@@ -72,6 +72,62 @@ export const setRoomTypeToPublic = function(gigId, gigRoomId, statusCallback) {
           rc_channel_id: json.group
         };
         update(gigId, updatePayload, statusCallback);
+      });
+    }
+  });
+};
+
+export const kick_user = async function(gigRoomId, userId) {
+  const authSet = UserProfile.getAuthSet();
+  const kickUserPayload = {
+    roomId: gigRoomId,
+    userId: userId
+  };
+
+  fetch(`/admin-ui/api/rc/kick_user`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-auth-token": authSet.token,
+      "x-user-id": authSet.userId
+    },
+    body: JSON.stringify(kickUserPayload)
+  }).then(data => {
+    if (data.status !== 200) {
+      data.json().then(json => {
+        NotificationManager.error(json.error.errmsg);
+      });
+    } else {
+      data.json().then(json => {
+        return json.success;
+      });
+    }
+  });
+};
+
+export const remove_owner_from_group = async function(gigRoomId, userId) {
+  const authSet = UserProfile.getAuthSet();
+  const kickUserPayload = {
+    roomId: gigRoomId,
+    userId: userId
+  };
+
+  fetch(`/admin-ui/api/rc/remove_owner_from_group`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-auth-token": authSet.token,
+      "x-user-id": authSet.userId
+    },
+    body: JSON.stringify(kickUserPayload)
+  }).then(data => {
+    if (data.status !== 200) {
+      data.json().then(json => {
+        NotificationManager.error(json.error.errmsg);
+      });
+    } else {
+      data.json().then(json => {
+        return json.success;
       });
     }
   });

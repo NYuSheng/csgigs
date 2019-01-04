@@ -1,11 +1,15 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 
-const task_controller = require('../controllers/task.controller');
+const task_controller = require("../controllers/task.controller");
 
-router.post('/addTask',task_controller.create_tasks)
-router.get('/getTasksByGig/:gig_id', task_controller.get_tasks_gigs);
-router.put('/:task_id', task_controller.update_task);
-router.post('/removeTask/:task_id', task_controller.remove_task);
+router.post("/addTask", task_controller.create_tasks);
+router.get("/getTasksByGig/:gig_id", task_controller.get_tasks_gigs);
+router.get(
+  "/getTasksByGig/:gig_id/:user_id",
+  task_controller.get_users_assigned_tasks_in_gigs
+);
+router.put("/:task_id", task_controller.update_task);
+router.post("/removeTask/:task_id", task_controller.remove_task);
 
 module.exports = router;

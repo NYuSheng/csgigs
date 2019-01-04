@@ -1,7 +1,8 @@
 const Task = require("../models/task.model");
 const ObjectID = require("mongodb").ObjectID;
+const asyncMiddleware = require("../utils/asyncMiddleware");
 
-exports.create_tasks = function(req, res, next) {
+exports.create_tasks = async function(req, res, next) {
   let task = new Task({
     gig_id: ObjectID(req.body.gig_id),
     task_name: req.body.task_name,
@@ -10,18 +11,17 @@ exports.create_tasks = function(req, res, next) {
     users_assigned: [],
     completeAt: null
   });
-
-  return task
-    .save()
-    .then(taskCreated => {
-      res.status(200).send({
-        task: taskCreated
-      });
-    })
-    .catch(err => {
-      console.log(err);
-      res.status(400).send({ error: err });
+  try{
+    let taskCreated = await task.save();
+    res.status(200).send({
+      task: taskCreated
     });
+  }catch (ex) {
+    LogConfig.error(JSON.stringify(ex));
+    const { error } = ex;
+    let message = defaultErrorMessage;
+    res.status(400).send({ error: err });
+  }
 };
 
 exports.get_tasks_gigs = function(req, res, next) {
@@ -58,6 +58,24 @@ exports.remove_task = function(req, res, next) {
     return res.status(200).send(response);
   });
 };
+
+exports.get_users_assigned_tasks_in_gigs = asyncMiddleware(async (req, res) => {
+  const matchCriteria = {
+    gig_id: new ObjectID(req.params.gig_id),
+    users_assigned: req.params.user_id
+  };
+  return Task.find(matchCriteria)
+    .exec()
+    .then(tasks => {
+      res.status(200).send({
+        tasks: tasks
+      });
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).send({ error: err });
+    });
+});
 
 function task_aggregation_with_user_assigned(matchCriteria) {
   return [
