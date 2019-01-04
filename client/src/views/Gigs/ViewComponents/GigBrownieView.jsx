@@ -130,6 +130,7 @@ class GigBrownieView extends React.Component {
           gigBudget={gigBudget}
           hidePopup={this.hidePopup.bind(this)}
           gigId={gigId}
+          gigRoomId={gigRoomId}
         />
         <Card pricing>
           <CardHeader color="warning" stats icon>

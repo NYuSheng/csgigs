@@ -146,11 +146,15 @@ class BrownieAllocation extends React.Component {
   }
 
   assignPoints(cell) {
-    const { gigId } = this.props;
+    const { gigId, gigRoomId } = this.props;
+    const { userAllocations } = this.state;
     assignPointsToUser(
-      cell.props.id,
+      userAllocations.find(
+        userAllocation => userAllocation.user._id === cell.props.id
+      ).user,
       gigId,
       cell.state.value,
+      gigRoomId,
       this.setUserAssignedState.bind(this),
       cell.setStatusState.bind(cell)
     );

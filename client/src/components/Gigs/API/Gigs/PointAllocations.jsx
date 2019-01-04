@@ -1,4 +1,5 @@
 import { NotificationManager } from "react-notifications";
+import { publishMessage } from "components/Gigs/API/RocketChat/RocketChat";
 
 export const getGigAllocations = function(gigId, callback) {
   fetch(`/admin-ui/api/points/gigs/${gigId}`, {
@@ -18,9 +19,10 @@ export const getGigAllocations = function(gigId, callback) {
 };
 
 export const assignPointsToUser = function(
-  userId,
+  user,
   gigId,
   points,
+  gigRoomId,
   callback,
   statusCallback
 ) {
@@ -30,7 +32,7 @@ export const assignPointsToUser = function(
     points: points
   };
 
-  fetch(`/admin-ui/api/points/${userId}`, {
+  fetch(`/admin-ui/api/points/${user._id}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(assignPointsPayload)
@@ -42,7 +44,11 @@ export const assignPointsToUser = function(
       });
     } else {
       NotificationManager.success("Points allocated");
-      callback(userId, points);
+      publishMessage({
+        message: `_${points} points have been allocated to ${user.name}_`,
+        roomId: gigRoomId
+      });
+      callback(user._id, points);
     }
   });
 };
