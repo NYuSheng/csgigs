@@ -18,6 +18,14 @@ export const retreive = function(gigId, callback) {
   });
 };
 
+export const retrieveAllTasks = async function(gigId, userId) {
+  const response = await fetch(
+    `/admin-ui/api/tasks/getTasksByGig/${gigId}/${userId}`
+  );
+  const json = await response.json();
+  return json.tasks;
+};
+
 export const update = function(taskId, payload, statusCallback) {
   if (statusCallback) statusCallback("loading");
   fetch(`/admin-ui/api/tasks/${taskId}`, {

@@ -25,7 +25,9 @@ import GridContainer from "components/Grid/GridContainer";
 import GridItem from "components/Grid/GridItem";
 import Button from "components/CustomButtons/Button";
 import { update } from "components/Gigs/API/Gigs/Gigs";
-
+import { retrieveAllTasks } from "components/Gigs/API/Tasks/Tasks";
+import { kick_user } from "components/Gigs/API/RocketChat/RocketChat";
+import { remove_owner_from_group } from "components/Gigs/API/RocketChat/RocketChat";
 // dependencies
 import Loader from "react-loader-spinner";
 import { NotificationManager } from "react-notifications";
@@ -105,7 +107,23 @@ class EditGigAdmins extends React.Component {
       const removedAdmins = adminArrays.removed;
       const newAdmins = adminArrays.new;
       // TODO: Remove and new admins
+      this.checkAdminBeforeDeassign(removedAdmins, gigId);
       update(gigId, this.buildPayLoad(), this.setStatusState.bind(this));
+    }
+  }
+
+  async checkAdminBeforeDeassign(removedAdmins, gigId) {
+    const { gigRoomId } = this.props;
+    for (let i = 0; i < removedAdmins.length; i++) {
+      const admin_user_id = removedAdmins[i]._id;
+      const tasks_assigned_to_user = await retrieveAllTasks(
+        gigId,
+        admin_user_id
+      );
+      await remove_owner_from_group(gigRoomId, admin_user_id);
+      if (!tasks_assigned_to_user.length) {
+        await kick_user(gigRoomId, admin_user_id);
+      }
     }
   }
 
