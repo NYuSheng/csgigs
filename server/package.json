@@ -10,7 +10,6 @@
   },
   "license": "MIT",
   "scripts": {
-    "precommit": "pretty-quick --staged",
     "dev": "cross-env NODE_ENV=development nodemon server.js",
     "test": "cross-env NODE_ENV=test npm run unit && npm run integration",
     "unit": "jest unit --detectOpenHandles --forceExit",
@@ -36,6 +35,7 @@
     "jest": "^23.6.0",
     "jest-fetch-mock": "2.1.0",
     "jest-mock-express": "~0.1.1",
+    "lint-staged": "8.1.0",
     "node-mocks-http": "^1.7.3",
     "nodemon": "^1.18.7",
     "prettier": "~1.15.3",
@@ -57,5 +57,17 @@
     "setupFiles": [
       "./tests/setup.js"
     ]
+  },
+  "lint-staged": {
+    "*.{js,jsx}": [
+      "pretty-quick --staged",
+      "eslint src/",
+      "git add"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
   }
 }
