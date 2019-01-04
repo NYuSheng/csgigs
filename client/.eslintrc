@@ -4,6 +4,7 @@
   "rules": {
     "prettier/prettier": "error",
     "semi": [2, "always"],
-    "no-var": "error"
+    "no-var": "error",
+    "no-console": "error"
   }
 }
