@@ -1,6 +1,7 @@
 //@ts-check
 const LogConfig = require("../log-config");
 const Gig = require("../models/gig.model");
+const User = require("../models/user.model");
 const asyncMiddleware = require("../utils/asyncMiddleware");
 const ObjectID = require("mongodb").ObjectID;
 const rc_controller = require("../controllers/rc.controller");
@@ -285,6 +286,31 @@ exports.get_users = asyncMiddleware(async (req, res) => {
 
 exports.add_user_participant = asyncMiddleware(async (req, res) => {
   try {
+    const authSetBot = getCachedApiAuth(req);
+    const request_user = await User.find({ _id: req.body.user_id });
+
+    if (request_user.length === 0) {
+      //call rc, retrieve new user info
+      const retrieved_user = await rc_controller.get_user_info(
+        authSetBot,
+        req.body.user_id
+      );
+      if (!retrieved_user.success) {
+        throw `Unable to retrieve user from rocket chat db`;
+      }
+
+      const new_user = new User({
+        _id: retrieved_user.user._id,
+        username: retrieved_user.user.username,
+        name: retrieved_user.user.name
+      });
+
+      const result = await new_user.save();
+      if (!result) {
+        throw `Unable to create new user in admin db, try again.`;
+      }
+    }
+
     const gig = await Gig.findOneAndUpdate(
       { name: req.body.gig_name },
       { $addToSet: { user_participants: req.body.user_id } }, //addToSet ensures no duplicate names in array
@@ -297,7 +323,6 @@ exports.add_user_participant = asyncMiddleware(async (req, res) => {
 
     const room_id = gig.rc_channel_id._id;
     const user_id = req.body.user_id;
-    const authSetBot = getCachedApiAuth(req);
 
     const result = await rc_controller.add_user_participant(
       authSetBot,
