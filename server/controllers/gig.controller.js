@@ -185,7 +185,7 @@ exports.get_all_gigs_by_statuses = asyncMiddleware(async (req, res) => {
 });
 
 exports.update_gig = function(req, res, next) {
-  Gig.findByIdAndUpdate(req.params.id, { $set: req.body }, function(err, gig) {
+  Gig.findByIdAndUpdate(req.params.id, { $set: req.body }, function(err) {
     if (err) return next(err);
     res.send("Gig updated.");
   });
@@ -209,7 +209,7 @@ exports.gigs_by_status = function(req, res) {
     });
 };
 
-exports.get_user_admins = asyncMiddleware(async (req, res, next) => {
+exports.get_user_admins = asyncMiddleware(async (req, res) => {
   const matchCriteria = { $match: { _id: new ObjectID(req.params.id) } };
   return Gig.aggregate(gig_aggregation_with_user_admin(matchCriteria))
     .exec()
@@ -243,7 +243,7 @@ function gig_aggregation_with_user_admin(matchCriteria) {
   ];
 }
 
-exports.get_user_participants = asyncMiddleware(async (req, res, next) => {
+exports.get_user_participants = asyncMiddleware(async (req, res) => {
   const matchCriteria = { $match: { _id: new ObjectID(req.params.id) } };
   return Gig.aggregate(gig_aggregation_with_user_participant(matchCriteria))
     .exec()
@@ -262,7 +262,7 @@ exports.get_user_participants = asyncMiddleware(async (req, res, next) => {
     });
 });
 
-exports.get_users = asyncMiddleware(async (req, res, next) => {
+exports.get_users = asyncMiddleware(async (req, res) => {
   const matchCriteria = { $match: { _id: new ObjectID(req.params.id) } };
   return Gig.aggregate(gig_aggregation_with_users(matchCriteria))
     .exec()
@@ -283,7 +283,7 @@ exports.get_users = asyncMiddleware(async (req, res, next) => {
     });
 });
 
-exports.add_user_participant = asyncMiddleware(async (req, res, next) => {
+exports.add_user_participant = asyncMiddleware(async (req, res) => {
   try {
     const gig = await Gig.findOneAndUpdate(
       { name: req.body.gig_name },
@@ -315,7 +315,7 @@ exports.add_user_participant = asyncMiddleware(async (req, res, next) => {
   }
 });
 
-exports.delete_user_participant = asyncMiddleware(async (req, res, next) => {
+exports.delete_user_participant = asyncMiddleware(async (req, res) => {
   return Gig.findOneAndUpdate(
     { _id: new ObjectID(req.params.id) },
     { $pullAll: { user_participants: [req.body.user_id] } }, //remove all instances of the user admin
