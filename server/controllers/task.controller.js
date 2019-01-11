@@ -1,8 +1,9 @@
 const Task = require("../models/task.model");
 const ObjectID = require("mongodb").ObjectID;
 const asyncMiddleware = require("../utils/asyncMiddleware");
+const LogConfig = require("../log-config");
 
-exports.create_tasks = async function(req, res, next) {
+exports.create_tasks = asyncMiddleware(async (req, res) => {
   let task = new Task({
     gig_id: ObjectID(req.body.gig_id),
     task_name: req.body.task_name,
@@ -11,75 +12,83 @@ exports.create_tasks = async function(req, res, next) {
     users_assigned: [],
     completeAt: null
   });
-  try{
+  try {
     let task_created = await task.save();
     res.status(200).send({
       task: task_created
     });
-  }catch (ex) {
+  } catch (ex) {
     LogConfig.error(JSON.stringify(ex));
     const { error } = ex;
     res.status(400).send({ error: error });
   }
-};
+});
 
-exports.get_tasks_gigs = async function(req, res, next) {
+exports.get_tasks_gigs = asyncMiddleware(async (req, res) => {
   const matchCriteria = { $match: { gig_id: new ObjectID(req.params.gig_id) } };
-  
-  try{
-    let tasks_retrieved = await Task.aggregate(task_aggregation_with_user_assigned(matchCriteria));
+
+  try {
+    let tasks_retrieved = await Task.aggregate(
+      task_aggregation_with_user_assigned(matchCriteria)
+    );
     res.status(200).send({
       tasks: tasks_retrieved
     });
-  }catch (ex) {
+  } catch (ex) {
     LogConfig.error(JSON.stringify(ex));
     const { error } = ex;
     res.status(400).send({ error: error });
   }
-};
+});
 
-exports.update_task = async function(req, res, next) {
-  try{
-    let task = await Task.findByIdAndUpdate(req.params.task_id, { $set: req.body });
-    if(!task){
-      res.status(404).send({error: "task of id " + req.params.task_id + "does not exist."});
+exports.update_task = asyncMiddleware(async function(req, res) {
+  try {
+    let task = await Task.findByIdAndUpdate(req.params.task_id, {
+      $set: req.body
+    });
+    if (!task) {
+      res.status(404).send({
+        error: "task of id " + req.params.task_id + "does not exist."
+      });
     }
     res.status(200).send("Task updated.");
-  }catch (ex) {
+  } catch (ex) {
     LogConfig.error(JSON.stringify(ex));
     const { error } = ex;
     res.status(400).send({ error: error });
   }
-};
+});
 
-exports.remove_task = async function(req, res, next) {
-  try{
+exports.remove_task = asyncMiddleware(async (req, res) => {
+  try {
     let task = await Task.findByIdAndRemove(req.params.task_id);
-    if(!task){
-      res.status(404).send({error: "task of id " + req.params.task_id + "does not exist."});
+    if (!task) {
+      res.status(404).send({
+        error: "task of id " + req.params.task_id + "does not exist."
+      });
     }
     const response = {
       message: "Task successfully deleted",
       id: task._id
     };
     res.status(200).send(response);
-  }catch (ex) {
+  } catch (ex) {
     LogConfig.error(JSON.stringify(ex));
     const { error } = ex;
     res.status(400).send({ error: error });
   }
-};
+});
 
-exports.get_users_assigned_tasks_in_gigs = async function(req, res) {
+exports.get_users_assigned_tasks_in_gigs = asyncMiddleware(async (req, res) => {
   const matchCriteria = {
     gig_id: new ObjectID(req.params.gig_id),
     users_assigned: req.params.user_id
   };
 
-  try{
+  try {
     const tasks = await Task.find(matchCriteria);
-    res.status(200).send({tasks: tasks});
-  }catch(ex){
+    res.status(200).send({ tasks: tasks });
+  } catch (ex) {
     LogConfig.error(JSON.stringify(ex));
     const { error } = ex;
     res.status(500).send({ error: error });
