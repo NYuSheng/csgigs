@@ -1,7 +1,7 @@
-const httpMocks = require("node-mocks-http");
+global.fetch = require("jest-fetch-mock");
+jest.setMock("node-fetch", global.fetch);
+
 const gigController = require("../controllers/gig.controller");
-const mongoose = require("mongoose");
-const test_util = require("../utils/test.util");
 const mockRes = require("jest-mock-express").response;
 
 const GigsMock = require("../models/gig.model");
@@ -24,6 +24,12 @@ const createMongoFindByIdAndUpdateMock = () => {
   jest
     .spyOn(GigsMock, "findByIdAndUpdate")
     .mockImplementationOnce(() => Promise.resolve());
+};
+
+const createMongoFindByIdAndRemoveMock = _id => {
+  jest
+    .spyOn(GigsMock, "findByIdAndRemove")
+    .mockImplementationOnce(() => Promise.resolve({ _id }));
 };
 
 const createMongoSaveResolveWith = result => {
@@ -66,7 +72,8 @@ const createRequest = user_admins => {
     body: {
       name: "testgig",
       user_admins: user_admins || [],
-      points_budget: 500
+      points_budget: 500,
+      createdBy: { _id: "1234", name: "testAuthor" }
     }
   };
 };
@@ -95,9 +102,7 @@ describe("Gig Controller", () => {
 
   describe("create gig: failure", () => {
     it("should return an error if unable to create a gig", async () => {
-      jest
-        .spyOn(GigsMock.prototype, "save")
-        .mockImplementationOnce(() => Promise.resolve(null));
+      createMongoSaveResolveWith(null);
       await gigController.create_gig(createRequest(["bob"]), res);
 
       expect(res.status).toHaveBeenCalledWith(500);
@@ -127,6 +132,7 @@ describe("Gig Controller", () => {
 
     it("should return an error if unable create a rc group", async () => {
       createMongoSaveMock(createUsers(["bob"]));
+      createMongoFindByIdAndRemoveMock("1");
 
       global.fetch.mockResponse(JSON.stringify({ success: false }));
 
@@ -161,6 +167,7 @@ describe("Gig Controller", () => {
       global.fetch.mockResponseOnce(JSON.stringify({ success: true }));
       global.fetch.mockResponseOnce(JSON.stringify({ success: false }));
       global.fetch.mockResponseOnce(JSON.stringify({ success: true }));
+      global.fetch.mockResponseOnce(JSON.stringify({ success: true }));
 
       await gigController.create_gig(createRequest(user_admins), res);
 
@@ -178,7 +185,10 @@ describe("Gig Controller", () => {
         .spyOn(GigsMock, "findByIdAndUpdate")
         .mockImplementationOnce(() => Promise.reject("Could not find it"));
 
+      // RC API create group
       global.fetch.mockResponseOnce(JSON.stringify(createGroupResponse()));
+      // RC API add users as group owners
+      global.fetch.mockResponseOnce(JSON.stringify({ success: true }));
       global.fetch.mockResponseOnce(JSON.stringify({ success: true }));
 
       await gigController.create_gig(createRequest(user_admins), res, x =>
@@ -202,6 +212,7 @@ describe("Gig Controller", () => {
       global.fetch.mockResponseOnce(JSON.stringify(createGroupResponse()));
       // RC API make user as group owner
       global.fetch.mockResponseOnce(JSON.stringify({ success: true }));
+      global.fetch.mockResponseOnce(JSON.stringify({ success: true }));
       // RC API to post message
       global.fetch.mockResponseOnce(JSON.stringify({ success: false }));
 
@@ -223,6 +234,7 @@ describe("Gig Controller", () => {
       // RC API create group
       global.fetch.mockResponseOnce(JSON.stringify(createGroupResponse()));
       // RC API make user as group owner
+      global.fetch.mockResponseOnce(JSON.stringify({ success: true }));
       global.fetch.mockResponseOnce(JSON.stringify({ success: true }));
       // RC API to post message
       global.fetch.mockResponseOnce(JSON.stringify({ success: true }));
