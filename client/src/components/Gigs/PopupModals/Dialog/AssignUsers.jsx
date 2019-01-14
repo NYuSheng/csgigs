@@ -27,7 +27,7 @@ import {
   listen,
   approval
 } from "components/Gigs/API/TaskRequests/TaskRequests";
-import { update } from "components/Gigs/API/Tasks/Tasks";
+import { update } from "components/Gigs/API/Tasks";
 
 // dependencies
 import Loader from "react-loader-spinner";

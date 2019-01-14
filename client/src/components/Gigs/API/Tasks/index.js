@@ -1,26 +1,32 @@
 import { NotificationManager } from "react-notifications";
 import { publishMessage } from "components/Gigs/API/RocketChat/RocketChat";
 
-export const retreive = function(gigId, callback) {
-  fetch(`/admin-ui/api/tasks/getTasksByGig/${gigId}`, {
-    method: "GET",
-    headers: { "Content-Type": "application/json" }
-  }).then(data => {
-    if (data.status !== 200) {
-      data.json().then(json => {
-        NotificationManager.error(json.error.errmsg);
-      });
-    } else {
-      data.json().then(json => {
-        callback(json.tasks);
-      });
-    }
-  });
+const fetchOptions = method => {
+  return {
+    method,
+    headers: { "Content-Type": "application/json", "Cache-Control": "no-store" }
+  };
 };
 
-export const retrieveAllTasks = async function(gigId, userId) {
+export const getTasks = async function(gigId) {
   const response = await fetch(
-    `/admin-ui/api/tasks/getTasksByGig/${gigId}/${userId}`
+    `/admin-ui/api/tasks/getTasksByGig/${gigId}`,
+    fetchOptions()
+  );
+  const json = await response.json();
+
+  if (response.status !== 200) {
+    NotificationManager.error(json.error.errmsg);
+    throw response.status;
+  }
+
+  return json.tasks;
+};
+
+export const getTasksForUser = async function(gigId, userId) {
+  const response = await fetch(
+    `/admin-ui/api/tasks/getTasksByGig/${gigId}/${userId}`,
+    fetchOptions()
   );
   const json = await response.json();
   return json.tasks;

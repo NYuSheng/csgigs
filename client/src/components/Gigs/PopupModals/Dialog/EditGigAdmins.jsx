@@ -25,7 +25,7 @@ import GridContainer from "components/Grid/GridContainer";
 import GridItem from "components/Grid/GridItem";
 import Button from "components/CustomButtons/Button";
 import { update } from "components/Gigs/API/Gigs/Gigs";
-import { retrieveAllTasks } from "components/Gigs/API/Tasks/Tasks";
+import { getTasksForUser } from "components/Gigs/API/Tasks";
 import { kick_user } from "components/Gigs/API/RocketChat/RocketChat";
 import { remove_owner_from_group } from "components/Gigs/API/RocketChat/RocketChat";
 // dependencies
@@ -100,12 +100,12 @@ class EditGigAdmins extends React.Component {
   }
 
   confirmAdminAssign() {
-    const { gigId, admins } = this.props;
+    const { gigId } = this.props;
     const { status } = this.state;
     if (status !== "success") {
       const adminArrays = this.findRemovedAndNewAdmins();
       const removedAdmins = adminArrays.removed;
-      const newAdmins = adminArrays.new;
+      //const newAdmins = adminArrays.new;
       // TODO: Remove and new admins
       this.checkAdminBeforeDeassign(removedAdmins, gigId);
       update(gigId, this.buildPayLoad(), this.setStatusState.bind(this));
@@ -116,7 +116,7 @@ class EditGigAdmins extends React.Component {
     const { gigRoomId } = this.props;
     for (let i = 0; i < removedAdmins.length; i++) {
       const admin_user_id = removedAdmins[i]._id;
-      const tasks_assigned_to_user = await retrieveAllTasks(
+      const tasks_assigned_to_user = await getTasksForUser(
         gigId,
         admin_user_id
       );

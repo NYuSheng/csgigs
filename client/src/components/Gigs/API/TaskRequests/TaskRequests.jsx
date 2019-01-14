@@ -1,5 +1,5 @@
 import { publishMessage } from "components/Gigs/API/RocketChat/RocketChat";
-import { update } from "components/Gigs/API/Tasks/Tasks";
+import { update } from "components/Gigs/API/Tasks";
 import { NotificationManager } from "react-notifications";
 
 export const listen = function(task) {

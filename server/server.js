@@ -64,6 +64,7 @@ async function bootstrapApp() {
 
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: false }));
+  app.set("etag", false);
 
   app.use("/admin-ui", express.static(path.join(__dirname, "./public")));
   app.use("/admin-ui/api/users", user);
