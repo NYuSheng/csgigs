@@ -37,6 +37,6 @@ exports.get_points_gig = asyncMiddleware(async function(req, res) {
     });
   } catch (error) {
     LogConfig.error(JSON.stringify(error));
-    res.status(500).send({ error: error });
+    res.status(500).send({ error });
   }
 });

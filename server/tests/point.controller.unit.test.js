@@ -85,24 +85,22 @@ describe("Point Controller", () => {
         .mockImplementationOnce(() => Promise.resolve(null));
       await pointController.get_points_gig(getPointsRequest(), res);
 
-      expect(res.status).toHaveBeenCalledWith(404);
+      expect(res.status).toHaveBeenCalledWith(500);
       expect(res.send).toHaveBeenCalledWith({
-        error: "Cannot find any points allocation for gig: " + gig_id
+        error: `Unable to find point allocations for gig: ${gig_id}`
       });
     });
   });
 
   describe("get gig points: success", () => {
     it("should return points  if successfully get gig points", async () => {
-      jest
-        .spyOn(PointMock, "find")
-        .mockImplementationOnce(() =>
-          Promise.resolve({
-            user_id: "user123",
-            git_id: "gig123",
-            points: 20000
-          })
-        );
+      jest.spyOn(PointMock, "find").mockImplementationOnce(() =>
+        Promise.resolve({
+          user_id: "user123",
+          git_id: "gig123",
+          points: 20000
+        })
+      );
       await pointController.get_points_gig(getPointsRequest(), res);
 
       expect(res.status).toHaveBeenCalledWith(200);
