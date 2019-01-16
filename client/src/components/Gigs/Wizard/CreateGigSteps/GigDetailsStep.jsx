@@ -18,218 +18,232 @@ import Card from "components/Card/Card";
 import CardHeader from "components/Card/CardHeader";
 import CardBody from "components/Card/CardBody";
 import Table from "components/Gigs/Table/Table";
-import AutoComplete from 'components/Gigs/AutoComplete/AutoComplete';
+import AutoComplete from "components/Gigs/AutoComplete/AutoComplete";
 
 // dependencies
-import {NotificationManager} from "react-notifications";
+import { NotificationManager } from "react-notifications";
+import CustomSelect from "../../../CustomSelect/CustomSelect";
 
 const style = {
-    infoText: {
-        fontWeight: "300",
-        margin: "10px 0 30px",
-        textAlign: "center"
-    },
-    inputAdornmentIcon: {
-        color: "#555"
-    },
-    inputAdornment: {
-        position: "relative"
-    }
+  infoText: {
+    fontWeight: "300",
+    margin: "10px 0 30px",
+    textAlign: "center"
+  },
+  inputAdornmentIcon: {
+    color: "#555"
+  },
+  inputAdornment: {
+    position: "relative"
+  }
 };
 
 class GigDetailsStep extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            name: "",
-            nameState: "",
-            selectedAdmins: [],
-            adminState: "",
-            budget: 0,
-            budgetState: "",
-            errorMessage: ""
-        };
-    }
+  constructor(props) {
+    super(props);
+    this.state = {
+      name: "",
+      nameState: "",
+      selectedAdmins: [],
+      adminState: "",
+      budget: 0,
+      budgetState: "",
+      errorMessage: ""
+    };
+  }
 
-    sendState() {
-        return this.state;
-    }
+  sendState() {
+    return this.state;
+  }
 
-    setupTableCells(admin) {
-        const {classes} = this.props;
-        const tableCellClasses = classes.tableCell;
-        return (
-            <React.Fragment>
-                <TableCell colSpan="1" className={tableCellClasses}>
-                    {admin.name}
-                </TableCell>
-                <TableCell colSpan="1" className={tableCellClasses} style={{textAlign: 'right'}}>
-                    <Cancel className={classes.icon}/>
-                </TableCell>
-            </React.Fragment>
-        );
-    }
+  setupTableCells(admin) {
+    const { classes } = this.props;
+    const tableCellClasses = classes.tableCell;
+    return (
+      <React.Fragment>
+        <TableCell colSpan="1" className={tableCellClasses}>
+          {admin.name}
+        </TableCell>
+        <TableCell
+          colSpan="1"
+          className={tableCellClasses}
+          style={{ textAlign: "right" }}
+        >
+          <Cancel className={classes.icon} />
+        </TableCell>
+      </React.Fragment>
+    );
+  }
 
-    selectAdmin(admin) {
-        var selectedAdmins = this.state.selectedAdmins;
-        const existingAdmins = selectedAdmins.filter(selectedAdmin => selectedAdmin["_id"] === admin["_id"])
-        if (existingAdmins.length >= 1) {
-            NotificationManager.error("User " + admin.name + " has been selected");
-        } else {
-            selectedAdmins.push(admin);
-        }
-        this.setState({
-            selectedAdmins: selectedAdmins,
-            adminState: "success"
+  selectAdmin(admin) {
+    const selectedAdmins = this.state.selectedAdmins;
+    const existingAdmins = selectedAdmins.filter(
+      selectedAdmin => selectedAdmin["_id"] === admin["_id"]
+    );
+    if (existingAdmins.length >= 1) {
+      NotificationManager.error("User " + admin.name + " has been selected");
+    } else {
+      selectedAdmins.push(admin);
+    }
+    this.setState({
+      selectedAdmins: selectedAdmins,
+      adminState: "success"
+    });
+  }
+
+  deselectAdmin(admin) {
+    const selectedAdmins = this.state.selectedAdmins;
+    const adminsAfterRemoval = selectedAdmins.filter(
+      selectedAdmin => selectedAdmin["_id"] !== admin["_id"]
+    );
+    if (!adminsAfterRemoval.length) {
+      this.setState({
+        adminState: ""
+      });
+    }
+    this.setState({
+      selectedAdmins: adminsAfterRemoval
+    });
+  }
+
+  validateNumber(event) {
+    const budget = event.target.value;
+    this.setState({
+      budget: budget,
+      budgetState: budget > 0 ? "success" : "error"
+    });
+  }
+
+  validateName(event) {
+    const name = event.target.value;
+    this.setState({ name: name });
+    const reg = /^\w+$/;
+    reg.test(name)
+      ? this.setState({
+          errorMessage: "",
+          nameState: "success"
         })
-    }
-
-    deselectAdmin(admin) {
-        const selectedAdmins = this.state.selectedAdmins;
-        const adminsAfterRemoval = selectedAdmins.filter(selectedAdmin => selectedAdmin["_id"] !== admin["_id"]);
-        if (!adminsAfterRemoval.length) {
-            this.setState({
-                adminState: ""
-            });
-        }
-        this.setState({
-            selectedAdmins: adminsAfterRemoval
+      : this.setState({
+          errorMessage: "Special characters in gig name: " + name,
+          nameState: "error"
         });
-    }
+  }
 
-    validateNumber(event) {
-        const budget = event.target.value;
+  isValidated() {
+    if (
+      this.state.nameState === "success" &&
+      this.state.budgetState === "success" &&
+      this.state.adminState === "success"
+    ) {
+      return true;
+    } else {
+      if (this.state.nameState !== "success") {
         this.setState({
-            budget: budget,
-            budgetState: budget > 0 ? "success" : "error"
+          nameState: "error",
+          errorMessage: "Field should not be empty."
         });
+      }
+      if (this.state.budgetState !== "success") {
+        this.setState({ budgetState: "error" });
+      }
+      if (this.state.adminState !== "success") {
+        this.setState({ adminState: "error" });
+      }
     }
+    return false;
+  }
 
-    validateName(event) {
-        const name = event.target.value;
-        this.setState({name: name});
-        const reg = /^\w+$/;
-        reg.test(name) ?
-            this.setState({
-                errorMessage: "",
-                nameState: "success"
-            })
-            :
-            this.setState({
-                errorMessage: "Special characters in gig name: " + name,
-                nameState: "error"
-            });
-    }
+  render() {
+    const { classes } = this.props;
+    const {
+      nameState,
+      adminState,
+      budgetState,
+      selectedAdmins,
+      errorMessage
+    } = this.state;
 
-    isValidated() {
-        if (
-            this.state.nameState === "success" &&
-            this.state.budgetState === "success" &&
-            this.state.adminState === "success"
-        ) {
-            return true;
-        } else {
-            if (this.state.nameState !== "success") {
-                this.setState({
-                    nameState: "error",
-                    errorMessage: "Field should not be empty."
-                });
+    return (
+      <GridContainer justify="center">
+        <GridItem xs={10} sm={10} md={10} lg={8} align="left">
+          <CustomInput
+            success={nameState === "success"}
+            error={nameState === "error"}
+            labelText={errorMessage || "Name your Gig"}
+            id="gigname"
+            formControlProps={{
+              fullWidth: true
+            }}
+            inputProps={{
+              onChange: event => this.validateName(event),
+              endAdornment: (
+                <InputAdornment
+                  position="end"
+                  className={classes.inputAdornment}
+                >
+                  <Event className={classes.inputAdornmentIcon} />
+                </InputAdornment>
+              )
+            }}
+            inputType="text"
+          />
+        </GridItem>
+        <GridItem xs={10} sm={10} md={10} lg={8} align="left">
+          <CustomSelect labelText={"Type of Gig"} />
+        </GridItem>
+        <GridItem xs={10} sm={10} md={10} lg={8} align="left">
+          <CustomInput
+            success={budgetState === "success"}
+            error={budgetState === "error"}
+            labelText={
+              <span>
+                Brownie Points <small>(required)</small>
+              </span>
             }
-            if (this.state.budgetState !== "success") {
-                this.setState({budgetState: "error"});
-            }
-            if (this.state.adminState !== "success") {
-                this.setState({adminState: "error"});
-            }
-
-        }
-        return false;
-    }
-
-    render() {
-        const {classes} = this.props;
-        const {nameState, adminState, budgetState, selectedAdmins, errorMessage} = this.state;
-
-        return (
-            <GridContainer justify="center">
-                <GridItem xs={10} sm={10} md={10} lg={8} align="left">
-                    <h4>Name of Gig</h4>
-                    <CustomInput
-                        success={nameState === "success"}
-                        error={nameState === "error"}
-                        labelText={errorMessage}
-                        id="gigname"
-                        formControlProps={{
-                            fullWidth: true
-                        }}
-                        inputProps={{
-                            onChange: event => this.validateName(event),
-                            endAdornment: (
-                                <InputAdornment
-                                    position="end"
-                                    className={classes.inputAdornment}
-                                >
-                                    <Event className={classes.inputAdornmentIcon}/>
-                                </InputAdornment>
-                            )
-                        }}
-                        inputType="text"
-                    />
-                </GridItem>
-                <GridItem xs={10} sm={10} md={10} lg={8} align="left">
-                    <h4>Budget for Brownie Points</h4>
-                    <CustomInput
-                        success={budgetState === "success"}
-                        error={budgetState === "error"}
-                        labelText={
-                            <span>
-                                Brownie Points <small>(required)</small>
-                            </span>
-                        }
-                        id="budgetpoints"
-                        formControlProps={{
-                            fullWidth: true
-                        }}
-                        inputProps={{
-                            onChange: event => this.validateNumber(event),
-                            endAdornment: (
-                                <InputAdornment
-                                    position="end"
-                                    className={classes.inputAdornment}
-                                >
-                                    <Budget className={classes.inputAdornmentIcon}/>
-                                </InputAdornment>
-                            )
-                        }}
-                        inputType="number"
-                    />
-                </GridItem>
-                <GridItem xs={10} sm={10} md={10} lg={8} align="left">
-                    <h4>Assign Gigs Admins</h4>
-                </GridItem>
-                <GridItem xs={11} sm={11} md={11} lg={8} align="center">
-                    <Card>
-                        <CardHeader>
-                            <AutoComplete selectInput={this.selectAdmin.bind(this)}/>
-                        </CardHeader>
-                        <CardBody>
-                            <Table
-                                error={adminState === "error"}
-                                tableHeight="200px"
-                                hover
-                                tableHeaderColor="primary"
-                                tableData={selectedAdmins}
-                                tableFooter="false"
-                                notFoundMessage="No admins selected"
-                                setupTableCells={this.setupTableCells.bind(this)}
-                                handleTableRowOnClick={this.deselectAdmin.bind(this)}
-                            />
-                        </CardBody>
-                    </Card>
-                </GridItem>
-            </GridContainer>
-        );
-    }
+            id="budgetpoints"
+            formControlProps={{
+              fullWidth: true
+            }}
+            inputProps={{
+              onChange: event => this.validateNumber(event),
+              endAdornment: (
+                <InputAdornment
+                  position="end"
+                  className={classes.inputAdornment}
+                >
+                  <Budget className={classes.inputAdornmentIcon} />
+                </InputAdornment>
+              )
+            }}
+            inputType="number"
+          />
+        </GridItem>
+        <GridItem xs={10} sm={10} md={10} lg={8} align="left">
+          <h4>Assign Gigs Admins</h4>
+        </GridItem>
+        <GridItem xs={11} sm={11} md={11} lg={8} align="center">
+          <Card>
+            <CardHeader>
+              <AutoComplete selectInput={this.selectAdmin.bind(this)} />
+            </CardHeader>
+            <CardBody>
+              <Table
+                error={adminState === "error"}
+                tableHeight="200px"
+                hover
+                tableHeaderColor="primary"
+                tableData={selectedAdmins}
+                tableFooter="false"
+                notFoundMessage="No admins selected"
+                setupTableCells={this.setupTableCells.bind(this)}
+                handleTableRowOnClick={this.deselectAdmin.bind(this)}
+              />
+            </CardBody>
+          </Card>
+        </GridItem>
+      </GridContainer>
+    );
+  }
 }
 
 export default withStyles(style)(GigDetailsStep);
