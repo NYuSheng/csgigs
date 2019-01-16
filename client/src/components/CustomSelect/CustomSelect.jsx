@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 
 // material-ui components
 import withStyles from "@material-ui/core/styles/withStyles";
@@ -9,17 +10,16 @@ import InputLabel from "@material-ui/core/InputLabel";
 
 import styles from "assets/jss/material-dashboard-pro-react/customSelectStyle.jsx";
 
-const gigTypes = ["Event", "Training", "Announcement"];
-
 class CustomSelect extends React.Component {
   state = {
     selectedValue: ""
   };
   handleOnChange = event => {
     this.setState({ selectedValue: event.target.value });
+    this.props.inputProps.onChange(event);
   };
   render() {
-    const { classes, id, labelText } = this.props;
+    const { classes, id, labelText, items } = this.props;
 
     return (
       <FormControl fullWidth>
@@ -38,7 +38,7 @@ class CustomSelect extends React.Component {
             id
           }}
         >
-          {gigTypes.map(x => (
+          {items.map(x => (
             <MenuItem
               key={x}
               classes={{
@@ -55,5 +55,13 @@ class CustomSelect extends React.Component {
     );
   }
 }
+
+CustomSelect.propTypes = {
+  classes: PropTypes.object,
+  labelText: PropTypes.node,
+  id: PropTypes.string,
+  inputProps: PropTypes.object,
+  items: PropTypes.array
+};
 
 export default withStyles(styles)(CustomSelect);

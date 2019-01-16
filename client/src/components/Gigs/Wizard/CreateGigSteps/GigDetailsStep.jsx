@@ -106,12 +106,43 @@ class GigDetailsStep extends React.Component {
     });
   }
 
-  validateNumber(event) {
+  selectOwner(owner) {
+    let selectedOwner = this.state.selectedOwner;
+    if (selectedOwner && selectedOwner["_id"] === owner["_id"]) {
+      NotificationManager.error("User " + owner.name + " has been selected");
+    } else if (selectedOwner) {
+      NotificationManager.error("Only one owner can be selected");
+    } else {
+      selectedOwner = owner;
+    }
+    this.setState({
+      selectedOwner
+    });
+  }
+
+  deselectOwner(owner) {
+    const selectedOwner = this.state.selectedOwner;
+    if (selectedOwner && selectedOwner["_id"] === owner["_id"]) {
+      this.setState({
+        selectedOwner: undefined
+      });
+    }
+  }
+
+  validateBudget(event) {
     const budget = event.target.value;
     this.setState({
       budget: budget,
       budgetState: budget > 0 ? "success" : "error"
     });
+  }
+
+  selectHandle(event, field) {
+    this.setState({ [field]: event.target.value });
+  }
+
+  inputHandle(event, field) {
+    this.setState({ [field]: event.target.value });
   }
 
   validateName(event) {
@@ -130,6 +161,7 @@ class GigDetailsStep extends React.Component {
   }
 
   isValidated() {
+    //console.log(this.state);
     if (
       this.state.nameState === "success" &&
       this.state.budgetState === "success" &&
@@ -160,6 +192,7 @@ class GigDetailsStep extends React.Component {
       adminState,
       budgetState,
       selectedAdmins,
+      selectedOwner,
       errorMessage
     } = this.state;
 
@@ -189,7 +222,14 @@ class GigDetailsStep extends React.Component {
           />
         </GridItem>
         <GridItem xs={10} sm={10} md={10} lg={8} align="left">
-          <CustomSelect labelText={"Type of Gig"} />
+          <CustomSelect
+            labelText={"Type of Gig"}
+            id="eventtype"
+            items={["Event", "Training", "Announcement"]}
+            inputProps={{
+              onChange: event => this.selectHandle(event, "type")
+            }}
+          />
         </GridItem>
         <GridItem xs={10} sm={10} md={10} lg={8} align="left">
           <CustomInput
@@ -205,7 +245,7 @@ class GigDetailsStep extends React.Component {
               fullWidth: true
             }}
             inputProps={{
-              onChange: event => this.validateNumber(event),
+              onChange: event => this.validateBudget(event),
               endAdornment: (
                 <InputAdornment
                   position="end"
@@ -216,6 +256,116 @@ class GigDetailsStep extends React.Component {
               )
             }}
             inputType="number"
+          />
+        </GridItem>
+        <GridItem xs={10} sm={10} md={10} lg={8} align="left">
+          <CustomInput
+            labelText="Venue"
+            id="venue"
+            formControlProps={{
+              fullWidth: true
+            }}
+            inputProps={{
+              onChange: event => this.inputHandle(event, "venue")
+            }}
+            inputType="text"
+          />
+        </GridItem>
+        <GridItem xs={10} sm={10} md={10} lg={8} align="left">
+          <CustomInput
+            labelText="Address"
+            id="address"
+            formControlProps={{
+              fullWidth: true
+            }}
+            inputProps={{
+              onChange: event => this.inputHandle(event, "address")
+            }}
+            inputType="text"
+          />
+        </GridItem>
+        <GridItem xs={10} sm={10} md={10} lg={8} align="left">
+          <CustomInput
+            labelText="region"
+            id="region"
+            formControlProps={{
+              fullWidth: true
+            }}
+            inputProps={{
+              onChange: event => this.inputHandle(event, "region")
+            }}
+            inputType="text"
+          />
+        </GridItem>
+        <GridItem xs={10} sm={10} md={10} lg={8} align="left">
+          <CustomSelect
+            labelText={"Channel"}
+            id="channel"
+            items={["Audio", "Video", "Telephonic"]}
+            inputProps={{
+              onChange: event => this.selectHandle(event, "channel")
+            }}
+          />
+        </GridItem>
+        <GridItem xs={10} sm={10} md={10} lg={8} align="left">
+          <CustomInput
+            labelText="Max number of participants"
+            id="maxParticipants"
+            formControlProps={{
+              fullWidth: true
+            }}
+            inputProps={{
+              onChange: event => this.inputHandle(event, "maxParticipants")
+            }}
+            inputType="number"
+          />
+        </GridItem>
+        <GridItem xs={10} sm={10} md={10} lg={8} align="left">
+          <CustomInput
+            labelText="Related link"
+            id="link"
+            formControlProps={{
+              fullWidth: true
+            }}
+            inputProps={{
+              onChange: event => this.inputHandle(event, "link")
+            }}
+            inputType="text"
+          />
+        </GridItem>
+        <GridItem xs={10} sm={10} md={10} lg={8} align="left">
+          <h4>Assign Owner</h4>
+        </GridItem>
+        <GridItem xs={11} sm={11} md={11} lg={8} align="center">
+          <Card>
+            <CardHeader>
+              <AutoComplete selectInput={this.selectOwner.bind(this)} />
+            </CardHeader>
+            <CardBody>
+              <Table
+                tableHeight="75px"
+                hover
+                tableHeaderColor="primary"
+                tableData={selectedOwner ? [selectedOwner] : []}
+                tableFooter="false"
+                notFoundMessage="No owner selected"
+                setupTableCells={this.setupTableCells.bind(this)}
+                handleTableRowOnClick={this.deselectOwner.bind(this)}
+              />
+            </CardBody>
+          </Card>
+        </GridItem>
+        <GridItem xs={10} sm={10} md={10} lg={8} align="left">
+          <CustomInput
+            labelText="Contact Email"
+            id="contact"
+            formControlProps={{
+              fullWidth: true
+            }}
+            inputProps={{
+              onChange: event => this.inputHandle(event, "contact")
+            }}
+            inputType="email"
           />
         </GridItem>
         <GridItem xs={10} sm={10} md={10} lg={8} align="left">
