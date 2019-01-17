@@ -223,6 +223,17 @@ class GigDetailsStep extends React.Component {
     return (
       <GridContainer justify="center">
         <GridItem xs={10} sm={10} md={10} lg={8} align="left">
+          <CustomSelect
+            labelText={"Type of Gig"}
+            id="eventtype"
+            items={["Event", "Training", "Announcement"]}
+            inputProps={{
+              onChange: selectedValue =>
+                this.selectHandle(selectedValue, "type")
+            }}
+          />
+        </GridItem>
+        <GridItem xs={10} sm={10} md={10} lg={8} align="left">
           <CustomInput
             success={nameState === "success"}
             error={nameState === "error"}
@@ -243,17 +254,6 @@ class GigDetailsStep extends React.Component {
               )
             }}
             inputType="text"
-          />
-        </GridItem>
-        <GridItem xs={10} sm={10} md={10} lg={8} align="left">
-          <CustomSelect
-            labelText={"Type of Gig"}
-            id="eventtype"
-            items={["Event", "Training", "Announcement"]}
-            inputProps={{
-              onChange: selectedValue =>
-                this.selectHandle(selectedValue, "type")
-            }}
           />
         </GridItem>
         <GridItem xs={10} sm={10} md={10} lg={8} align="left">
@@ -336,12 +336,12 @@ class GigDetailsStep extends React.Component {
         </GridItem>
         <GridItem xs={10} sm={10} md={10} lg={8} align="left">
           <CustomSelect
-            labelText={"Channel"}
-            id="channel"
-            items={["Audio", "Video", "Telephonic"]}
+            labelText={"Format"}
+            id="format"
+            items={["Face-to-face", "Audio", "Video", "Telephonic"]}
             inputProps={{
               onChange: selectedValue =>
-                this.selectHandle(selectedValue, "channel")
+                this.selectHandle(selectedValue, "format")
             }}
           />
         </GridItem>
@@ -372,6 +372,40 @@ class GigDetailsStep extends React.Component {
           />
         </GridItem>
         <GridItem xs={10} sm={10} md={10} lg={8} align="left">
+          <CustomInput
+            labelText="Contact Email"
+            id="contact"
+            formControlProps={{
+              fullWidth: true
+            }}
+            inputProps={{
+              onChange: event => this.inputHandle(event, "contact")
+            }}
+            inputType="email"
+          />
+        </GridItem>
+        <GridItem xs={10} sm={10} md={10} lg={8} align="left">
+          <CustomRadio
+            labelText={"Require Regitration?"}
+            id="requireRegistration"
+            selectedItem="Y"
+            items={[
+              {
+                key: "Y",
+                value: "Yes"
+              },
+              {
+                key: "N",
+                value: "No"
+              }
+            ]}
+            inputProps={{
+              onChange: selectedValue =>
+                this.selectHandle(selectedValue, "requireRegistration")
+            }}
+          />
+        </GridItem>
+        <GridItem xs={10} sm={10} md={10} lg={8} align="left">
           <h4>Assign Owner</h4>
         </GridItem>
         <GridItem xs={11} sm={11} md={11} lg={8} align="center">
@@ -392,19 +426,6 @@ class GigDetailsStep extends React.Component {
               />
             </CardBody>
           </Card>
-        </GridItem>
-        <GridItem xs={10} sm={10} md={10} lg={8} align="left">
-          <CustomInput
-            labelText="Contact Email"
-            id="contact"
-            formControlProps={{
-              fullWidth: true
-            }}
-            inputProps={{
-              onChange: event => this.inputHandle(event, "contact")
-            }}
-            inputType="email"
-          />
         </GridItem>
         <GridItem xs={10} sm={10} md={10} lg={8} align="left">
           <h4>Assign Gigs Admins</h4>
@@ -428,27 +449,6 @@ class GigDetailsStep extends React.Component {
               />
             </CardBody>
           </Card>
-        </GridItem>
-        <GridItem xs={10} sm={10} md={10} lg={8} align="left">
-          <CustomRadio
-            labelText={"Require Regitration?"}
-            id="requireRegistration"
-            selectedItem="Y"
-            items={[
-              {
-                key: "Y",
-                value: "Yes"
-              },
-              {
-                key: "N",
-                value: "No"
-              }
-            ]}
-            inputProps={{
-              onChange: selectedValue =>
-                this.selectHandle(selectedValue, "requireRegistration")
-            }}
-          />
         </GridItem>
       </GridContainer>
     );
