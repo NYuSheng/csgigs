@@ -1,4 +1,5 @@
 import React from "react";
+import moment from "moment-timezone";
 
 // @material-ui/icons
 import Event from "@material-ui/icons/Event";
@@ -23,6 +24,7 @@ import AutoComplete from "components/Gigs/AutoComplete/AutoComplete";
 // dependencies
 import { NotificationManager } from "react-notifications";
 import CustomSelect from "../../../CustomSelect/CustomSelect";
+import CustomRadio from "../../../CustomRadio/CustomRadio";
 
 const style = {
   infoText: {
@@ -50,6 +52,28 @@ class GigDetailsStep extends React.Component {
       budgetState: "",
       errorMessage: ""
     };
+  }
+
+  formatTimezone(tz) {
+    return "(GMT " + moment.tz(tz).format("Z") + ") " + tz;
+  }
+
+  getAllTimeZones() {
+    let timeZones = moment.tz.names();
+
+    const timeZonesWithOffset = timeZones
+      .map(tz => this.formatTimezone(tz))
+      .sort();
+
+    return timeZonesWithOffset;
+  }
+
+  getCurrentTimeZone() {
+    const currentTimeZone = moment.tz.guess();
+
+    const currentTimeZoneWithOffset = this.formatTimezone(currentTimeZone);
+
+    return currentTimeZoneWithOffset;
   }
 
   sendState() {
@@ -137,8 +161,8 @@ class GigDetailsStep extends React.Component {
     });
   }
 
-  selectHandle(event, field) {
-    this.setState({ [field]: event.target.value });
+  selectHandle(selectedValue, field) {
+    this.setState({ [field]: selectedValue });
   }
 
   inputHandle(event, field) {
@@ -161,7 +185,7 @@ class GigDetailsStep extends React.Component {
   }
 
   isValidated() {
-    //console.log(this.state);
+    // console.log(this.state);
     if (
       this.state.nameState === "success" &&
       this.state.budgetState === "success" &&
@@ -227,7 +251,8 @@ class GigDetailsStep extends React.Component {
             id="eventtype"
             items={["Event", "Training", "Announcement"]}
             inputProps={{
-              onChange: event => this.selectHandle(event, "type")
+              onChange: selectedValue =>
+                this.selectHandle(selectedValue, "type")
             }}
           />
         </GridItem>
@@ -286,7 +311,7 @@ class GigDetailsStep extends React.Component {
         </GridItem>
         <GridItem xs={10} sm={10} md={10} lg={8} align="left">
           <CustomInput
-            labelText="region"
+            labelText="Region"
             id="region"
             formControlProps={{
               fullWidth: true
@@ -299,11 +324,24 @@ class GigDetailsStep extends React.Component {
         </GridItem>
         <GridItem xs={10} sm={10} md={10} lg={8} align="left">
           <CustomSelect
+            labelText={"Timezone"}
+            id="timezone"
+            items={this.getAllTimeZones()}
+            selectedItem={this.getCurrentTimeZone()}
+            inputProps={{
+              onChange: selectedValue =>
+                this.selectHandle(selectedValue, "timezone")
+            }}
+          />
+        </GridItem>
+        <GridItem xs={10} sm={10} md={10} lg={8} align="left">
+          <CustomSelect
             labelText={"Channel"}
             id="channel"
             items={["Audio", "Video", "Telephonic"]}
             inputProps={{
-              onChange: event => this.selectHandle(event, "channel")
+              onChange: selectedValue =>
+                this.selectHandle(selectedValue, "channel")
             }}
           />
         </GridItem>
@@ -390,6 +428,27 @@ class GigDetailsStep extends React.Component {
               />
             </CardBody>
           </Card>
+        </GridItem>
+        <GridItem xs={10} sm={10} md={10} lg={8} align="left">
+          <CustomRadio
+            labelText={"Require Regitration?"}
+            id="requireRegistration"
+            selectedItem="Y"
+            items={[
+              {
+                key: "Y",
+                value: "Yes"
+              },
+              {
+                key: "N",
+                value: "No"
+              }
+            ]}
+            inputProps={{
+              onChange: selectedValue =>
+                this.selectHandle(selectedValue, "requireRegistration")
+            }}
+          />
         </GridItem>
       </GridContainer>
     );

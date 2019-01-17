@@ -11,12 +11,19 @@ import InputLabel from "@material-ui/core/InputLabel";
 import styles from "assets/jss/material-dashboard-pro-react/customSelectStyle.jsx";
 
 class CustomSelect extends React.Component {
-  state = {
-    selectedValue: ""
-  };
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      selectedValue: this.props.selectedItem || ""
+    };
+
+    this.props.inputProps.onChange(this.state.selectedValue);
+  }
+
   handleOnChange = event => {
     this.setState({ selectedValue: event.target.value });
-    this.props.inputProps.onChange(event);
+    this.props.inputProps.onChange(event.target.value);
   };
   render() {
     const { classes, id, labelText, items } = this.props;
@@ -61,7 +68,8 @@ CustomSelect.propTypes = {
   labelText: PropTypes.node,
   id: PropTypes.string,
   inputProps: PropTypes.object,
-  items: PropTypes.array
+  items: PropTypes.array,
+  selectedItem: PropTypes.string
 };
 
 export default withStyles(styles)(CustomSelect);
