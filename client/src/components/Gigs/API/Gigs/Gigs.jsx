@@ -34,6 +34,8 @@ export const create = function(step, callback) {
       registrationRequired: step.requireRegistration,
       maxParticipants: step.maxParticipants,
       relatedLink: step.link,
+      startDate: step.startDate,
+      endDate: step.endDate,
       photo: step.gigImage
     })
   }).then(data => {

@@ -51,6 +51,8 @@ exports.create_gig = asyncMiddleware(async (req, res) => {
     registrationRequired: req.body.registrationRequired === "Y" ? true : false,
     maxParticipants: req.body.maxParticipants,
     relatedLink: req.body.relatedLink,
+    startDate: req.body.startDate,
+    endDate: req.body.endDate,
 
     //Possible required fields in creation
     user_participants: []

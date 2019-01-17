@@ -1,5 +1,6 @@
 import React from "react";
 import moment from "moment-timezone";
+import Datetime from "react-datetime";
 
 // @material-ui/icons
 import Event from "@material-ui/icons/Event";
@@ -10,6 +11,7 @@ import Cancel from "@material-ui/icons/Cancel";
 import withStyles from "@material-ui/core/styles/withStyles";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import TableCell from "@material-ui/core/TableCell";
+import FormControl from "@material-ui/core/FormControl";
 
 // core components
 import GridContainer from "components/Grid/GridContainer.jsx";
@@ -17,6 +19,7 @@ import GridItem from "components/Grid/GridItem.jsx";
 import CustomInput from "components/Gigs/CustomInput/CustomInput.jsx";
 import Card from "components/Card/Card";
 import CardHeader from "components/Card/CardHeader";
+import CardIcon from "components/Card/CardIcon.jsx";
 import CardBody from "components/Card/CardBody";
 import Table from "components/Gigs/Table/Table";
 import AutoComplete from "components/Gigs/AutoComplete/AutoComplete";
@@ -80,13 +83,13 @@ class GigDetailsStep extends React.Component {
     return this.state;
   }
 
-  setupTableCells(admin) {
+  setupTableCells = user => {
     const { classes } = this.props;
     const tableCellClasses = classes.tableCell;
     return (
       <React.Fragment>
         <TableCell colSpan="1" className={tableCellClasses}>
-          {admin.name}
+          {user.name}
         </TableCell>
         <TableCell
           colSpan="1"
@@ -97,9 +100,9 @@ class GigDetailsStep extends React.Component {
         </TableCell>
       </React.Fragment>
     );
-  }
+  };
 
-  selectAdmin(admin) {
+  selectAdmin = admin => {
     const selectedAdmins = this.state.selectedAdmins;
     const existingAdmins = selectedAdmins.filter(
       selectedAdmin => selectedAdmin["_id"] === admin["_id"]
@@ -113,9 +116,9 @@ class GigDetailsStep extends React.Component {
       selectedAdmins: selectedAdmins,
       adminState: "success"
     });
-  }
+  };
 
-  deselectAdmin(admin) {
+  deselectAdmin = admin => {
     const selectedAdmins = this.state.selectedAdmins;
     const adminsAfterRemoval = selectedAdmins.filter(
       selectedAdmin => selectedAdmin["_id"] !== admin["_id"]
@@ -128,9 +131,9 @@ class GigDetailsStep extends React.Component {
     this.setState({
       selectedAdmins: adminsAfterRemoval
     });
-  }
+  };
 
-  selectOwner(owner) {
+  selectOwner = owner => {
     let selectedOwner = this.state.selectedOwner;
     if (selectedOwner && selectedOwner["_id"] === owner["_id"]) {
       NotificationManager.error("User " + owner.name + " has been selected");
@@ -142,24 +145,28 @@ class GigDetailsStep extends React.Component {
     this.setState({
       selectedOwner
     });
-  }
+  };
 
-  deselectOwner(owner) {
+  selectDate = (momentDate, field) => {
+    this.setState({ [field]: momentDate.format() });
+  };
+
+  deselectOwner = owner => {
     const selectedOwner = this.state.selectedOwner;
     if (selectedOwner && selectedOwner["_id"] === owner["_id"]) {
       this.setState({
         selectedOwner: undefined
       });
     }
-  }
+  };
 
-  validateBudget(event) {
+  validateBudget = event => {
     const budget = event.target.value;
     this.setState({
       budget: budget,
       budgetState: budget > 0 ? "success" : "error"
     });
-  }
+  };
 
   selectHandle(selectedValue, field) {
     this.setState({ [field]: selectedValue });
@@ -169,7 +176,7 @@ class GigDetailsStep extends React.Component {
     this.setState({ [field]: event.target.value });
   }
 
-  validateName(event) {
+  validateName = event => {
     const name = event.target.value;
     this.setState({ name: name });
     const reg = /^\w+$/;
@@ -182,7 +189,7 @@ class GigDetailsStep extends React.Component {
           errorMessage: "Special characters in gig name: " + name,
           nameState: "error"
         });
-  }
+  };
 
   isValidated() {
     // console.log(this.state);
@@ -243,7 +250,7 @@ class GigDetailsStep extends React.Component {
               fullWidth: true
             }}
             inputProps={{
-              onChange: event => this.validateName(event),
+              onChange: this.validateName,
               endAdornment: (
                 <InputAdornment
                   position="end"
@@ -270,7 +277,7 @@ class GigDetailsStep extends React.Component {
               fullWidth: true
             }}
             inputProps={{
-              onChange: event => this.validateBudget(event),
+              onChange: this.validateBudget,
               endAdornment: (
                 <InputAdornment
                   position="end"
@@ -411,7 +418,7 @@ class GigDetailsStep extends React.Component {
         <GridItem xs={11} sm={11} md={11} lg={8} align="center">
           <Card>
             <CardHeader>
-              <AutoComplete selectInput={this.selectOwner.bind(this)} />
+              <AutoComplete selectInput={this.selectOwner} />
             </CardHeader>
             <CardBody>
               <Table
@@ -421,8 +428,8 @@ class GigDetailsStep extends React.Component {
                 tableData={selectedOwner ? [selectedOwner] : []}
                 tableFooter="false"
                 notFoundMessage="No owner selected"
-                setupTableCells={this.setupTableCells.bind(this)}
-                handleTableRowOnClick={this.deselectOwner.bind(this)}
+                setupTableCells={this.setupTableCells}
+                handleTableRowOnClick={this.deselectOwner}
               />
             </CardBody>
           </Card>
@@ -433,7 +440,7 @@ class GigDetailsStep extends React.Component {
         <GridItem xs={11} sm={11} md={11} lg={8} align="center">
           <Card>
             <CardHeader>
-              <AutoComplete selectInput={this.selectAdmin.bind(this)} />
+              <AutoComplete selectInput={this.selectAdmin} />
             </CardHeader>
             <CardBody>
               <Table
@@ -444,9 +451,63 @@ class GigDetailsStep extends React.Component {
                 tableData={selectedAdmins}
                 tableFooter="false"
                 notFoundMessage="No admins selected"
-                setupTableCells={this.setupTableCells.bind(this)}
-                handleTableRowOnClick={this.deselectAdmin.bind(this)}
+                setupTableCells={this.setupTableCells}
+                handleTableRowOnClick={this.deselectAdmin}
               />
+            </CardBody>
+          </Card>
+        </GridItem>
+        <GridItem xs={11} sm={11} md={11} lg={8} align="center">
+          <Card>
+            <CardHeader color="rose" icon>
+              <CardIcon color="rose">
+                <Event />
+              </CardIcon>
+              <h4
+                className={classes.cardIconTitle}
+                style={{ textAlign: "left", color: "black" }}
+              >
+                Start Date/Time
+              </h4>
+            </CardHeader>
+            <CardBody>
+              <FormControl fullWidth>
+                <Datetime
+                  onChange={momentDate =>
+                    this.selectDate(momentDate, "startDate")
+                  }
+                  inputProps={{
+                    placeholder: "Select Date/Time"
+                  }}
+                />
+              </FormControl>
+            </CardBody>
+          </Card>
+        </GridItem>
+        <GridItem xs={11} sm={11} md={11} lg={8} align="center">
+          <Card>
+            <CardHeader color="rose" icon>
+              <CardIcon color="rose">
+                <Event />
+              </CardIcon>
+              <h4
+                className={classes.cardIconTitle}
+                style={{ textAlign: "left", color: "black" }}
+              >
+                End Date/Time
+              </h4>
+            </CardHeader>
+            <CardBody>
+              <FormControl fullWidth>
+                <Datetime
+                  onChange={momentDate =>
+                    this.selectDate(momentDate, "endDate")
+                  }
+                  inputProps={{
+                    placeholder: "Select Date/Time"
+                  }}
+                />
+              </FormControl>
             </CardBody>
           </Card>
         </GridItem>
