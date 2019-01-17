@@ -386,7 +386,7 @@ class GigDetailsStep extends React.Component {
         </GridItem>
         <GridItem xs={10} sm={10} md={10} lg={8} align="left">
           <CustomRadio
-            labelText={"Require Regitration?"}
+            labelText={"Require Registration?"}
             id="requireRegistration"
             selectedItem="Y"
             items={[
