@@ -1,5 +1,5 @@
 import { NotificationManager } from "react-notifications";
-import { publishMessage } from "components/Gigs/API/RocketChat/RocketChat";
+import { publishMessageWithReplyOptions } from "components/Gigs/API/RocketChat/RocketChat";
 
 const fetchOptions = method => {
   return {
@@ -50,26 +50,27 @@ export const update = function(taskId, payload, statusCallback) {
   });
 };
 
-export const add = function(gigRoomId, gigId, state, statusCallback) {
+export const add = async function(gigRoomId, gigId, state, statusCallback) {
   if (statusCallback) statusCallback("loading");
-  fetch("/admin-ui/api/tasks/addTask", {
+  const data = await fetch("/admin-ui/api/tasks/addTask", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(buildTaskPayload(gigId, state))
-  }).then(data => {
-    if (data.status !== 200) {
-      data.json().then(json => {
-        NotificationManager.error(json.error.errmsg);
-      });
-      if (statusCallback) statusCallback("working");
-    } else {
-      data.json().then(json => {
-        const task = json.task;
-        publishMessage(buildTaskPublishMessage(gigRoomId, task));
-      });
-      if (statusCallback) statusCallback("success");
-    }
   });
+
+  const json = await data.json();
+  if (data.status !== 200) {
+    NotificationManager.error(json.error.errmsg);
+    //TODO: should this be error?
+    if (statusCallback) statusCallback("working");
+    return;
+  }
+
+  const task = json.task;
+  publishMessageWithReplyOptions(
+    buildTaskPublishMessageWithReply(gigRoomId, task)
+  );
+  if (statusCallback) statusCallback("success");
 };
 
 export const remove = function(gigRoomId, taskId, taskName, statusCallback) {
@@ -91,13 +92,21 @@ export const remove = function(gigRoomId, taskId, taskName, statusCallback) {
   });
 };
 
-function buildTaskPublishMessage(roomId, task) {
-  const message = `New Task!
-**${task.task_name}** (${task._id})
-Description: ${task.task_description}
-Reply "volunteer" to volunteer for this task.`;
+function buildTaskPublishMessageWithReply(roomId, task) {
+  const message = `A new task **${task.task_name}** in category *${
+    task.task_category
+  }* has been created.
+  _${task.task_description}_`;
 
-  return { message, roomId };
+  const optionsTitle = "Please click volunteer if you can help";
+  const replyOptions = [
+    {
+      label: "Volunteer",
+      reply: `I would like to volunteer for **${task.task_name}** (${task._id})`
+    }
+  ];
+
+  return { message, roomId, optionsTitle, replyOptions };
 }
 
 function buildTaskPayload(gigId, state) {
