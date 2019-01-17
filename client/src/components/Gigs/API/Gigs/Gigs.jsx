@@ -8,6 +8,7 @@ import {
 export const create = function(step, callback) {
   const gigCreator = UserProfile.getUser().me;
   const authSet = UserProfile.getAuthSet();
+  // console.log(step);
   fetch("/admin-ui/api/gigs/create", {
     method: "POST",
     headers: {
@@ -22,6 +23,17 @@ export const create = function(step, callback) {
       status: "Draft",
       createdBy: gigCreator,
       user_admins: step.selectedAdmins,
+      type: step.type,
+      owner: step.selectedOwner,
+      venue: step.venue,
+      address: step.address,
+      region: step.region,
+      channel: step.format,
+      contact: step.contact,
+      timeZone: step.timezone,
+      registrationRequired: step.requireRegistration,
+      maxParticipants: step.maxParticipants,
+      relatedLink: step.link,
       photo: step.gigImage
     })
   }).then(data => {

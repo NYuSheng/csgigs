@@ -40,6 +40,18 @@ exports.create_gig = asyncMiddleware(async (req, res) => {
     createdBy: req.body.createdBy._id,
     status: "Draft",
     user_admins: req.body.user_admins.map(admin => admin._id),
+    type: req.body.type,
+    owner: req.body.owner ? req.body.owner._id : "",
+    venue: req.body.venue,
+    address: req.body.address,
+    region: req.body.region,
+    channel: req.body.channel,
+    contact: req.body.contact,
+    timeZone: req.body.timeZone,
+    registrationRequired: req.body.registrationRequired === "Y" ? true : false,
+    maxParticipants: req.body.maxParticipants,
+    relatedLink: req.body.relatedLink,
+
     //Possible required fields in creation
     user_participants: []
     // user_attendees: []
