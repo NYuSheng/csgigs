@@ -115,6 +115,43 @@ exports.publish_message = async function(req, res) {
   });
 };
 
+exports.publishMessageWithReplyOptions = asyncMiddleware(async function(
+  req,
+  res
+) {
+  const authSetBot = getCachedApiAuth(req);
+  const data = await api.post(
+    "chat.postMessage",
+    authSetBot.authToken,
+    authSetBot.userId,
+    {
+      roomId: req.body.roomId,
+      text: req.body.message,
+      attachments: [
+        {
+          title: req.body.optionsTitle,
+          collapsed: false,
+          actions: req.body.replyOptions.map(x => ({
+            type: "button",
+            text: x.label,
+            msg: x.reply,
+            msg_in_chat_window: true
+          }))
+        }
+      ]
+    }
+  );
+
+  if (!data.success) {
+    return res.status(500).send({
+      error: "Unable to publish message to " + req.body.roomId
+    });
+  }
+  res.status(200).send({
+    message: data.message
+  });
+});
+
 exports.publishBroadcastMessage = async function(authSetBot, roomId, text) {
   const result = await api.post(
     "chat.postMessage",

@@ -65,13 +65,14 @@ const createGroupResponse = () => {
   };
 };
 
-const createRequest = user_admins => {
+const createRequest = (user_admins, owner = { _id: "owner1" }) => {
   return {
     app,
     headers: {},
     body: {
       name: "testgig",
       user_admins: user_admins || [],
+      owner: owner,
       points_budget: 500,
       createdBy: { _id: "1234", name: "testAuthor" }
     }
@@ -144,12 +145,25 @@ describe("Gig Controller", () => {
       });
     });
 
-    it("should return an error if there were no group owners specified", async () => {
+    it("should return an error if there were no admins specified", async () => {
       createMongoSaveMock(createUsers(["bob", "frank", "jill"]));
 
       global.fetch.mockResponse(JSON.stringify({ success: true }));
 
       await gigController.create_gig(createRequest(), res);
+
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.send).toHaveBeenCalledWith({
+        error: "No admin specified for testgig"
+      });
+    });
+
+    it("should return an error if there were no owner specified", async () => {
+      createMongoSaveMock(createUsers(["bob", "frank", "jill"]));
+
+      global.fetch.mockResponse(JSON.stringify({ success: true }));
+
+      await gigController.create_gig(createRequest(["admin1"], null), res);
 
       expect(res.status).toHaveBeenCalledWith(500);
       expect(res.send).toHaveBeenCalledWith({

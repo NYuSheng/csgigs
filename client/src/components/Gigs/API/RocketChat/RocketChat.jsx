@@ -21,6 +21,24 @@ export const publishMessage = function(payload) {
   });
 };
 
+export const publishMessageWithReplyOptions = async function(payload) {
+  const authSet = UserProfile.getAuthSet();
+  const response = await fetch(`/admin-ui/api/rc/publish-replyable-message`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-auth-token": authSet.token,
+      "x-user-id": authSet.userId
+    },
+    body: JSON.stringify(payload)
+  });
+
+  if (response.status !== 200) {
+    const json = await response.json();
+    NotificationManager.error(json.error.errmsg);
+  }
+};
+
 export const setRoomToReadOnly = function(gigRoomId) {
   const authSet = UserProfile.getAuthSet();
   const setReadOnlyPayload = {

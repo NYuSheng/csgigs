@@ -11,8 +11,20 @@ let GigsSchema = new Schema({
   points_budget: { type: Number, required: true },
   status: { type: String, required: true },
   user_admins: [{ type: String }],
-  user_participants: [{ type: String }]
-  // user_attendees:[{type: String}]
+  user_participants: [{ type: String }],
+  type: { type: String, required: true },
+  startDate: { type: Date },
+  endDate: { type: Date },
+  owner: { type: String },
+  venue: { type: String },
+  address: { type: String },
+  region: { type: String },
+  channel: { type: String },
+  contact: { type: String },
+  timeZone: { type: String },
+  registrationRequired: { type: Boolean },
+  maxParticipants: { type: Number },
+  relatedLink: { type: String }
 });
 
 module.exports = mongoose.model("gigs", GigsSchema);

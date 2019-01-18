@@ -40,13 +40,31 @@ exports.create_gig = asyncMiddleware(async (req, res) => {
     createdBy: req.body.createdBy._id,
     status: "Draft",
     user_admins: req.body.user_admins.map(admin => admin._id),
+    type: req.body.type,
+    owner: req.body.owner ? req.body.owner._id : "",
+    venue: req.body.venue,
+    address: req.body.address,
+    region: req.body.region,
+    channel: req.body.channel,
+    contact: req.body.contact,
+    timeZone: req.body.timeZone,
+    registrationRequired: req.body.registrationRequired === "Y" ? true : false,
+    maxParticipants: req.body.maxParticipants,
+    relatedLink: req.body.relatedLink,
+    startDate: req.body.startDate,
+    endDate: req.body.endDate,
+
     //Possible required fields in creation
     user_participants: []
     // user_attendees: []
   });
   try {
-    if (!gig.user_admins.length) {
+    if (!gig.owner) {
       throw `No owner specified for ${gig.name}`;
+    }
+
+    if (!gig.user_admins.length) {
+      throw `No admin specified for ${gig.name}`;
     }
 
     const gig_created = await trySaveOrThrow(gig);
