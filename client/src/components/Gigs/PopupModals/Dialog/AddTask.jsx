@@ -31,17 +31,14 @@ function Transition(props) {
 }
 
 class AddTask extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      taskName: "",
-      taskDescription: "",
-      taskNameState: "",
-      taskCategory: "",
-      taskCategoryState: "",
-      status: "working"
-    };
-  }
+  state = {
+    taskName: "",
+    taskDescription: "",
+    taskNameState: "",
+    taskCategory: "",
+    taskCategoryState: "",
+    status: "working"
+  };
 
   componentWillReceiveProps() {
     this.setState({
@@ -54,27 +51,27 @@ class AddTask extends React.Component {
     });
   }
 
-  onChangeTaskCategory(event) {
+  onChangeTaskCategory = event => {
     const category = event.target.value;
     this.setState({
       taskCategory: category,
       taskCategoryState: category ? "success" : "error"
     });
-  }
+  };
 
-  onChangeTaskDescription(event) {
+  onChangeTaskDescription = event => {
     this.setState({
       taskDescription: event.target.value
     });
-  }
+  };
 
-  onChangeTaskName(event) {
+  onChangeTaskName = event => {
     const name = event.target.value;
     this.setState({
       taskName: name,
       taskNameState: name ? "success" : "error"
     });
-  }
+  };
 
   isValidated() {
     const { taskNameState, taskCategoryState } = this.state;
@@ -91,26 +88,26 @@ class AddTask extends React.Component {
     return false;
   }
 
-  setStatusState(status) {
+  setStatusState = status => {
     this.setState({
       status: status
     });
-  }
+  };
 
-  confirmTaskAdd() {
+  confirmTaskAdd = () => {
     const { gigRoomId, gigId } = this.props;
     const { status } = this.state;
     if (status !== "success") {
       if (this.isValidated()) {
-        add(gigRoomId, gigId, this.state, this.setStatusState.bind(this));
+        add(gigRoomId, gigId, this.state, this.setStatusState);
       }
     }
-  }
+  };
 
-  closeModal() {
+  closeModal = () => {
     const { hideTask } = this.props;
     hideTask("addTask");
-  }
+  };
 
   render() {
     const { classes, modalOpen, fullScreen } = this.props;
@@ -206,7 +203,7 @@ class AddTask extends React.Component {
                 </div>
               </GridItem>
             ) : null}
-            {status === "working" ? (
+            {status === "working" && (
               <React.Fragment>
                 <GridItem xs={10} sm={10} md={10} lg={10}>
                   <CustomInput
@@ -223,7 +220,7 @@ class AddTask extends React.Component {
                     }}
                     inputProps={{
                       value: taskName,
-                      onChange: event => this.onChangeTaskName(event)
+                      onChange: this.onChangeTaskName
                     }}
                     inputType="text"
                   />
@@ -238,7 +235,7 @@ class AddTask extends React.Component {
                     inputProps={{
                       value: taskDescription,
                       multiline: true,
-                      onChange: event => this.onChangeTaskDescription(event)
+                      onChange: this.onChangeTaskDescription
                     }}
                     inputType="text"
                   />
@@ -258,14 +255,14 @@ class AddTask extends React.Component {
                     }}
                     inputProps={{
                       value: taskCategory,
-                      onChange: event => this.onChangeTaskCategory(event)
+                      onChange: this.onChangeTaskCategory
                     }}
                     inputType="text"
                   />
                 </GridItem>
               </React.Fragment>
-            ) : null}
-            {status === "success" ? (
+            )}
+            {status === "success" && (
               <GridItem
                 xs={10}
                 sm={10}
@@ -286,7 +283,7 @@ class AddTask extends React.Component {
                   </h4>
                 </div>
               </GridItem>
-            ) : null}
+            )}
           </GridContainer>
         </DialogContent>
         {status === "working" ? (
@@ -295,14 +292,14 @@ class AddTask extends React.Component {
             style={{ padding: 24 }}
           >
             <Button
-              onClick={() => this.confirmTaskAdd()}
+              onClick={this.confirmTaskAdd}
               className={classes.button + " " + classes.success}
               color="success"
             >
               Add
             </Button>
             <Button
-              onClick={() => this.closeModal()}
+              onClick={this.closeModal}
               className={classes.button + " " + classes.danger}
               color="danger"
             >

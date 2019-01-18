@@ -9,18 +9,12 @@ import defaultImage from "assets/img/image_placeholder.jpg";
 import defaultAvatar from "assets/img/placeholder.jpg";
 
 class ImageUpload extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      file: null,
-      imagePreviewUrl: this.props.avatar ? defaultAvatar : defaultImage
-    };
-    this.handleImageChange = this.handleImageChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.handleClick = this.handleClick.bind(this);
-    this.handleRemove = this.handleRemove.bind(this);
-  }
-  handleImageChange(e) {
+  state = {
+    file: null,
+    imagePreviewUrl: this.props.avatar ? defaultAvatar : defaultImage
+  };
+
+  handleImageChange = e => {
     e.preventDefault();
     let reader = new FileReader();
     let file = e.target.files[0];
@@ -31,25 +25,25 @@ class ImageUpload extends React.Component {
       });
     };
     reader.readAsDataURL(file);
-  }
-  handleSubmit(e) {
+  };
+  handleSubmit = e => {
     e.preventDefault();
     // this.state.file is the file/image uploaded
     // in this function you can save the image (this.state.file) on form submit
     // you have to call it yourself
-  }
-  handleClick() {
+  };
+  handleClick = () => {
     this.refs.fileInput.click();
-  }
-  handleRemove() {
+  };
+  handleRemove = () => {
     this.setState({
       file: null,
       imagePreviewUrl: this.props.avatar ? defaultAvatar : defaultImage
     });
     this.refs.fileInput.value = null;
-  }
+  };
   render() {
-    var {
+    const {
       avatar,
       addButtonProps,
       changeButtonProps,
@@ -63,19 +57,16 @@ class ImageUpload extends React.Component {
         </div>
         <div>
           {this.state.file === null ? (
-            <Button {...addButtonProps} onClick={() => this.handleClick()}>
+            <Button {...addButtonProps} onClick={this.handleClick}>
               {avatar ? "Add Photo" : "Select image"}
             </Button>
           ) : (
             <span>
-              <Button {...changeButtonProps} onClick={() => this.handleClick()}>
+              <Button {...changeButtonProps} onClick={this.handleClick}>
                 Change
               </Button>
               {avatar ? <br /> : null}
-              <Button
-                {...removeButtonProps}
-                onClick={() => this.handleRemove()}
-              >
+              <Button {...removeButtonProps} onClick={this.handleRemove}>
                 <i className="fas fa-times" /> Remove
               </Button>
             </span>
