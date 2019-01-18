@@ -16,6 +16,7 @@ const UserProfile = (function() {
       sessionStorage.setItem("user", JSON.stringify(user));
     });
   };
+  //test
 
   const authenticate = function() {
     try {
