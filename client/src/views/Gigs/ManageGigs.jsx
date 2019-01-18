@@ -53,7 +53,7 @@ class ManageGigs extends React.Component {
   }
 
   componentDidMount() {
-    var authenticated = UserProfile.authenticate();
+    let authenticated = UserProfile.authenticate();
     if (!authenticated) {
       const { history } = this.props;
       history.push({
@@ -84,7 +84,7 @@ class ManageGigs extends React.Component {
     });
   }
 
-  setupTableCells(gig) {
+  setupTableCells = gig => {
     const { classes } = this.props;
     const tableCellClasses = classes.tableCell;
     return (
@@ -97,22 +97,22 @@ class ManageGigs extends React.Component {
         </TableCell>
       </React.Fragment>
     );
-  }
+  };
 
-  handleTableRowOnClick(gig) {
+  handleTableRowOnClick = gig => {
     const { history } = this.props;
     history.push({
       headername: `${gig.name}`,
       pathname: `/gigs/manage/${gig._id}`
     });
-  }
+  };
 
-  handleCreateGigPage() {
+  handleCreateGigPage = () => {
     const { history } = this.props;
     history.push({
       pathname: "/gigs/create"
     });
-  }
+  };
 
   render() {
     const { classes } = this.props;
@@ -145,7 +145,7 @@ class ManageGigs extends React.Component {
               {/*<GridItem xs={6} sm={6} md={6} lg={6}>*/}
               <Button
                 color="default"
-                onClick={this.handleCreateGigPage.bind(this)}
+                onClick={this.handleCreateGigPage}
                 className={classes.button}
                 variant="contained"
                 size="small"
@@ -168,8 +168,9 @@ class ManageGigs extends React.Component {
             tableData={this.state.gigs}
             tableFooter="true"
             notFoundMessage="No gigs found"
-            setupTableCells={this.setupTableCells.bind(this)}
-            handleTableRowOnClick={this.handleTableRowOnClick.bind(this)}
+            setupTableCells={this.setupTableCells}
+            handleTableRowOnClick={this.handleTableRowOnClick}
+            rowsPerPage={25}
           />
         </CardBody>
       </Card>
