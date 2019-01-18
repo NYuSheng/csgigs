@@ -53,7 +53,8 @@ class GigDetailsStep extends React.Component {
       adminState: "",
       budget: 0,
       budgetState: "",
-      errorMessage: ""
+      errorMessage: "",
+      ownerState: ""
     };
   }
 
@@ -143,6 +144,7 @@ class GigDetailsStep extends React.Component {
       selectedOwner = owner;
     }
     this.setState({
+      ownerState: "success",
       selectedOwner
     });
   };
@@ -155,6 +157,7 @@ class GigDetailsStep extends React.Component {
     const selectedOwner = this.state.selectedOwner;
     if (selectedOwner && selectedOwner["_id"] === owner["_id"]) {
       this.setState({
+        ownerState: "",
         selectedOwner: undefined
       });
     }
@@ -196,7 +199,8 @@ class GigDetailsStep extends React.Component {
     if (
       this.state.nameState === "success" &&
       this.state.budgetState === "success" &&
-      this.state.adminState === "success"
+      this.state.adminState === "success" &&
+      this.state.ownerState === "success"
     ) {
       return true;
     } else {
@@ -212,6 +216,9 @@ class GigDetailsStep extends React.Component {
       if (this.state.adminState !== "success") {
         this.setState({ adminState: "error" });
       }
+      if (this.state.ownerState !== "success") {
+        this.setState({ ownerState: "error" });
+      }
     }
     return false;
   }
@@ -222,9 +229,11 @@ class GigDetailsStep extends React.Component {
       nameState,
       adminState,
       budgetState,
+      ownerState,
       selectedAdmins,
       selectedOwner,
-      errorMessage
+      errorMessage,
+      type
     } = this.state;
 
     return (
@@ -290,128 +299,186 @@ class GigDetailsStep extends React.Component {
             inputType="number"
           />
         </GridItem>
-        <GridItem xs={10} sm={10} md={10} lg={8} align="left">
-          <CustomInput
-            labelText="Venue"
-            id="venue"
-            formControlProps={{
-              fullWidth: true
-            }}
-            inputProps={{
-              onChange: event => this.inputHandle(event, "venue")
-            }}
-            inputType="text"
-          />
-        </GridItem>
-        <GridItem xs={10} sm={10} md={10} lg={8} align="left">
-          <CustomInput
-            labelText="Address"
-            id="address"
-            formControlProps={{
-              fullWidth: true
-            }}
-            inputProps={{
-              onChange: event => this.inputHandle(event, "address")
-            }}
-            inputType="text"
-          />
-        </GridItem>
-        <GridItem xs={10} sm={10} md={10} lg={8} align="left">
-          <CustomInput
-            labelText="Region"
-            id="region"
-            formControlProps={{
-              fullWidth: true
-            }}
-            inputProps={{
-              onChange: event => this.inputHandle(event, "region")
-            }}
-            inputType="text"
-          />
-        </GridItem>
-        <GridItem xs={10} sm={10} md={10} lg={8} align="left">
-          <CustomSelect
-            labelText={"Timezone"}
-            id="timezone"
-            items={this.getAllTimeZones()}
-            selectedItem={this.getCurrentTimeZone()}
-            inputProps={{
-              onChange: selectedValue =>
-                this.selectHandle(selectedValue, "timezone")
-            }}
-          />
-        </GridItem>
-        <GridItem xs={10} sm={10} md={10} lg={8} align="left">
-          <CustomSelect
-            labelText={"Format"}
-            id="format"
-            items={["Face-to-face", "Audio", "Video", "Telephonic"]}
-            inputProps={{
-              onChange: selectedValue =>
-                this.selectHandle(selectedValue, "format")
-            }}
-          />
-        </GridItem>
-        <GridItem xs={10} sm={10} md={10} lg={8} align="left">
-          <CustomInput
-            labelText="Max number of participants"
-            id="maxParticipants"
-            formControlProps={{
-              fullWidth: true
-            }}
-            inputProps={{
-              onChange: event => this.inputHandle(event, "maxParticipants")
-            }}
-            inputType="number"
-          />
-        </GridItem>
-        <GridItem xs={10} sm={10} md={10} lg={8} align="left">
-          <CustomInput
-            labelText="Related link"
-            id="link"
-            formControlProps={{
-              fullWidth: true
-            }}
-            inputProps={{
-              onChange: event => this.inputHandle(event, "link")
-            }}
-            inputType="text"
-          />
-        </GridItem>
-        <GridItem xs={10} sm={10} md={10} lg={8} align="left">
-          <CustomInput
-            labelText="Contact Email"
-            id="contact"
-            formControlProps={{
-              fullWidth: true
-            }}
-            inputProps={{
-              onChange: event => this.inputHandle(event, "contact")
-            }}
-            inputType="email"
-          />
-        </GridItem>
-        <GridItem xs={10} sm={10} md={10} lg={8} align="left">
-          <CustomRadio
-            labelText={"Require Registration?"}
-            id="requireRegistration"
-            selectedItem="Y"
-            items={[
-              {
-                key: "Y",
-                value: "Yes"
-              },
-              {
-                key: "N",
-                value: "No"
-              }
-            ]}
-            inputProps={{
-              onChange: selectedValue =>
-                this.selectHandle(selectedValue, "requireRegistration")
-            }}
-          />
-        </GridItem>
+        {type !== "Announcement" && (
+          <>
+            <GridItem xs={10} sm={10} md={10} lg={8} align="left">
+              <CustomInput
+                labelText="Venue"
+                id="venue"
+                formControlProps={{
+                  fullWidth: true
+                }}
+                inputProps={{
+                  onChange: event => this.inputHandle(event, "venue")
+                }}
+                inputType="text"
+              />
+            </GridItem>
+            <GridItem xs={10} sm={10} md={10} lg={8} align="left">
+              <CustomInput
+                labelText="Address"
+                id="address"
+                formControlProps={{
+                  fullWidth: true
+                }}
+                inputProps={{
+                  onChange: event => this.inputHandle(event, "address")
+                }}
+                inputType="text"
+              />
+            </GridItem>
+            <GridItem xs={10} sm={10} md={10} lg={8} align="left">
+              <CustomInput
+                labelText="Region"
+                id="region"
+                formControlProps={{
+                  fullWidth: true
+                }}
+                inputProps={{
+                  onChange: event => this.inputHandle(event, "region")
+                }}
+                inputType="text"
+              />
+            </GridItem>
+            <GridItem xs={10} sm={10} md={10} lg={8} align="left">
+              <CustomSelect
+                labelText={"Timezone"}
+                id="timezone"
+                items={this.getAllTimeZones()}
+                selectedItem={this.getCurrentTimeZone()}
+                inputProps={{
+                  onChange: selectedValue =>
+                    this.selectHandle(selectedValue, "timezone")
+                }}
+              />
+            </GridItem>
+            <GridItem xs={11} sm={11} md={11} lg={8} align="center">
+              <Card>
+                <CardHeader color="rose" icon>
+                  <CardIcon color="rose">
+                    <Event />
+                  </CardIcon>
+                  <h4
+                    className={classes.cardIconTitle}
+                    style={{ textAlign: "left", color: "black" }}
+                  >
+                    Start Date/Time
+                  </h4>
+                </CardHeader>
+                <CardBody>
+                  <FormControl fullWidth>
+                    <Datetime
+                      onChange={momentDate =>
+                        this.selectDate(momentDate, "startDate")
+                      }
+                      inputProps={{
+                        placeholder: "Select Date/Time"
+                      }}
+                    />
+                  </FormControl>
+                </CardBody>
+              </Card>
+            </GridItem>
+            <GridItem xs={11} sm={11} md={11} lg={8} align="center">
+              <Card>
+                <CardHeader color="rose" icon>
+                  <CardIcon color="rose">
+                    <Event />
+                  </CardIcon>
+                  <h4
+                    className={classes.cardIconTitle}
+                    style={{ textAlign: "left", color: "black" }}
+                  >
+                    End Date/Time
+                  </h4>
+                </CardHeader>
+                <CardBody>
+                  <FormControl fullWidth>
+                    <Datetime
+                      onChange={momentDate =>
+                        this.selectDate(momentDate, "endDate")
+                      }
+                      inputProps={{
+                        placeholder: "Select Date/Time"
+                      }}
+                    />
+                  </FormControl>
+                </CardBody>
+              </Card>
+            </GridItem>
+            <GridItem xs={10} sm={10} md={10} lg={8} align="left">
+              <CustomSelect
+                labelText={"Format"}
+                id="format"
+                items={["Face-to-face", "Audio", "Video", "Telephonic"]}
+                inputProps={{
+                  onChange: selectedValue =>
+                    this.selectHandle(selectedValue, "format")
+                }}
+              />
+            </GridItem>
+            <GridItem xs={10} sm={10} md={10} lg={8} align="left">
+              <CustomInput
+                labelText="Max number of participants"
+                id="maxParticipants"
+                formControlProps={{
+                  fullWidth: true
+                }}
+                inputProps={{
+                  onChange: event => this.inputHandle(event, "maxParticipants")
+                }}
+                inputType="number"
+              />
+            </GridItem>
+            <GridItem xs={10} sm={10} md={10} lg={8} align="left">
+              <CustomInput
+                labelText="Related link"
+                id="link"
+                formControlProps={{
+                  fullWidth: true
+                }}
+                inputProps={{
+                  onChange: event => this.inputHandle(event, "link")
+                }}
+                inputType="text"
+              />
+            </GridItem>
+            <GridItem xs={10} sm={10} md={10} lg={8} align="left">
+              <CustomInput
+                labelText="Contact Email"
+                id="contact"
+                formControlProps={{
+                  fullWidth: true
+                }}
+                inputProps={{
+                  onChange: event => this.inputHandle(event, "contact")
+                }}
+                inputType="email"
+              />
+            </GridItem>
+            <GridItem xs={10} sm={10} md={10} lg={8} align="left">
+              <CustomRadio
+                labelText={"Require Registration?"}
+                id="requireRegistration"
+                selectedItem="Y"
+                items={[
+                  {
+                    key: "Y",
+                    value: "Yes"
+                  },
+                  {
+                    key: "N",
+                    value: "No"
+                  }
+                ]}
+                inputProps={{
+                  onChange: selectedValue =>
+                    this.selectHandle(selectedValue, "requireRegistration")
+                }}
+              />
+            </GridItem>
+          </>
+        )}
         <GridItem xs={10} sm={10} md={10} lg={8} align="left">
           <h4>Assign Owner</h4>
         </GridItem>
@@ -422,6 +489,7 @@ class GigDetailsStep extends React.Component {
             </CardHeader>
             <CardBody>
               <Table
+                error={ownerState === "error"}
                 tableHeight="75px"
                 hover
                 tableHeaderColor="primary"
@@ -454,60 +522,6 @@ class GigDetailsStep extends React.Component {
                 setupTableCells={this.setupTableCells}
                 handleTableRowOnClick={this.deselectAdmin}
               />
-            </CardBody>
-          </Card>
-        </GridItem>
-        <GridItem xs={11} sm={11} md={11} lg={8} align="center">
-          <Card>
-            <CardHeader color="rose" icon>
-              <CardIcon color="rose">
-                <Event />
-              </CardIcon>
-              <h4
-                className={classes.cardIconTitle}
-                style={{ textAlign: "left", color: "black" }}
-              >
-                Start Date/Time
-              </h4>
-            </CardHeader>
-            <CardBody>
-              <FormControl fullWidth>
-                <Datetime
-                  onChange={momentDate =>
-                    this.selectDate(momentDate, "startDate")
-                  }
-                  inputProps={{
-                    placeholder: "Select Date/Time"
-                  }}
-                />
-              </FormControl>
-            </CardBody>
-          </Card>
-        </GridItem>
-        <GridItem xs={11} sm={11} md={11} lg={8} align="center">
-          <Card>
-            <CardHeader color="rose" icon>
-              <CardIcon color="rose">
-                <Event />
-              </CardIcon>
-              <h4
-                className={classes.cardIconTitle}
-                style={{ textAlign: "left", color: "black" }}
-              >
-                End Date/Time
-              </h4>
-            </CardHeader>
-            <CardBody>
-              <FormControl fullWidth>
-                <Datetime
-                  onChange={momentDate =>
-                    this.selectDate(momentDate, "endDate")
-                  }
-                  inputProps={{
-                    placeholder: "Select Date/Time"
-                  }}
-                />
-              </FormControl>
             </CardBody>
           </Card>
         </GridItem>

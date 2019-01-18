@@ -59,8 +59,12 @@ exports.create_gig = asyncMiddleware(async (req, res) => {
     // user_attendees: []
   });
   try {
-    if (!gig.user_admins.length) {
+    if (!gig.owner) {
       throw `No owner specified for ${gig.name}`;
+    }
+
+    if (!gig.user_admins.length) {
+      throw `No admin specified for ${gig.name}`;
     }
 
     const gig_created = await trySaveOrThrow(gig);
