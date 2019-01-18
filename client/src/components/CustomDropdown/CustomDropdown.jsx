@@ -19,32 +19,26 @@ import Button from "components/CustomButtons/Button.jsx";
 import customDropdownStyle from "assets/jss/material-dashboard-pro-react/components/customDropdownStyle.jsx";
 
 class CustomDropdown extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      open: false
-    };
-    this.handleClick = this.handleClick.bind(this);
-    this.handleClose = this.handleClose.bind(this);
-    this.handleCloseMenu = this.handleCloseMenu.bind(this);
-  }
+  state = {
+    open: false
+  };
 
   handleClick = () => {
     this.setState(state => ({ open: !state.open }));
-  }
+  };
   handleClose = event => {
     if (this.anchorEl.contains(event.target)) {
       return;
     }
 
     this.setState({ open: false });
-  }
-  handleCloseMenu(param){
+  };
+  handleCloseMenu = param => {
     this.setState({ open: false });
-    if(this.props && this.props.onClick){
+    if (this.props && this.props.onClick) {
       this.props.onClick(param);
     }
-  }
+  };
   render() {
     const { open } = this.state;
     const {
