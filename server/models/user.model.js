@@ -12,7 +12,10 @@ let UserSchema = new Schema({
       address: { type: String, required: true },
       verified: { type: Boolean, required: true }
     }
-  ]
+  ],
+  favourites: {
+    gigs: [{ type: Schema.Types.ObjectId }]
+  }
 });
 
 module.exports = mongoose.model("users", UserSchema);
