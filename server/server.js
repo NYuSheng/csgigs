@@ -62,8 +62,8 @@ async function bootstrapApp() {
   app.locals.broadcastChannelName = response.channel._id;
   LogConfig.info("Found broadcast channel room id");
 
-  app.use(bodyParser.json());
-  app.use(bodyParser.urlencoded({ extended: false }));
+  app.use(bodyParser.json({ limit: "10mb" }));
+  app.use(bodyParser.urlencoded({ extended: false, limit: "10mb" }));
   app.set("etag", false);
 
   app.use("/admin-ui", express.static(path.join(__dirname, "./public")));
