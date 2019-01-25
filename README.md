@@ -11,7 +11,7 @@ Create a new `.env` file in the server project root (next to `server\package.jso
 ```
 CSGIGS_ROCKET_API_USER=gigsbot
 CSGIGS_ROCKET_API_PASSWORD=gigsbotpassword
-CSGIGS_ROCKET_BROADCAST_CHANNEL=broadcastchannelname
+CSGIGS_ROCKET_BROADCAST_CHANNEL=broadcast
 CSGIGS_ROCKET_API_URL=http://localhost:3000/api/v1/
 ```
 
