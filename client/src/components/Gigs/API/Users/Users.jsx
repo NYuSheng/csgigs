@@ -3,7 +3,7 @@ import UserProfile from "components/Gigs/Authentication/UserProfile";
 
 export const login = function(payload, loadingCallback, redirectCallback) {
   loadingCallback(true);
-  fetch("/admin-ui/api/users/login", {
+  fetch("/api/login", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload)

@@ -4,6 +4,8 @@ const asyncMiddleware = require("../utils/asyncMiddleware");
 
 const getCachedApiAuth = request => request.app.locals.apiAuth;
 
+//TODO: remove this entire file. Use the api from the bot project instead
+
 exports.rc_user_login = async function(body, res) {
   const data = await api.post("login", null, null, body);
 

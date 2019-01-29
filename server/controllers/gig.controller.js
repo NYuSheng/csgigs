@@ -111,6 +111,11 @@ exports.create_gig = asyncMiddleware(async (req, res) => {
     }
 
     await Gig.findByIdAndUpdate(gig_created._id, {
+      rc_private_channel: {
+        id: created_group._id,
+        name: created_group.name
+      },
+      //TODO: remove this
       rc_channel_id: created_group
     });
 

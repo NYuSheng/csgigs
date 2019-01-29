@@ -1,12 +1,19 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
+const rcChannelType = {
+  type: { id: { type: String }, name: { type: String } },
+  default: null
+};
+
 let GigsSchema = new Schema({
   name: { type: String, required: true, index: true, unique: true },
   description: { type: String },
   photo: { type: String },
   createdBy: { type: String },
   createdAt: { type: Date, default: Date.now },
+  rc_private_channel: rcChannelType,
+  rc_public_channel: rcChannelType,
   rc_channel_id: { type: Object, default: null },
   points_budget: { type: Number, required: true },
   status: { type: String, required: true },
