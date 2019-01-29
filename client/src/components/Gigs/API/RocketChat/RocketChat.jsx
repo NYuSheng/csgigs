@@ -63,37 +63,30 @@ export const setRoomToReadOnly = function(gigRoomId) {
   });
 };
 
-export const setRoomTypeToPublic = function(gigId, gigRoomId, statusCallback) {
+export async function publishGig(gigId, statusCallback) {
   const authSet = UserProfile.getAuthSet();
-  const publishPayload = {
-    roomId: gigRoomId,
-    type: "c"
-  };
-
-  fetch(`/admin-ui/api/rc/set_group_type`, {
+  const callback = statusCallback || (() => 0);
+  callback("loading");
+  const response = await fetch(`/api/gigs/${gigId}/publish`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       "x-auth-token": authSet.token,
       "x-user-id": authSet.userId
-    },
-    body: JSON.stringify(publishPayload)
-  }).then(data => {
-    if (data.status !== 200) {
-      data.json().then(json => {
-        NotificationManager.error(json.error.errmsg);
-      });
-    } else {
-      data.json().then(json => {
-        const updatePayload = {
-          status: "Active",
-          rc_channel_id: json.group
-        };
-        update(gigId, updatePayload, statusCallback);
-      });
     }
   });
-};
+
+  const data = await response.json();
+  if (response.status !== 200 || !data.success) {
+    NotificationManager.error(
+      data.error || "There was an error publishing the gig"
+    );
+    callback("error");
+    return;
+  }
+
+  callback("success");
+}
 
 export const kick_user = async function(gigRoomId, userId) {
   const authSet = UserProfile.getAuthSet();
